@@ -1,3 +1,4 @@
+import { ThisReceiver } from '@angular/compiler';
 import { Component, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { forkJoin, Subscription } from 'rxjs';
@@ -17,22 +18,23 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
   defineFormGroup: FormGroup = new FormGroup({
     campaignName: new FormControl('', [Validators.required, Validators.maxLength(255)]),
     campaignSegment: new FormControl('', Validators.required),
-    campaignBudget: new FormControl('', [Validators.min(0), Validators.max(9999999), Validators.minLength(7)]),
+    campaignBudget: new FormControl('', [Validators.minLength(7), Validators.min(0), Validators.max(1000000)]),
     campaignConversionTarget: new FormControl('', [Validators.min(1), Validators.max(100)]),
-    campaignStartEnd: new FormControl('', Validators.required),
+    campaignStart: new FormControl('', Validators.required),
+    campaignEnd: new FormControl('', Validators.required),
 
     // Upsell || !acquisation
     campaignRegion: new FormControl(''),
     campaignLocation: new FormControl(''),
     campaignService: new FormControl(''),
+    campaignPropensity: new FormControl(''),
 
     // acquisation
     campaignZipzode: new FormControl(''),
     campaignZipplus: new FormControl(''),
-    campaignPropensity: new FormControl('')
   });
   //@ts-ignore
-  saveModel: SaveCampaignModel;
+  saveModelResult: SaveCampaignModel = {};
 
   minDate: Date = new Date();
   maxDate: Date = new Date(new Date().setDate(new Date().getDate() + 12));
@@ -41,6 +43,13 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
   isAcquisitionSelected: boolean = false;;
   savedSegments: SegmentModel[] = [];
   recommendedSegments: SegmentModel[] = [];
+
+  savedSegmentsDropdown: SegmentModel[] = [];
+  recommendedSegmentsDropdown: SegmentModel[] = [];
+
+  //@ts-ignore
+  selectedSegment: SegmentModel = {};
+
   zipcodes: ZipcodeModel[] = [];
   zippluses: ZipcodeModel[] = [];
   locations: LocationModel[] = [];
@@ -59,7 +68,16 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       forkJoin([
         this.newCampaignService.getRecommendedSegments(),
-        this.newCampaignService.getSavedSegments(),
+        this.newCampaignService.getSavedSegments()
+      ]).subscribe(
+        result => {
+          this.recommendedSegments = result[0].length > 0 ? result[0] : [];
+          this.savedSegments = result[1].length > 0 ? result[1] : [];
+          this.recommendedSegmentsDropdown = result[0].length > 0 ? result[0] : [];
+          this.savedSegmentsDropdown = result[1].length > 0 ? result[1] : [];
+        }
+      ),
+      forkJoin([
         this.newCampaignService.getZipcodes(),
         this.newCampaignService.getZippluses(),
         this.newCampaignService.getLocations(),
@@ -68,17 +86,15 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
         this.newCampaignService.getPropensity(),
       ]).subscribe(
         result => {
-          this.recommendedSegments = result[0].length > 0 ? result[0] : [];
-          this.savedSegments = result[1].length > 0 ? result[1] : [];
-          this.zipcodes = result[2].length > 0 ? result[2] : [];
-          this.zippluses = result[3].length > 0 ? result[3] : [];
-          this.locations = result[4].length > 0 ? result[4] : [];
-          this.regions = result[5].length > 0 ? result[5] : [];
-          this.services = result[6].length > 0 ? result[6] : [];
-          this.propensities = result[7].length > 0 ? result[7] : [];
+          this.zipcodes = result[0].length > 0 ? result[0] : [];
+          this.zippluses = result[1].length > 0 ? result[1] : [];
+          this.locations = result[2].length > 0 ? result[2] : [];
+          this.regions = result[3].length > 0 ? result[3] : [];
+          this.services = result[4].length > 0 ? result[4] : [];
+          this.propensities = result[5].length > 0 ? result[5] : [];
         }
-
-      ));
+      )
+    );
   }
 
   saveCampaignClick(next: boolean): void {
@@ -97,38 +113,62 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
       }
     }
 
+    //@ts-ignore
+    const saveModel: SaveCampaignModel = {};
+
     if (selectedSegment) {
-      //@ts-ignore
-      this.saveModel = {
-        name: this.defineFormGroup.value.campaignName,
-        segmentId: this.defineFormGroup.value.campaignSegment,
-        segmentCategory: segmentCategory,
-        segmentName: selectedSegment.segmentName,
-        segmentType: selectedSegment.segmentType,
-        segmentSize: selectedSegment.subscriberCount,
-        orgId: 12903101,
-        budget: this.defineFormGroup.value.campaignBudget ? parseInt(this.defineFormGroup.value.campaignBudget) : 0,
-        conversionTarget: this.defineFormGroup.value.campaignConversionTarget ? parseInt(this.defineFormGroup.value.campaignConversionTarget) : 0,
-        startDate: this.defineFormGroup.value.campaignStartEnd[0],
-        endDate: this.defineFormGroup.value.campaignStartEnd[1],
-        region: this.defineFormGroup.value.campaignRegion,
-        location: this.defineFormGroup.value.campaignLocation,
-        service: this.defineFormGroup.value.campaignService,
-        zipcode: this.defineFormGroup.value.campaignZipzode,
-        zipPlusFour: this.defineFormGroup.value.campaignZipplus,
-        propensity: this.defineFormGroup.value.campaignPropensity,
+      if (this.saveModelResult.campaignId) {
+        saveModel.campaignId = this.saveModelResult.campaignId;
       }
-      this.newCampaignService.saveCampaign(this.saveModel).subscribe(result => {
-        this.saveModel = result;
-        alert('New Campaign Saved : ' + result.campaignId);
-      });
+      saveModel.name = this.defineFormGroup.value.campaignName;
+      saveModel.segmentId = this.defineFormGroup.value.campaignSegment;
+      saveModel.segmentCategory = segmentCategory;
+      saveModel.segmentName = selectedSegment.segmentName;
+      saveModel.segmentType = selectedSegment.segmentType;
+      saveModel.segmentSize = selectedSegment.subscriberCount;
+      saveModel.subscriberCount = selectedSegment.subscriberCount;
+      saveModel.orgId = 12903101;
+      saveModel.budget = this.defineFormGroup.value.campaignBudget;
+      saveModel.conversionTarget = this.defineFormGroup.value.campaignConversionTarget;
+      saveModel.startDate = this.defineFormGroup.value.campaignStart.toISOString().split('T')[0];
+      saveModel.endDate = this.defineFormGroup.value.campaignEnd.toISOString().split('T')[0];
+
+      if (this.isRecommenedSelected) {
+        saveModel.region = this.defineFormGroup.value.campaignRegion;
+        saveModel.location = this.defineFormGroup.value.campaignLocation;
+        saveModel.service = this.defineFormGroup.value.campaignService;
+        saveModel.propensity = this.defineFormGroup.value.campaignPropensity;
+      }
+      if (this.isAcquisitionSelected) {
+        saveModel.zipcode = [this.defineFormGroup.value.campaignZipzode];
+        //this.saveModel.zipPlusFour = [this.defineFormGroup.value.campaignZipplus];
+      }
+      this.subscriptions.push(
+        this.newCampaignService.saveCampaign(saveModel).subscribe(result => {
+          this.saveModelResult = result;
+          alert('New Campaign Saved : ' + result.campaignId);
+        })
+      );
     }
   }
 
-  segmentSelected() {
-    const selectedSegmentId: string = this.defineFormGroup.value.campaignSegment;
+  segmentSelected(segment: SegmentModel) {
+    this.selectedSegment = segment;
+    const selectedSegmentId = segment.segmentId;
     this.isRecommenedSelected = this.recommendedSegments.some(s => s.segmentId === selectedSegmentId);
     this.isisAcquisitionSegment(selectedSegmentId);
+    this.defineFormGroup.controls['campaignSegment'].setValue(segment.segmentId);
+    this.defineFormGroup.controls['campaignRegion'].setValue('');
+    this.defineFormGroup.controls['campaignLocation'].setValue('');
+    this.defineFormGroup.controls['campaignService'].setValue('');
+    this.defineFormGroup.controls['campaignPropensity'].setValue('');
+    this.defineFormGroup.controls['campaignZipzode'].setValue('');
+    this.defineFormGroup.controls['campaignZipplus'].setValue('');
+  }
+
+  searchSegments(query: any): void {
+    this.recommendedSegmentsDropdown = this.recommendedSegments.filter(segment => segment.segmentName.toLocaleLowerCase().includes(query.target.value.toLocaleLowerCase()));
+    this.savedSegmentsDropdown = this.savedSegments.filter(segment => segment.segmentName.toLocaleLowerCase().includes(query.target.value.toLocaleLowerCase()));
   }
 
   private isisAcquisitionSegment(selectedSegmentId: string): void {

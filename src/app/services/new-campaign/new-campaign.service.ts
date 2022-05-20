@@ -22,7 +22,12 @@ export class NewCampaignService {
   }
 
   saveCampaign(saveCampaignModel: SaveCampaignModel): Observable<SaveCampaignModel> {
-    return this.httpClient.post<SaveCampaignModel>(this.apiUrl + '-campaigns/campaign', saveCampaignModel);
+    if (saveCampaignModel.campaignId) {
+      return this.httpClient.put<SaveCampaignModel>(this.apiUrl + '-campaigns/campaign', saveCampaignModel);
+    }
+    else {
+      return this.httpClient.post<SaveCampaignModel>(this.apiUrl + '-campaigns/campaign', saveCampaignModel);
+    }
   }
 
   getZipcodes(): Observable<ZipcodeModel[]> {

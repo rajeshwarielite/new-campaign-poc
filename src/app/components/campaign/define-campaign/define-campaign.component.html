@@ -1,15 +1,41 @@
 <form class="mt-3" [formGroup]="defineFormGroup">
     <div class="input-group mb-3">
-        <label class="input-group-text w-25"
-            [ngClass]="{'border-danger' : (defineFormGroup.controls['campaignName'].invalid && defineFormGroup.controls['campaignName'].touched) }">
+        <label class="input-group-text w-25">
             Campaign Name <span class="text-danger">*</span></label>
         <input type="text" class="form-control" formControlName="campaignName" placeholder="Campaign Name">
     </div>
+    <p *ngIf="(defineFormGroup.controls['campaignName'].invalid && defineFormGroup.controls['campaignName'].touched)"
+        class="text-danger fs-6">Campaign Name Required</p>
     <div class="input-group mb-3">
-        <label class="input-group-text w-25"
-            [ngClass]="{'border-danger' : (defineFormGroup.controls['campaignSegment'].invalid && defineFormGroup.controls['campaignSegment'].touched) }">
-            Segment <span class="text-danger">*</span></label>
-        <select type="text" class="form-control" (change)="segmentSelected()" formControlName="campaignSegment">
+        <label class="input-group-text w-25">Segment <span class="text-danger">*</span></label>
+        <div class="dropdown-button w-75" ngbDropdown>
+            <button class="w-100" id="segmentDropdown" ngbDropdownToggle>
+                <p class="listdata mb0">{{ selectedSegment.segmentName }}</p>
+            </button>
+            <div class="w-100 overflow-auto" style="height: 20rem;" ngbDropdownMenu aria-labelledby="segmentDropdown">
+                <div class="form-outline">
+                    <input class="w-100" type="search" (keyup)="searchSegments($event)" placeholder="Search.." name="name" />
+                </div>
+                <strong class="pl-3">Recommended</strong>
+                <ng-container *ngFor="let segment of recommendedSegmentsDropdown;">
+                    <button (click)="segmentSelected(segment)" ngbDropdownItem class="greyaa"><span class="content-wrap"
+                            title="{{segment.segmentName}}">{{segment.segmentName}}</span>
+                        <span>{{segment.segmentType}}</span></button>
+                </ng-container>
+                <strong class="pl-3">Saved</strong>
+                <ng-container *ngFor="let segment of savedSegmentsDropdown;">
+                    <button (click)="segmentSelected(segment)" ngbDropdownItem class="greyaa"><span class="content-wrap"
+                            title="{{segment.segmentName}}">{{segment.segmentName}}</span>
+                        <span>{{segment.segmentType}}</span></button>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+    <p *ngIf="(defineFormGroup.controls['campaignSegment'].invalid && defineFormGroup.controls['campaignSegment'].touched)"
+        class="text-danger fs-6">Segment Required</p>
+    <!-- <div class="input-group mb-3">
+        <label class="input-group-text w-25">Segment <span class="text-danger">*</span></label>
+        <select type="text" class="form-control" >
             <optgroup label="Recommended Segments">
                 <ng-container *ngFor="let segment of recommendedSegments;">
                     <option [value]="segment.segmentId">{{
@@ -25,7 +51,7 @@
                 </ng-container>
             </optgroup>
         </select>
-    </div>
+    </div> -->
 
     <ng-container *ngIf="isRecommenedSelected && !isAcquisitionSelected">
         <div class="input-group mb-3">
@@ -69,46 +95,60 @@
             </select>
         </div>
     </ng-container>
+
     <ng-container *ngIf="isAcquisitionSelected">
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Zipcode</label>
             <select type="number" class="form-control" formControlName="campaignZipzode">
                 <ng-container *ngFor="let zipcode of zipcodes;">
-                    <option [value]="zipcode.item_id">{{zipcode.item_text}}
+                    <option [value]="zipcode.item_text">{{zipcode.item_text}}
                     </option>
                 </ng-container>
             </select>
         </div>
         <div class="input-group mb-3">
-
             <label class="input-group-text w-25">Zipplus</label>
             <select type="number" class="form-control" formControlName="campaignZipplus">
                 <ng-container *ngFor="let zipplus of zippluses;">
-                    <option [value]="zipplus.item_id">{{zipplus.item_text}}
+                    <option [value]="zipplus.item_text">{{zipplus.item_text}}
                     </option>
                 </ng-container>
             </select>
         </div>
     </ng-container>
+
     <div class="input-group mb-3">
-        <label class="input-group-text w-25"
-            [ngClass]="{'border-danger' : (defineFormGroup.controls['campaignBudget'].invalid && defineFormGroup.controls['campaignBudget'].touched) }">
+        <label class="input-group-text w-25">
             Budget</label>
-        <input type="number" class="form-control" formControlName="campaignBudget" placeholder="$">
+        <input type="number" class="form-control" maxlength="10" title="0 - 1000000" formControlName="campaignBudget"
+            placeholder="$">
     </div>
+    <p *ngIf="(defineFormGroup.controls['campaignBudget'].invalid && defineFormGroup.controls['campaignBudget'].touched)"
+        class="text-danger fs-6">Enter Valid Budget.</p>
     <div class="input-group mb-3">
-        <label class="input-group-text w-25"
-            [ngClass]="{'border-danger' : (defineFormGroup.controls['campaignConversionTarget'].invalid && defineFormGroup.controls['campaignConversionTarget'].touched) }">
+        <label class="input-group-text w-25">
             Conversion Target</label>
         <input type="number" class="form-control" formControlName="campaignConversionTarget" placeholder="%">
     </div>
+    <p *ngIf="(defineFormGroup.controls['campaignConversionTarget'].invalid && defineFormGroup.controls['campaignConversionTarget'].touched)"
+        class="text-danger fs-6">Enter Valid Convertion Target.</p>
     <div class="input-group mb-3">
-        <label class="input-group-text w-25"
-            [ngClass]="{'border-danger' : (defineFormGroup.controls['campaignStartEnd'].invalid && defineFormGroup.controls['campaignStartEnd'].touched) }">
-            Date range <span class="text-danger">*</span></label>
-        <input class="form-control" formControlName="campaignStartEnd" bsDaterangepicker [minDate]="minDate"
-            [maxDate]="maxDate" [bsConfig]="{ rangeInputFormat: 'DD-MM-YYYY' }" />
+        <label class="input-group-text w-25">
+            Start Date<span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="campaignStart" bsDatepicker [minDate]="minDate" [maxDate]="maxDate"
+            [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY' }" />
     </div>
+    <p *ngIf="(defineFormGroup.controls['campaignStart'].invalid && defineFormGroup.controls['campaignStart'].touched)"
+        class="text-danger fs-6">Start Date Required</p>
+    <div class="input-group mb-3">
+        <label class="input-group-text w-25">
+            End Date<span class="text-danger">*</span></label>
+        <input class="form-control" formControlName="campaignEnd" bsDatepicker
+            [minDate]="defineFormGroup.controls['campaignStart'].value" [maxDate]="maxDate"
+            [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY' }" />
+    </div>
+    <p *ngIf="(defineFormGroup.controls['campaignEnd'].invalid && defineFormGroup.controls['campaignEnd'].touched)"
+        class="text-danger fs-6">End Date Required</p>
     <div class="flex">
         <div class="float-start">
             <button type="button" [disabled]="defineFormGroup.invalid" (click)="saveCampaignClick(false)"

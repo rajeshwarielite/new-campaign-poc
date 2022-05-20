@@ -11,6 +11,8 @@ import { ChannelCampaignComponent } from './components/campaign/channel-campaign
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { CampaignContainerComponent } from './components/campaign-container/campaign-container.component';
 import { TabsModule } from 'ngx-bootstrap/tabs';
+import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
+import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -28,6 +30,8 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
     HttpClientModule,
     BsDatepickerModule.forRoot(),
     TabsModule.forRoot(),
+    BsDropdownModule.forRoot(),
+    NgbDropdownModule
   ],
   providers: [
     {

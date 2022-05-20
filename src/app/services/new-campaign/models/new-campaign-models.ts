@@ -49,10 +49,11 @@ export interface SaveCampaignModel {
     segmentName: string,
     segmentSize: number,
     segmentType: string,
+    subscriberCount: number,
     service: string,
     startDate: Date,
     status: string,
     system: string,
-    zipPlusFour: string,
-    zipcode: string,
+    zipPlusFour?: string[],
+    zipcode?: string[],
 }
