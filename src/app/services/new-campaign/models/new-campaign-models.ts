@@ -57,3 +57,44 @@ export interface SaveCampaignModel {
     zipPlusFour?: string[],
     zipcode?: string[],
 }
+
+export interface ChannelCampaignModel {
+    available: boolean,
+    completedCampaigns: number,
+    costPerSubscriber: number,
+    description: string,
+    inprogressCampaigns: number,
+    marketingChannel: string,
+    marketingChannelId: string,
+    scheduleCampaigns: number
+}
+export interface SaveChannelRequestModel {
+    campaignId: string,
+    includeInChannel: string,
+    marketingChannelId: string,
+    marketingChannelName: string,
+    notificationNam: string,
+    orgId: string,
+    scheduleType: string,
+}
+export interface SaveChannelResponseModel {
+    applicableSubscriber: number
+    campaignId: string,
+    content: string,
+    errorReason: string,
+    estimatedCost: number,
+    eventDriven: string,
+    eventThreshold: string,
+    id: string,
+    includeInChannel: string,
+    link: string,
+    marketingChannelId: string,
+    marketingChannelName: string,
+    notificationName: string,
+    notificationTime: string,
+    notificationTimeZone: string,
+    orgId: number,
+    scheduleType: string,
+    scheduledDateTime: string,
+    status: string,
+}

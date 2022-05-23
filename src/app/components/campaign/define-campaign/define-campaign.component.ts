@@ -144,10 +144,14 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
         //this.saveModel.zipPlusFour = [this.defineFormGroup.value.campaignZipplus];
       }
       this.subscriptions.push(
-        this.newCampaignService.saveCampaign(saveModel).subscribe(result => {
-          this.saveModelResult = result;
-          alert('New Campaign Saved : ' + result.campaignId);
-        })
+        this.newCampaignService.saveCampaign(saveModel).subscribe(
+          (result) => {
+            this.saveModelResult = result;
+            alert('New Campaign Saved : ' + result.campaignId);
+          },
+          (err) => {
+            alert('Error : ' + err.error.errorDesc);
+          })
       );
     }
   }
@@ -183,4 +187,12 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
   }
+
+  startDateChange(): void {
+    if (this.defineFormGroup.value.campaignEnd && (this.defineFormGroup.value.campaignStart > this.defineFormGroup.value.campaignEnd)) {
+      this.defineFormGroup.controls['campaignEnd'].setValue(this.defineFormGroup.value.campaignStart);
+    }
+  }
+
 }
+

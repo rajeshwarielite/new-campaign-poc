@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { LocationModel, PropensityModel, RegionModel, SaveCampaignModel, SegmentModel, ServiceModel, ZipcodeModel } from './models/new-campaign-models';
+import { ChannelCampaignModel, LocationModel, PropensityModel, RegionModel, SaveCampaignModel, SaveChannelRequestModel, SaveChannelResponseModel, SegmentModel, ServiceModel, ZipcodeModel } from './models/new-campaign-models';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +29,14 @@ export class NewCampaignService {
       return this.httpClient.post<SaveCampaignModel>(this.apiUrl + '-campaigns/campaign', saveCampaignModel);
     }
   }
+  saveChannel(saveChannelRequestModel: SaveChannelRequestModel): Observable<SaveChannelResponseModel> {
+    return this.httpClient.post<SaveChannelResponseModel>(this.apiUrl + '-channel/channel', saveChannelRequestModel);
+  }
+
+  getCampaignChannels(campaignId: string): Observable<SaveChannelResponseModel[]> {
+    return this.httpClient.get<SaveChannelResponseModel[]>(this.apiUrl + '-channel/channel/' + campaignId);
+  }
+
 
   getZipcodes(): Observable<ZipcodeModel[]> {
     const zipcodes: ZipcodeModel[] = [
@@ -75,5 +83,9 @@ export class NewCampaignService {
   getPropensity(): Observable<PropensityModel[]> {
     const propensities: PropensityModel[] = [{ Propensity: 'High' }, { Propensity: 'Low' }];
     return of(propensities);
+  }
+
+  getChannels(): Observable<ChannelCampaignModel[]> {
+    return this.httpClient.get<ChannelCampaignModel[]>(this.apiUrl + '-mchannel/marketingChannel');
   }
 }

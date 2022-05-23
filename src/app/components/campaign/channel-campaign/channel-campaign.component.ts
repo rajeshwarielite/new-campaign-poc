@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { ChannelCampaignModel } from 'src/app/services/new-campaign/models/new-campaign-models';
+import { NewCampaignService } from 'src/app/services/new-campaign/new-campaign.service';
 
 @Component({
   selector: 'app-channel-campaign',
@@ -8,18 +10,19 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 })
 export class ChannelCampaignComponent implements OnInit {
   channelFormGroup: FormGroup = new FormGroup({
-    channel: new FormControl(''),
-    constantContact: new FormControl(''),
-    mobileNotifications: new FormControl(''),
-    faceBook: new FormControl(''),
-    mailChimp: new FormControl(''),
-    hubSpot: new FormControl(''),
-    downloadCSV: new FormControl('')
-  })
+  }, Validators.requiredTrue);
 
-  constructor() { }
+  markettingChannels: ChannelCampaignModel[] = [];
+
+  constructor(private newCampaignService: NewCampaignService) { }
 
   ngOnInit(): void {
+    this.newCampaignService.getChannels().subscribe(result => {
+      this.markettingChannels = result;
+      result.forEach(channel => {
+        this.channelFormGroup.addControl(channel.marketingChannelId, new FormControl(false));
+      });
+    });
   }
 
 }

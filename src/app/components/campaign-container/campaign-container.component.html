@@ -4,7 +4,7 @@
         <tab heading="1. Define" (selectTab)="defineTabSelected()" [active]="!channelSelected">
             <app-define-campaign (nextStepEvent)="setChannelStep($event)"></app-define-campaign>
         </tab>
-        <tab heading="2. Channel" [disabled]="!channelSelected" [active]="channelSelected">
+        <tab heading="2. Channel">
             <app-channel-campaign></app-channel-campaign>
         </tab>
         <tab heading="3. Deploy">Basic content 2</tab>

@@ -10,23 +10,26 @@
         <label class="input-group-text w-25">Segment <span class="text-danger">*</span></label>
         <div class="dropdown-button w-75" ngbDropdown>
             <button class="w-100" id="segmentDropdown" ngbDropdownToggle>
-                <p class="listdata mb0">{{ selectedSegment.segmentName }}</p>
+                <p class="listdata float-start mb0">{{ selectedSegment.segmentName }} {{ selectedSegment.segmentType }}</p>
             </button>
             <div class="w-100 overflow-auto" style="height: 20rem;" ngbDropdownMenu aria-labelledby="segmentDropdown">
                 <div class="form-outline">
-                    <input class="w-100" type="search" (keyup)="searchSegments($event)" placeholder="Search.." name="name" />
+                    <input class="w-100" type="search" (keyup)="searchSegments($event)" placeholder="Search.."
+                        name="name" />
                 </div>
                 <strong class="pl-3">Recommended</strong>
                 <ng-container *ngFor="let segment of recommendedSegmentsDropdown;">
-                    <button (click)="segmentSelected(segment)" ngbDropdownItem class="greyaa"><span class="content-wrap"
+                    <button (click)="segmentSelected(segment)" ngbDropdownItem class="greyaa">
+                        <span class="content-wrap float-start"
                             title="{{segment.segmentName}}">{{segment.segmentName}}</span>
-                        <span>{{segment.segmentType}}</span></button>
+                        <span class="float-end">{{segment.segmentType}}</span></button>
                 </ng-container>
                 <strong class="pl-3">Saved</strong>
                 <ng-container *ngFor="let segment of savedSegmentsDropdown;">
-                    <button (click)="segmentSelected(segment)" ngbDropdownItem class="greyaa"><span class="content-wrap"
+                    <button (click)="segmentSelected(segment)" ngbDropdownItem class="greyaa">
+                        <span class="content-wrap float-start"
                             title="{{segment.segmentName}}">{{segment.segmentName}}</span>
-                        <span>{{segment.segmentType}}</span></button>
+                        <span class="float-end">{{segment.segmentType}}</span></button>
                 </ng-container>
             </div>
         </div>
@@ -35,7 +38,7 @@
         class="text-danger fs-6">Segment Required</p>
     <!-- <div class="input-group mb-3">
         <label class="input-group-text w-25">Segment <span class="text-danger">*</span></label>
-        <select type="text" class="form-control" >
+        <select type="text" class="form-select" >
             <optgroup label="Recommended Segments">
                 <ng-container *ngFor="let segment of recommendedSegments;">
                     <option [value]="segment.segmentId">{{
@@ -56,7 +59,7 @@
     <ng-container *ngIf="isRecommenedSelected && !isAcquisitionSelected">
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Region</label>
-            <select type="text" class="form-control" formControlName="campaignRegion">
+            <select type="text" class="form-select" formControlName="campaignRegion">
                 <option value="">All</option>
                 <ng-container *ngFor="let region of regions;">
                     <option [value]="region.Region">{{region.Region}}
@@ -66,7 +69,7 @@
         </div>
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Location</label>
-            <select type="text" class="form-control" formControlName="campaignLocation">
+            <select type="text" class="form-select" formControlName="campaignLocation">
                 <option value="">All</option>
                 <ng-container *ngFor="let location of locations;">
                     <option [value]="location.Location">{{location.Location}}
@@ -76,7 +79,7 @@
         </div>
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Service</label>
-            <select type="text" class="form-control" formControlName="campaignService">
+            <select type="text" class="form-select" formControlName="campaignService">
                 <option value="">All</option>
                 <ng-container *ngFor="let service of services;">
                     <option [value]="service.Service">{{service.Service}}
@@ -86,7 +89,7 @@
         </div>
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Propensity</label>
-            <select type="text" class="form-control" formControlName="campaignPropensity">
+            <select type="text" class="form-select" formControlName="campaignPropensity">
                 <option value="">All</option>
                 <ng-container *ngFor="let propensity of propensities;">
                     <option [value]="propensity.Propensity">{{propensity.Propensity}}
@@ -99,7 +102,7 @@
     <ng-container *ngIf="isAcquisitionSelected">
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Zipcode</label>
-            <select type="number" class="form-control" formControlName="campaignZipzode">
+            <select type="number" class="form-select" formControlName="campaignZipzode">
                 <ng-container *ngFor="let zipcode of zipcodes;">
                     <option [value]="zipcode.item_text">{{zipcode.item_text}}
                     </option>
@@ -108,7 +111,7 @@
         </div>
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Zipplus</label>
-            <select type="number" class="form-control" formControlName="campaignZipplus">
+            <select type="number" class="form-select" formControlName="campaignZipplus">
                 <ng-container *ngFor="let zipplus of zippluses;">
                     <option [value]="zipplus.item_text">{{zipplus.item_text}}
                     </option>
@@ -120,10 +123,9 @@
     <div class="input-group mb-3">
         <label class="input-group-text w-25">
             Budget</label>
-        <input type="number" class="form-control" maxlength="10" title="0 - 1000000" formControlName="campaignBudget"
-            placeholder="$">
+        <input type="number" class="form-control" formControlName="campaignBudget" placeholder="$">
     </div>
-    <p *ngIf="(defineFormGroup.controls['campaignBudget'].invalid && defineFormGroup.controls['campaignBudget'].touched)"
+    <p *ngIf="(defineFormGroup.controls['campaignBudget'].invalid && defineFormGroup.controls['campaignBudget'].dirty)"
         class="text-danger fs-6">Enter Valid Budget.</p>
     <div class="input-group mb-3">
         <label class="input-group-text w-25">
@@ -135,8 +137,8 @@
     <div class="input-group mb-3">
         <label class="input-group-text w-25">
             Start Date<span class="text-danger">*</span></label>
-        <input class="form-control" formControlName="campaignStart" bsDatepicker [minDate]="minDate" [maxDate]="maxDate"
-            [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY' }" />
+        <input class="form-control" formControlName="campaignStart" bsDatepicker (onHidden)="startDateChange()"
+            [minDate]="minDate" [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY' }" />
     </div>
     <p *ngIf="(defineFormGroup.controls['campaignStart'].invalid && defineFormGroup.controls['campaignStart'].touched)"
         class="text-danger fs-6">Start Date Required</p>
@@ -144,7 +146,7 @@
         <label class="input-group-text w-25">
             End Date<span class="text-danger">*</span></label>
         <input class="form-control" formControlName="campaignEnd" bsDatepicker
-            [minDate]="defineFormGroup.controls['campaignStart'].value" [maxDate]="maxDate"
+            [minDate]="defineFormGroup.controls['campaignStart'].value"
             [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY' }" />
     </div>
     <p *ngIf="(defineFormGroup.controls['campaignEnd'].invalid && defineFormGroup.controls['campaignEnd'].touched)"
