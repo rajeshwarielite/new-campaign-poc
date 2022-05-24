@@ -8,7 +8,8 @@
     <ng-container *ngFor="let channel of markettingChannels">
         <div class="row">
             <div class="col form-check">
-                <input class="form-check-input" [attr.disabled]="channel.available ? null : false" type="checkbox" [formControlName]="channel.marketingChannelId" >
+                    <input class="form-check-input" [attr.disabled]="channel.available ? null : false" type="checkbox"
+                    [formControlName]="channel.marketingChannelId">
                 <label class="ms-1">{{channel.marketingChannel}}</label>
             </div>
             <div class="col">
@@ -21,6 +22,19 @@
                 <label>{{channel.description}}</label>
             </div>
         </div>
+
     </ng-container>
-    <span>{{channelFormGroup.valid}} </span>
+    <div class="flex">
+        <div class="float-start">
+            <button type="button" (click)="setSelectedChannels(false)" class="btn btn-success">Save</button>
+        </div>
+
+        <div class="float-end">
+            <button type="button" (click)="setSelectedChannels(true)" class="btn btn-primary">Next ></button>
+        </div>
+        <div class="float-end me-2">
+            <button type="button" (click)="previousDefine()" class="btn btn-primary"> < Previous</button>
+        </div>
+    </div>
+
 </form>
