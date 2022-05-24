@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
 import { ChannelCampaignModel, LocationModel, PropensityModel, RegionModel, SaveCampaignModel, SaveChannelRequestModel, SaveChannelResponseModel, SegmentModel, ServiceModel, ZipcodeModel } from './models/new-campaign-models';
 
 @Injectable({
@@ -12,6 +12,12 @@ export class NewCampaignService {
 
   constructor(
     private httpClient: HttpClient) { }
+
+  private selectedChannelsSubject = new BehaviorSubject<ChannelCampaignModel[]>([]);
+  public $selectedChannels = this.selectedChannelsSubject.asObservable();
+
+  private saveCampaignModelSubject = new Subject<SaveCampaignModel>();
+  public $saveCampaignModel = this.saveCampaignModelSubject.asObservable();
 
   getSavedSegments(): Observable<SegmentModel[]> {
     return this.httpClient.get<SegmentModel[]>(this.apiUrl + '/segments/savedSegments?details=false&counts=false');
@@ -29,6 +35,11 @@ export class NewCampaignService {
       return this.httpClient.post<SaveCampaignModel>(this.apiUrl + '-campaigns/campaign', saveCampaignModel);
     }
   }
+
+  getCampaigns(): Observable<SaveCampaignModel[]> {
+    return this.httpClient.get<SaveCampaignModel[]>(this.apiUrl + '-campaigns/campaign');
+  }
+
   saveChannel(saveChannelRequestModel: SaveChannelRequestModel): Observable<SaveChannelResponseModel> {
     return this.httpClient.post<SaveChannelResponseModel>(this.apiUrl + '-channel/channel', saveChannelRequestModel);
   }
@@ -87,5 +98,12 @@ export class NewCampaignService {
 
   getChannels(): Observable<ChannelCampaignModel[]> {
     return this.httpClient.get<ChannelCampaignModel[]>(this.apiUrl + '-mchannel/marketingChannel');
+  }
+
+  setSelectedChannels(selectedChannels: ChannelCampaignModel[]): void {
+    this.selectedChannelsSubject.next(selectedChannels);
+  }
+  setSaveCampaignModel(saveCampaignModel: SaveCampaignModel): void {
+    this.saveCampaignModelSubject.next(saveCampaignModel);
   }
 }

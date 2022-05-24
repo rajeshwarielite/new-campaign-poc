@@ -18,7 +18,7 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
   defineFormGroup: FormGroup = new FormGroup({
     campaignName: new FormControl('', [Validators.required, Validators.maxLength(255)]),
     campaignSegment: new FormControl('', Validators.required),
-    campaignBudget: new FormControl('', [Validators.minLength(7), Validators.min(0), Validators.max(1000000)]),
+    campaignBudget: new FormControl('', [Validators.minLength(7), Validators.min(0), Validators.max(9999999)]),
     campaignConversionTarget: new FormControl('', [Validators.min(1), Validators.max(100)]),
     campaignStart: new FormControl('', Validators.required),
     campaignEnd: new FormControl('', Validators.required),
@@ -36,6 +36,8 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
   //@ts-ignore
   saveModelResult: SaveCampaignModel = {};
 
+  allCampaignModels: SaveCampaignModel[] = [];
+
   minDate: Date = new Date();
   maxDate: Date = new Date(new Date().setDate(new Date().getDate() + 12));
 
@@ -46,6 +48,9 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
 
   savedSegmentsDropdown: SegmentModel[] = [];
   recommendedSegmentsDropdown: SegmentModel[] = [];
+
+  successMessage: string = '';
+  errorMessage: string = '';
 
   //@ts-ignore
   selectedSegment: SegmentModel = {};
@@ -93,11 +98,14 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
           this.services = result[4].length > 0 ? result[4] : [];
           this.propensities = result[5].length > 0 ? result[5] : [];
         }
-      )
+      ),
+      this.newCampaignService.getCampaigns().subscribe(result => this.allCampaignModels = result)
     );
   }
 
   saveCampaignClick(next: boolean): void {
+    this.successMessage = '';
+    this.errorMessage = '';
 
     this.nextStepEvent.emit(next);
 
@@ -140,17 +148,18 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
         saveModel.propensity = this.defineFormGroup.value.campaignPropensity;
       }
       if (this.isAcquisitionSelected) {
-        saveModel.zipcode = [this.defineFormGroup.value.campaignZipzode];
+        saveModel.zipcode = this.defineFormGroup.value.campaignZipzode ? this.defineFormGroup.value.campaignZipzode : [];
         //this.saveModel.zipPlusFour = [this.defineFormGroup.value.campaignZipplus];
       }
       this.subscriptions.push(
         this.newCampaignService.saveCampaign(saveModel).subscribe(
           (result) => {
             this.saveModelResult = result;
-            alert('New Campaign Saved : ' + result.campaignId);
+            this.newCampaignService.setSaveCampaignModel(result);
+            this.successMessage = 'New Campaign Saved/Updated Successfully';
           },
           (err) => {
-            alert('Error : ' + err.error.errorDesc);
+            this.errorMessage = err.error.errorDesc;
           })
       );
     }
@@ -192,6 +201,11 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
     if (this.defineFormGroup.value.campaignEnd && (this.defineFormGroup.value.campaignStart > this.defineFormGroup.value.campaignEnd)) {
       this.defineFormGroup.controls['campaignEnd'].setValue(this.defineFormGroup.value.campaignStart);
     }
+  }
+
+  messageReset() {
+    this.successMessage = '';
+    this.errorMessage = '';
   }
 
 }

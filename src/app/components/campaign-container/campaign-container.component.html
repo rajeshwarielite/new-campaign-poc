@@ -1,13 +1,17 @@
 <div class="container container-md w-75 mt-4">
-    <h2 class="fw-bolder mb-4">New Campaign</h2>
+    <h2 class="fw-bolder mb-4">
+        {{ saveCampaignModel.name ? saveCampaignModel.name : 'New Campaign' }}
+    </h2>
     <tabset [justified]="true">
-        <tab heading="1. Define" (selectTab)="defineTabSelected()" [active]="!channelSelected">
+        <tab heading="1. Define" [active]="defineSelected">
             <app-define-campaign (nextStepEvent)="setChannelStep($event)"></app-define-campaign>
         </tab>
-        <tab heading="2. Channel">
-            <app-channel-campaign></app-channel-campaign>
+        <tab heading="2. Channel" [disabled]="!channelSelected && !deploySelected" [active]="channelSelected">
+            <app-channel-campaign (nextStepEvent)="setDeployStep($event)"></app-channel-campaign>
         </tab>
-        <tab heading="3. Deploy">Basic content 2</tab>
-        <tab heading="4. Results">Basic content 2</tab>
+        <tab heading="3. Deploy" [disabled]="!deploySelected" [active]="deploySelected">
+            <app-deploy-campaign (nextStepEvent)="setResultStep($event)"></app-deploy-campaign>
+        </tab>
+        <tab heading="4. Results" [disabled]="true" [active]="resultSelected">Result Content</tab>
     </tabset>
 </div>

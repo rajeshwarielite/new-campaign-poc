@@ -13,13 +13,16 @@ import { CampaignContainerComponent } from './components/campaign-container/camp
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { DeployCampaignComponent } from './components/campaign/deploy-campaign/deploy-campaign.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DefineCampaignComponent,
     ChannelCampaignComponent,
-    CampaignContainerComponent
+    CampaignContainerComponent,
+    DeployCampaignComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +34,8 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
     BsDatepickerModule.forRoot(),
     TabsModule.forRoot(),
     BsDropdownModule.forRoot(),
-    NgbDropdownModule
+    NgbDropdownModule,
+    NgSelectModule
   ],
   providers: [
     {
