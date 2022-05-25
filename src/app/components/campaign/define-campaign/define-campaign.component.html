@@ -12,7 +12,8 @@
     <div class="input-group mb-3">
         <label class="input-group-text w-25">
             Campaign Name <span class="text-danger">*</span></label>
-        <input type="text" class="form-control" formControlName="campaignName" placeholder="Campaign Name">
+        <input type="text" class="form-control" formControlName="campaignName" (change)="campaignNameChanged()"
+            placeholder="Campaign Name">
     </div>
     <p *ngIf="(defineFormGroup.controls['campaignName'].invalid && defineFormGroup.controls['campaignName'].touched)"
         class="text-danger fs-6">Campaign Name Required</p>
@@ -32,21 +33,27 @@
                     <input class="w-100" type="search" (keyup)="searchSegments($event)" placeholder="Search.."
                         name="name" />
                 </div>
-                <strong class="pl-3">Recommended</strong>
+                <strong class="ps-3">Recommended</strong>
+                <div>
+                    <ng-container *ngFor="let segment of recommendedSegmentsDropdown;">
+                        <button (click)="segmentSelected(segment)" ngbDropdownItem class="ps-2">
+                            <span class="content-wrap float-start"
+                                title="{{segment.segmentName}}">{{segment.segmentName}}</span>
+                            <span class="float-end">{{segment.segmentType}}</span></button>
+                    </ng-container>
+                    <span class="ps-1" *ngIf="!recommendedSegmentsDropdown.length">No Segments found</span>
+                </div>
 
-                <ng-container *ngFor="let segment of recommendedSegmentsDropdown;">
-                    <button (click)="segmentSelected(segment)" ngbDropdownItem class="greyaa">
-                        <span class="content-wrap float-start"
-                            title="{{segment.segmentName}}">{{segment.segmentName}}</span>
-                        <span class="float-end">{{segment.segmentType}}</span></button>
-                </ng-container>
-                <strong class="pl-3">Saved</strong>
-                <ng-container *ngFor="let segment of savedSegmentsDropdown;">
-                    <button (click)="segmentSelected(segment)" ngbDropdownItem class="greyaa">
-                        <span class="content-wrap float-start"
-                            title="{{segment.segmentName}}">{{segment.segmentName}}</span>
-                        <span class="float-end">{{segment.segmentType}}</span></button>
-                </ng-container>
+                <strong class="ps-3">Saved</strong>
+                <div>
+                    <ng-container *ngFor="let segment of savedSegmentsDropdown;">
+                        <button (click)="segmentSelected(segment)" ngbDropdownItem class="ps-2">
+                            <span class="content-wrap float-start"
+                                title="{{segment.segmentName}}">{{segment.segmentName}}</span>
+                            <span class="float-end">{{segment.segmentType}}</span></button>
+                    </ng-container>
+                    <span class="ps-1" *ngIf="!savedSegmentsDropdown.length">No Segments found</span>
+                </div>
             </div>
         </div>
     </div>

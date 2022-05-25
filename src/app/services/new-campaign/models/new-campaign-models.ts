@@ -46,6 +46,7 @@ export interface SaveCampaignModel {
     segmentCategory: string,
     segmentId: string,
     segmentMobileAppSize: number,
+    segmentNonMobileAppSize: number,
     segmentName: string,
     segmentSize: number,
     segmentType: string,
@@ -66,7 +67,8 @@ export interface ChannelCampaignModel {
     inprogressCampaigns: number,
     marketingChannel: string,
     marketingChannelId: string,
-    scheduleCampaigns: number
+    scheduleCampaigns: number,
+    selected:boolean,
 }
 export interface SaveChannelRequestModel {
     campaignId: string,

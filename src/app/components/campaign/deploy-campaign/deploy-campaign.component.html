@@ -3,3 +3,15 @@
         <h1>{{i+1}}. {{schannel.marketingChannel}}</h1>
     </div>
 </ng-container>
+<div class="flex">
+    <div class="float-start">
+        <button type="button" class="btn btn-success">Save</button>
+    </div>
+
+    <div class="float-end">
+        <button type="button" (click)="deployCampaign(true)" class="btn btn-primary">Next ></button>
+    </div>
+    <div class="float-end me-2">
+        <button type="button" (click)="deployCampaign(false)" class="btn btn-primary"> < Previous</button>
+    </div>
+</div>

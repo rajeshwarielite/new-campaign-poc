@@ -103,9 +103,24 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
     );
   }
 
+  campaignNameChanged(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+    let campainNameAvailable = this.allCampaignModels.some(s => s.name === this.defineFormGroup.value.campaignName);
+    if (campainNameAvailable) {
+      this.errorMessage = 'Campaign name already exists';
+    }
+  }
+
   saveCampaignClick(next: boolean): void {
     this.successMessage = '';
     this.errorMessage = '';
+
+    let campainNameAvailable = this.allCampaignModels.some(s => s.name === this.defineFormGroup.value.campaignName);
+    if (campainNameAvailable) {
+      this.errorMessage = 'Campaign name already exists';
+      return;
+    }
 
     this.nextStepEvent.emit(next);
 
@@ -156,7 +171,12 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
           (result) => {
             this.saveModelResult = result;
             this.newCampaignService.setSaveCampaignModel(result);
-            this.successMessage = 'New Campaign Saved/Updated Successfully';
+            if (saveModel.campaignId) {
+              this.successMessage = 'New Campaign Updated Successfully';
+            }
+            else {
+              this.successMessage = 'New Campaign Saved Successfully';
+            }
           },
           (err) => {
             this.errorMessage = err.error.errorDesc;

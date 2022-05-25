@@ -1,17 +1,20 @@
 <div class="container container-md w-75 mt-4">
-    <h2 class="fw-bolder mb-4">
-        {{ saveCampaignModel.name ? saveCampaignModel.name : 'New Campaign' }}
-    </h2>
-    <tabset [justified]="true">
-        <tab heading="1. Define" [active]="defineSelected">
-            <app-define-campaign (nextStepEvent)="setChannelStep($event)"></app-define-campaign>
+    <div>
+        <span class="fw-bolder fs-1 mb-4 text-bg-primary">
+            {{ saveCampaignModel.name ? saveCampaignModel.name : 'New Campaign' }}
+        </span>
+        <span style="background-color: 198754;" *ngIf="saveCampaignModel.status">{{ saveCampaignModel.status }}</span>
+    </div>
+    <tabset #staticTabs>
+        <tab heading="1. Define">
+            <app-define-campaign (nextStepEvent)="setDefineStep($event)"></app-define-campaign>
         </tab>
-        <tab heading="2. Channel" [disabled]="!channelSelected && !deploySelected" [active]="channelSelected">
-            <app-channel-campaign (nextStepEvent)="setDeployStep($event)"></app-channel-campaign>
+        <tab heading="2. Channel" [disabled]="true">
+            <app-channel-campaign (nextStepEvent)="setChannelStep($event)"></app-channel-campaign>
         </tab>
-        <tab heading="3. Deploy" [disabled]="!deploySelected" [active]="deploySelected">
-            <app-deploy-campaign (nextStepEvent)="setResultStep($event)"></app-deploy-campaign>
+        <tab heading="3. Deploy" [disabled]="true">
+            <app-deploy-campaign (nextStepEvent)="setDeployStep($event)"></app-deploy-campaign>
         </tab>
-        <tab heading="4. Results" [disabled]="true" [active]="resultSelected">Result Content</tab>
+        <tab heading="4. Results" [disabled]="true">Result Content</tab>
     </tabset>
 </div>

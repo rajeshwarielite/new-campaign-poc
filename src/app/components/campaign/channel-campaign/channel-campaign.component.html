@@ -1,40 +1,84 @@
 <form [formGroup]="channelFormGroup">
-    <div class="row fw-bold mb-4 mt-4">
-        <div class="col ">Channels</div>
-        <div class="col">Segmnent Size</div>
-        <div class="col">Includes in Channel</div>
-        <div class="col">Description</div>
-    </div>
-    <ng-container *ngFor="let channel of markettingChannels">
-        <div class="row">
-            <div class="col form-check">
-                    <input class="form-check-input" [attr.disabled]="channel.available ? null : false" type="checkbox"
-                    [formControlName]="channel.marketingChannelId">
-                <label class="ms-1">{{channel.marketingChannel}}</label>
-            </div>
-            <div class="col">
-                <label>10</label>
-            </div>
-            <div class="col">
-                <label>-</label>
-            </div>
-            <div class="col">
-                <label>{{channel.description}}</label>
-            </div>
-        </div>
-
-    </ng-container>
-    <div class="flex">
+    <div class="flex my-4">
         <div class="float-start">
-            <button type="button" (click)="setSelectedChannels(false)" class="btn btn-success">Save</button>
+            <button type="button" (click)="setSelectedChannels(false)" class="btn btn-primary">
+                < Previous</button>
         </div>
-
         <div class="float-end">
-            <button type="button" (click)="setSelectedChannels(true)" class="btn btn-primary">Next ></button>
+            <button type="button" [disabled]="!formValid" (click)="setSelectedChannels(true)"
+                class="btn btn-primary">Next ></button>
         </div>
         <div class="float-end me-2">
-            <button type="button" (click)="previousDefine()" class="btn btn-primary"> < Previous</button>
+            <button type="button" [disabled]="!formValid" (click)="setSelectedChannels()"
+                class="btn btn-success">Save</button>
         </div>
     </div>
-
+    <br>
+    <div class="table-striped">
+        <div class="row fw-bold mb-4 mt-4">
+            <div class="col">
+                <input class="form-check-input" type="checkbox" formControlName="selectAll"
+                    (change)="selectAllChannel($event)">
+                Channels
+            </div>
+            <div class="col">Segmnent Size</div>
+            <div class="col">Includes in Channel</div>
+            <div class="col">Description</div>
+        </div>
+        <ng-container *ngFor="let channel of markettingChannels">
+            <div class="row">
+                <div class="col form-check">
+                    <input class="form-check-input" (change)="selectChannel($event, channel)" type="checkbox"
+                        [formControlName]="channel.marketingChannelId">
+                    <span class="ms-1">{{channel.marketingChannel}}</span>
+                </div>
+                <div class="col">
+                    <label>{{saveCampaignModel.segmentSize}}</label>
+                </div>
+                <div class="col">
+                    <ng-container *ngIf="channel.selected">
+                        <div *ngIf="channel.marketingChannel === 'Mobile Notification'">
+                            <span>All ({{saveCampaignModel.segmentMobileAppSize}})</span>
+                        </div>
+                        <div *ngIf="channel.marketingChannel !== 'Mobile Notification'">
+                            <select class="form-select" [value]="'All'">
+                                <option value="All">All ({{ saveCampaignModel.segmentSize }})</option>
+                                <option value="Non-Mobile">Non Mobile ({{ saveCampaignModel.segmentMobileAppSize }})
+                                </option>
+                            </select>
+                        </div>
+                    </ng-container>
+                    <span *ngIf="!channel.selected">-</span>
+                </div>
+                <div class="col">
+                    <span>{{channel.description}}</span>
+                </div>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="saveCampaignModel.segmentType !== 'Acquisition'">
+            <div class="row">
+                <div class="col form-check">
+                    <input class="form-check-input" type="checkbox" (change)="selectChannel($event, csvChannel)"
+                        formControlName="csvDownload">
+                    <span class="ms-1">{{csvChannel.marketingChannel}}</span>
+                </div>
+                <div class="col">
+                    <span>{{saveCampaignModel.segmentSize}}</span>
+                </div>
+                <div class="col">
+                    <div *ngIf=" csvChannel.selected">
+                        <select class="form-select" [value]="'All'">
+                            <option value="All">All ({{ saveCampaignModel.segmentSize }})</option>
+                            <option value="Non-Mobile">Non Mobile ({{ saveCampaignModel.segmentNonMobileAppSize }})
+                            </option>
+                        </select>
+                    </div>
+                    <span *ngIf="!csvChannel.selected">-</span>
+                </div>
+                <div class="col">
+                    <span>{{csvChannel.description}}</span>
+                </div>
+            </div>
+        </ng-container>
+    </div>
 </form>

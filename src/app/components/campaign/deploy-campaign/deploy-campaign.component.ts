@@ -21,4 +21,7 @@ export class DeployCampaignComponent implements OnInit {
     this.newCampaignService.$saveCampaignModel.subscribe(result => this.saveCampaignModel = result);
   }
 
+  deployCampaign(next?:boolean):void{
+    this.nextStepEvent.emit(next);
+  }
 }

@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { TabsetComponent } from 'ngx-bootstrap/tabs';
 import { SaveCampaignModel } from 'src/app/services/new-campaign/models/new-campaign-models';
 import { NewCampaignService } from 'src/app/services/new-campaign/new-campaign.service';
+import { ActiveTab } from './active-tab.enum';
 
 @Component({
   selector: 'app-campaign-container',
@@ -9,10 +11,9 @@ import { NewCampaignService } from 'src/app/services/new-campaign/new-campaign.s
 })
 export class CampaignContainerComponent implements OnInit {
 
-  defineSelected: boolean = true;
-  channelSelected: boolean = false;
-  deploySelected: boolean = false;
-  resultSelected: boolean = false;
+  @ViewChild('staticTabs', { static: false }) staticTabs: TabsetComponent = TabsetComponent.prototype;
+
+  activeTab = ActiveTab.Define;
 
   // @ts-ignore
   saveCampaignModel: SaveCampaignModel = {};
@@ -23,39 +24,60 @@ export class CampaignContainerComponent implements OnInit {
     this.newCampaignService.$saveCampaignModel.subscribe(result => this.saveCampaignModel = result);
   }
 
-  defineTabSelected(): void {
-    this.channelSelected = false;
+  disableAllTabs(): void {
+    this.staticTabs.tabs.forEach(tab => {
+      tab.disabled = true;
+      tab.active = false;
+    });
   }
 
-  channelTabSelected(): void {
-    this.channelSelected = true;
-  }
-
-  setChannelStep(next: boolean) {
-    this.channelSelected = next;
-    if(next){
-     this.defineSelected = false;
-     this.deploySelected = false;
-     this.resultSelected = false;
+  setDefineStep(next?: boolean) {
+    if (next) {
+      this.disableAllTabs();
+      this.activeTab = ActiveTab.Channel;
+      // this.staticTabs.tabs[0].disabled = false;
+      this.staticTabs.tabs[1].disabled = false;
+      this.staticTabs.tabs[1].active = true;
+    }
+    else if (next === false) {
+      this.disableAllTabs();
+      this.activeTab = ActiveTab.Define;
+      this.staticTabs.tabs[0].disabled = false;
+      this.staticTabs.tabs[0].active = true;
     }
   }
 
-  setDeployStep(next: boolean) {
-    this.deploySelected = next;
-    if(next){
-     this.defineSelected = false;
-     this.channelSelected = false;
-     this.resultSelected = false;
+  setChannelStep(next?: boolean) {
+    if (next) {
+      this.disableAllTabs();
+      this.activeTab = ActiveTab.Deploy;
+      // this.staticTabs.tabs[0].disabled = false;
+      // this.staticTabs.tabs[1].disabled = false;
+      this.staticTabs.tabs[2].disabled = false;
+      this.staticTabs.tabs[2].active = true;
+    }
+    else if (next === false) {
+      this.setDefineStep(false);
     }
   }
 
-  setResultStep(next: boolean) {
-    this.resultSelected = next;
-    if(next){
-     this.defineSelected = false;
-     this.deploySelected = false;
-     this.channelSelected = false;
+  setDeployStep(next?: boolean) {
+    if (next) {
+      this.disableAllTabs();
+      this.activeTab = ActiveTab.Result;
+      // this.staticTabs.tabs[0].disabled = false;
+      // this.staticTabs.tabs[1].disabled = false;
+      // this.staticTabs.tabs[2].disabled = false;
+      this.staticTabs.tabs[3].disabled = false;
+      this.staticTabs.tabs[3].active = true;
     }
+    else if (next === false) {
+      this.setDefineStep(true);
+    }
+  }
+
+  setResultStep() {
+    this.setChannelStep(true);
   }
 
 }
