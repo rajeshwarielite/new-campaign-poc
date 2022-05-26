@@ -26,9 +26,9 @@ export class ChannelCampaignComponent implements OnInit {
     description: 'CSV Download',
     inprogressCampaigns: 0,
     marketingChannel: 'CSV Download',
-    marketingChannelId: 'csvdownload',
+    marketingChannelId: 'csvDownload',
     scheduleCampaigns: 0,
-    selected: false
+    include: 'All',
   };
   // @ts-ignore
   saveCampaignModel: SaveCampaignModel = {};
@@ -68,7 +68,6 @@ export class ChannelCampaignComponent implements OnInit {
   }
 
   selectChannel(event: any, channel: ChannelCampaignModel): void {
-    channel.selected = event.target.checked;
     const allChecked = Object.keys(this.channelFormGroup.controls).filter(c => c !== 'selectAll').every(ctrl => {
       const control = this.channelFormGroup.get(ctrl);
       if (control && !control.disabled) {
@@ -86,15 +85,18 @@ export class ChannelCampaignComponent implements OnInit {
         const control = this.channelFormGroup.get(ctrl);
         return control?.value;
       });
-
       this.formValid = anyChecked;
     }
+  }
+
+  selectChannelInclude(event: any, channel: ChannelCampaignModel): void {
+    channel.include = event.target.value;
   }
 
   setSelectedChannels(next?: boolean): void {
     this.nextStepEvent.emit(next);
     const selectedChannelIds = Object.keys(this.channelFormGroup.controls).map(control => this.channelFormGroup.get(control)?.value ? control : '');
-    const selectedChannels = this.markettingChannels.filter(ch => selectedChannelIds.includes(ch.marketingChannelId));
+    const selectedChannels = [...this.markettingChannels, this.csvChannel].filter(ch => selectedChannelIds.includes(ch.marketingChannelId));    
     this.newCampaignService.setSelectedChannels(selectedChannels);
   }
 }
