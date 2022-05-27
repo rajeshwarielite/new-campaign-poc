@@ -17,6 +17,8 @@ export class ChannelCampaignComponent implements OnInit {
 
   formValid: boolean = false;
 
+  allMarkettingChannels: ChannelCampaignModel[] = [];
+
   markettingChannels: ChannelCampaignModel[] = [];
 
   csvChannel: ChannelCampaignModel = {
@@ -38,12 +40,28 @@ export class ChannelCampaignComponent implements OnInit {
   ngOnInit(): void {
     this.newCampaignService.getChannels().subscribe(result => {
       result.sort((a, b) => (a.marketingChannel > b.marketingChannel) ? 1 : -1);
-      this.markettingChannels = result;
-      result.forEach(channel => {
+      this.allMarkettingChannels = result;
+    });
+    this.newCampaignService.$saveCampaignModel.subscribe(result => {
+      if (result.segmentType == 'Acquisition') {
+        this.markettingChannels = this.allMarkettingChannels.filter(ch => ch.marketingChannel !== 'Mobile Notification');
+      }
+      else {
+        this.markettingChannels = this.allMarkettingChannels;
+      }
+      this.markettingChannels.forEach(channel => {
         this.channelFormGroup.addControl(channel.marketingChannelId, new FormControl({ value: false, disabled: !channel.available }));
       });
+      Object.keys(this.channelFormGroup.controls).forEach(ctrl => {
+        const control = this.channelFormGroup.get(ctrl);
+        if (control && !control.disabled) {
+          control.setValue(false);
+        }
+      });
+      this.formValid = false;
+      this.formValid = false;
+      this.saveCampaignModel = result;
     });
-    this.newCampaignService.$saveCampaignModel.subscribe(result => this.saveCampaignModel = result);
   }
 
   selectAllChannel(event: any): void {
@@ -96,7 +114,7 @@ export class ChannelCampaignComponent implements OnInit {
   setSelectedChannels(next?: boolean): void {
     this.nextStepEvent.emit(next);
     const selectedChannelIds = Object.keys(this.channelFormGroup.controls).map(control => this.channelFormGroup.get(control)?.value ? control : '');
-    const selectedChannels = [...this.markettingChannels, this.csvChannel].filter(ch => selectedChannelIds.includes(ch.marketingChannelId));    
+    const selectedChannels = [...this.markettingChannels, this.csvChannel].filter(ch => selectedChannelIds.includes(ch.marketingChannelId));
     this.newCampaignService.setSelectedChannels(selectedChannels);
   }
 }

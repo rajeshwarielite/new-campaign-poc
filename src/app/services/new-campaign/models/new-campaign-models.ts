@@ -67,7 +67,7 @@ export interface ChannelCampaignModel {
     marketingChannel: string,
     marketingChannelId: string,
     scheduleCampaigns: number,
-    include:string,
+    include: string,
 }
 export interface SaveChannelRequestModel {
     campaignId: string,
@@ -77,6 +77,16 @@ export interface SaveChannelRequestModel {
     notificationNam: string,
     orgId: string,
     scheduleType: string,
+    content: string,
+    eventDriven: string,
+    eventThreshold: string,
+    link: string,
+    notificationName: string,
+    notificationTime: string,
+    notificationTimeZone: string,
+    scheduledDateTime: string,
+    errorReason: string,
+    estimatedCost: string,
 }
 export interface SaveChannelResponseModel {
     applicableSubscriber: number

@@ -16,17 +16,17 @@
     <br>
     <div class="table-striped">
         <div class="row fw-bold mb-4 mt-4">
-            <div class="col">
+            <div class="col form-check">
                 <input class="form-check-input" type="checkbox" formControlName="selectAll"
                     (change)="selectAllChannel($event)">
                 Channels
             </div>
-            <div class="col">Segmnent Size</div>
+            <div class="col">Segment Size</div>
             <div class="col">Includes in Channel</div>
             <div class="col">Description</div>
         </div>
         <ng-container *ngFor="let channel of markettingChannels">
-            <div class="row">
+            <div class="row mb-2">
                 <div class="col form-check">
                     <input class="form-check-input" (change)="selectChannel($event, channel)" type="checkbox"
                         [formControlName]="channel.marketingChannelId">
@@ -57,7 +57,7 @@
             </div>
         </ng-container>
         <ng-container *ngIf="saveCampaignModel.segmentType !== 'Acquisition'">
-            <div class="row">
+            <div class="row mb-4">
                 <div class="col form-check">
                     <input class="form-check-input" type="checkbox" (change)="selectChannel($event, csvChannel)"
                         formControlName="csvDownload">

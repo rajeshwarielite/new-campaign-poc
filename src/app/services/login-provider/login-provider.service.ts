@@ -21,7 +21,7 @@ export class LoginProviderService {
       headers: new HttpHeaders().set('X-Calix-ClientID', 'UcWGgUfH0guUPG2LkGVU5GbPAjhi22JO')
     };
 
-    this.httpClient.post<TokenResponse>('https://dev.api.calix.ai/v1/authentication/token', body, options)
+    this.httpClient.post<TokenResponse>('https://stage.api.calix.ai/v1/authentication/token', body, options)
       .subscribe(result => {
         sessionStorage.setItem('access_token', result.access_token);
       });

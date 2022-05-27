@@ -69,7 +69,9 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
     this.loginProviderService.getToken();
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void {    
+    setInterval(() => this.errorMessage = this.successMessage = '', 10000);
+
     this.subscriptions.push(
       forkJoin([
         this.newCampaignService.getRecommendedSegments(),
@@ -115,14 +117,16 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
   saveCampaignClick(next: boolean): void {
     this.successMessage = '';
     this.errorMessage = '';
+    if(this.defineFormGroup.invalid){
+      this.errorMessage = 'Form Invalid';
+      return;
+    }
 
     let campainNameAvailable = this.allCampaignModels.some(s => s.name === this.defineFormGroup.value.campaignName);
     if (campainNameAvailable) {
       this.errorMessage = 'Campaign name already exists';
       return;
     }
-
-    this.nextStepEvent.emit(next);
 
     let segmentCategory: string = '';
     const selectedSegmentId: string = this.defineFormGroup.value.campaignSegment;
@@ -169,14 +173,16 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
       this.subscriptions.push(
         this.newCampaignService.saveCampaign(saveModel).subscribe(
           (result) => {
+            this.newCampaignService.getCampaignById(result.campaignId).subscribe();
             this.saveModelResult = result;
             this.newCampaignService.setSaveCampaignModel(result);
-            if (saveModel.campaignId) {
+            if (result.campaignId) {
               this.successMessage = 'New Campaign Updated Successfully';
             }
             else {
               this.successMessage = 'New Campaign Saved Successfully';
             }
+            this.nextStepEvent.emit(next);
           },
           (err) => {
             this.errorMessage = err.error.errorDesc;

@@ -15,7 +15,7 @@
         <input type="text" class="form-control" formControlName="campaignName" (change)="campaignNameChanged()"
             placeholder="Campaign Name">
     </div>
-    <p *ngIf="(defineFormGroup.controls['campaignName'].invalid && defineFormGroup.controls['campaignName'].touched)"
+    <p *ngIf="(defineFormGroup.controls['campaignName'].invalid && defineFormGroup.controls['campaignName'].dirty)"
         class="text-danger fs-6">Campaign Name Required</p>
     <div class="input-group mb-3">
         <label class="input-group-text w-25">Segment <span class="text-danger">*</span></label>
@@ -57,7 +57,7 @@
             </div>
         </div>
     </div>
-    <p *ngIf="(defineFormGroup.controls['campaignSegment'].invalid && defineFormGroup.controls['campaignSegment'].touched)"
+    <p *ngIf="(defineFormGroup.controls['campaignSegment'].invalid && defineFormGroup.controls['campaignSegment'].dirty)"
         class="text-danger fs-6">Segment Required</p>
 
     <ng-container *ngIf="isRecommenedSelected && !isAcquisitionSelected">
@@ -130,24 +130,24 @@
             Conversion Target</label>
         <input type="number" class="form-control" formControlName="campaignConversionTarget" placeholder="%">
     </div>
-    <p *ngIf="(defineFormGroup.controls['campaignConversionTarget'].invalid && defineFormGroup.controls['campaignConversionTarget'].touched)"
+    <p *ngIf="(defineFormGroup.controls['campaignConversionTarget'].invalid && defineFormGroup.controls['campaignConversionTarget'].dirty)"
         class="text-danger fs-6">Enter Valid Convertion Target.</p>
     <div class="input-group mb-3">
         <label class="input-group-text w-25">
             Start Date<span class="text-danger">*</span></label>
         <input class="form-control" formControlName="campaignStart" bsDatepicker (onHidden)="startDateChange()"
-            [minDate]="minDate" [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY' }" />
+            [minDate]="minDate" [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', adaptivePosition: true }" />
     </div>
-    <p *ngIf="(defineFormGroup.controls['campaignStart'].invalid && defineFormGroup.controls['campaignStart'].touched)"
+    <p *ngIf="(defineFormGroup.controls['campaignStart'].invalid && defineFormGroup.controls['campaignStart'].dirty)"
         class="text-danger fs-6">Start Date Required</p>
     <div class="input-group mb-3">
         <label class="input-group-text w-25">
             End Date<span class="text-danger">*</span></label>
         <input class="form-control" formControlName="campaignEnd" bsDatepicker
             [minDate]="defineFormGroup.controls['campaignStart'].value"
-            [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY' }" />
+            [bsConfig]="{ dateInputFormat: 'MM-DD-YYYY', adaptivePosition: true }" />
     </div>
-    <p *ngIf="(defineFormGroup.controls['campaignEnd'].invalid && defineFormGroup.controls['campaignEnd'].touched)"
+    <p *ngIf="(defineFormGroup.controls['campaignEnd'].invalid && defineFormGroup.controls['campaignEnd'].dirty)"
         class="text-danger fs-6">End Date Required</p>
     <div class="flex">
         <div class="float-start">

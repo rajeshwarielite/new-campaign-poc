@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of, Subject } from 'rxjs';
+import { BehaviorSubject, EMPTY, Observable, of, Subject } from 'rxjs';
+import { delay, expand, switchMap, take } from 'rxjs/operators'
 import { ChannelCampaignModel, LocationModel, PropensityModel, RegionModel, SaveCampaignModel, SaveChannelRequestModel, SaveChannelResponseModel, SegmentModel, ServiceModel, ZipcodeModel } from './models/new-campaign-models';
 
 @Injectable({
@@ -8,7 +9,7 @@ import { ChannelCampaignModel, LocationModel, PropensityModel, RegionModel, Save
 })
 export class NewCampaignService {
 
-  private apiUrl = 'https://dev.api.calix.ai/v1/cmc';
+  private apiUrl = 'https://stage.api.calix.ai/v1/';
 
   constructor(
     private httpClient: HttpClient) { }
@@ -20,34 +21,41 @@ export class NewCampaignService {
   public $saveCampaignModel = this.saveCampaignModelSubject.asObservable();
 
   getSavedSegments(): Observable<SegmentModel[]> {
-    return this.httpClient.get<SegmentModel[]>(this.apiUrl + '/segments/savedSegments?details=false&counts=false');
+    return this.httpClient.get<SegmentModel[]>(this.apiUrl + 'cmc/segments/savedSegments?details=false&counts=false');
   }
 
   getRecommendedSegments(): Observable<SegmentModel[]> {
-    return this.httpClient.get<SegmentModel[]>(this.apiUrl + '/segments/recommendedSegments?details=false&counts=false');
+    return this.httpClient.get<SegmentModel[]>(this.apiUrl + 'cmc/segments/recommendedSegments?details=false&counts=false');
   }
 
   saveCampaign(saveCampaignModel: SaveCampaignModel): Observable<SaveCampaignModel> {
     if (saveCampaignModel.campaignId) {
-      return this.httpClient.put<SaveCampaignModel>(this.apiUrl + '-campaigns/campaign', saveCampaignModel);
+      return this.httpClient.put<SaveCampaignModel>(this.apiUrl + 'cmc-campaigns/campaign', saveCampaignModel);
     }
     else {
-      return this.httpClient.post<SaveCampaignModel>(this.apiUrl + '-campaigns/campaign', saveCampaignModel);
+      return this.httpClient.post<SaveCampaignModel>(this.apiUrl + 'cmc-campaigns/campaign', saveCampaignModel);
     }
+  }
+
+  saveFile(formData: FormData): Observable<SaveCampaignModel> {
+    return this.httpClient.post<SaveCampaignModel>(this.apiUrl + 's3/upload/files', formData);
+  }
+
+  getCampaignById(id: string): Observable<SaveCampaignModel> {
+    return this.httpClient.get<SaveCampaignModel>(this.apiUrl + 'cmc-campaigns/campaign/' + id);
   }
 
   getCampaigns(): Observable<SaveCampaignModel[]> {
-    return this.httpClient.get<SaveCampaignModel[]>(this.apiUrl + '-campaigns/campaign');
+    return this.httpClient.get<SaveCampaignModel[]>(this.apiUrl + 'cmc-campaigns/campaign');
   }
 
   saveChannel(saveChannelRequestModel: SaveChannelRequestModel): Observable<SaveChannelResponseModel> {
-    return this.httpClient.post<SaveChannelResponseModel>(this.apiUrl + '-channel/channel', saveChannelRequestModel);
+    return this.httpClient.post<SaveChannelResponseModel>(this.apiUrl + 'cmc-channel/channel', saveChannelRequestModel);
   }
 
   getCampaignChannels(campaignId: string): Observable<SaveChannelResponseModel[]> {
-    return this.httpClient.get<SaveChannelResponseModel[]>(this.apiUrl + '-channel/channel/' + campaignId);
+    return this.httpClient.get<SaveChannelResponseModel[]>(this.apiUrl + 'cmc-channel/channel/' + campaignId);
   }
-
 
   getZipcodes(): Observable<ZipcodeModel[]> {
     const zipcodes: ZipcodeModel[] = [
@@ -97,7 +105,7 @@ export class NewCampaignService {
   }
 
   getChannels(): Observable<ChannelCampaignModel[]> {
-    return this.httpClient.get<ChannelCampaignModel[]>(this.apiUrl + '-mchannel/marketingChannel');
+    return this.httpClient.get<ChannelCampaignModel[]>(this.apiUrl + 'cmc-mchannel/marketingChannel');
   }
 
   setSelectedChannels(selectedChannels: ChannelCampaignModel[]): void {

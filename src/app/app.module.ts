@@ -15,6 +15,7 @@ import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DeployCampaignComponent } from './components/campaign/deploy-campaign/deploy-campaign.component';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { DeployCampaignComponent } from './components/campaign/deploy-campaign/d
     TabsModule.forRoot(),
     BsDropdownModule.forRoot(),
     NgbDropdownModule,
-    NgSelectModule
+    NgSelectModule,
+    ModalModule.forRoot()
   ],
   providers: [
     {

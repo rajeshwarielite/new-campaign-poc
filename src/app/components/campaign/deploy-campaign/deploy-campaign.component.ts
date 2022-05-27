@@ -111,7 +111,4 @@ export class DeployCampaignComponent implements OnInit {
       
     }
   }
-  deployCampaign():void{
-
-  }
 }

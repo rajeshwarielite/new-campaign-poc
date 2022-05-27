@@ -6,13 +6,13 @@
         <span style="background-color: 198754;" *ngIf="saveCampaignModel.status">{{ saveCampaignModel.status }}</span>
     </div>
     <tabset #staticTabs>
-        <tab heading="1. Define">
-            <app-define-campaign (nextStepEvent)="setDefineStep($event)"></app-define-campaign>
+        <tab heading="1. Define" (selectTab)="defineSelected($event)">
+            <app-define-campaign #defineCampaign (nextStepEvent)="setDefineStep($event)"></app-define-campaign>
         </tab>
-        <tab heading="2. Channel" [disabled]="true">
-            <app-channel-campaign (nextStepEvent)="setChannelStep($event)"></app-channel-campaign>
+        <tab heading="2. Channel" (selectTab)="channelSelected($event)" [disabled]="true" >
+            <app-channel-campaign #channelCampaign (nextStepEvent)="setChannelStep($event)"></app-channel-campaign>
         </tab>
-        <tab heading="3. Deploy" [disabled]="true">
+        <tab heading="3. Deploy" (selectTab)="deploySelected($event)" [disabled]="true">
             <app-deploy-campaign (nextStepEvent)="setDeployStep($event)"></app-deploy-campaign>
         </tab>
         <tab heading="4. Results" [disabled]="true">Result Content</tab>

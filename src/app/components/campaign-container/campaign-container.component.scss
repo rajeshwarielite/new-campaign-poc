@@ -1,0 +1,13 @@
+tabset {
+    ::ng-deep {
+        .nav-tabs .nav-link.active {
+            background-color: #0d6efd !important;
+            color: white !important;
+        }
+
+        .nav-tabs .nav-item.done .nav-link {
+            background-color: #198754;
+            color: white;
+        }
+    }
+}
