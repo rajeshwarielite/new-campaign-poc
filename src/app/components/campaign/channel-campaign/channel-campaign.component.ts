@@ -40,6 +40,7 @@ export class ChannelCampaignComponent implements OnInit {
   ngOnInit(): void {
     this.newCampaignService.getChannels().subscribe(result => {
       result.sort((a, b) => (a.marketingChannel > b.marketingChannel) ? 1 : -1);
+      result.forEach(channel => channel.include = channel.marketingChannel === 'Mobile Notification' ? 0 : 'All')
       this.allMarkettingChannels = result;
     });
     this.newCampaignService.$saveCampaignModel.subscribe(result => {

@@ -69,7 +69,7 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
     this.loginProviderService.getToken();
   }
 
-  ngOnInit(): void {    
+  ngOnInit(): void {
     setInterval(() => this.errorMessage = this.successMessage = '', 10000);
 
     this.subscriptions.push(
@@ -101,7 +101,7 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
           this.propensities = result[5].length > 0 ? result[5] : [];
         }
       ),
-      this.newCampaignService.getCampaigns().subscribe(result => this.allCampaignModels = result)
+      //this.newCampaignService.getCampaigns().subscribe(result => this.allCampaignModels = result)
     );
   }
 
@@ -117,7 +117,7 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
   saveCampaignClick(next: boolean): void {
     this.successMessage = '';
     this.errorMessage = '';
-    if(this.defineFormGroup.invalid){
+    if (this.defineFormGroup.invalid) {
       this.errorMessage = 'Form Invalid';
       return;
     }

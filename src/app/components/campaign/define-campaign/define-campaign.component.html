@@ -1,3 +1,14 @@
+<div class="flex mt-2 pb-3">
+    <div class="float-start">
+        <button type="button" [disabled]="defineFormGroup.invalid" (click)="saveCampaignClick(false)"
+            class="btn btn-success">Save</button>
+    </div>
+    <div class="float-end">
+        <button type="button" [disabled]="defineFormGroup.invalid" (click)="saveCampaignClick(true)"
+            class="btn btn-primary">Next ></button>
+    </div>
+</div>
+<br>
 <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
     <span class="success-img h-4"><img src="./assets/images/error-icon.svg" style="height: 2rem;" /></span>
     <div class="d-inline-flex w-75 text-left ms-4"> {{errorMessage}}</div>
@@ -149,14 +160,4 @@
     </div>
     <p *ngIf="(defineFormGroup.controls['campaignEnd'].invalid && defineFormGroup.controls['campaignEnd'].dirty)"
         class="text-danger fs-6">End Date Required</p>
-    <div class="flex">
-        <div class="float-start">
-            <button type="button" [disabled]="defineFormGroup.invalid" (click)="saveCampaignClick(false)"
-                class="btn btn-success">Save</button>
-        </div>
-        <div class="float-end">
-            <button type="button" [disabled]="defineFormGroup.invalid" (click)="saveCampaignClick(true)"
-                class="btn btn-primary">Next ></button>
-        </div>
-    </div>
 </form>

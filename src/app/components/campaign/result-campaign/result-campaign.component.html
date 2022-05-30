@@ -1,0 +1,44 @@
+<div class="row ">
+    <div class="col">Segment</div>
+    <div class="col">Segment Size </div>
+    <div class="col">Start Date </div>
+    <div class="col">End Date</div>
+    <div class="col">Conversion Rate</div>
+    <div class="col">Budget </div>
+</div>
+<div class="row text-primary">
+    <div class="col">{{saveCampaignModel.segmentName}} </div>
+    <div class="col">{{saveCampaignModel.segmentSize}} </div>
+    <div class="col">{{saveCampaignModel.startDate}} </div>
+    <div class="col">{{saveCampaignModel.endDate}} </div>
+    <div class="col">{{saveCampaignModel.conversionTarget}} </div>
+    <div class="col">{{saveCampaignModel.budget}} </div>
+</div>
+<ng-container *ngFor="let channel of savedChannels">
+    <ng-container *ngIf="channel.marketingChannelName === 'Mobile Notification'">
+        <h3><u> CommandIQ {{channel.marketingChannelName}}</u></h3>
+        <div class="row" >
+            <div class="col">Schedule</div>
+            <div class="col">Segment Members Included</div>
+            <div class="col">Notifications Sent</div>
+            <div class="col">Deployment Status</div>
+        </div>
+        <div class="row text-primary">
+            <div class="col">{{channel.scheduleType}}</div>
+            <div class="col">{{channel.includeInChannel}}</div>
+            <div class="col">{{saveCampaignModel.notificationSent}}</div>
+            <div class="col">{{channel.status}}</div>
+        </div>
+    </ng-container>
+    <ng-container *ngIf="channel.marketingChannelName !== 'Mobile Notification'">
+        <h3><u> {{channel.marketingChannelName}}</u></h3>
+        <div class="row">
+            <div class="col">Deployment Status</div>
+            <div class="col">{{channel.status}}</div>
+            <ng-container *ngIf="channel.errorReason">
+                <span> {{ channel.errorReason}} </span>
+                <button type="button" (click)="redeployChannel(channel)">Re-Deploy</button>
+            </ng-container>
+        </div>
+    </ng-container>
+</ng-container>

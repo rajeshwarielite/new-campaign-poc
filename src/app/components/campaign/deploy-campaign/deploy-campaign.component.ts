@@ -1,9 +1,10 @@
 import { Component, EventEmitter, OnInit, Output, TemplateRef } from '@angular/core';
 import { NewCampaignService } from 'src/app/services/new-campaign/new-campaign.service';
-import { ChannelCampaignModel, SaveCampaignModel } from 'src/app/services/new-campaign/models/new-campaign-models';
+import { ChannelCampaignModel, SaveCampaignModel, SaveChannelRequestModel, SaveChannelResponseModel } from 'src/app/services/new-campaign/models/new-campaign-models';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Message } from '@angular/compiler/src/i18n/i18n_ast';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { EMPTY, forkJoin, lastValueFrom, Observable } from 'rxjs';
 @Component({
   selector: 'app-deploy-campaign',
   templateUrl: './deploy-campaign.component.html',
@@ -31,6 +32,8 @@ export class DeployCampaignComponent implements OnInit {
   selectedChannels: ChannelCampaignModel[] = [];
   // @ts-ignore
   saveCampaignModel: SaveCampaignModel = {};
+
+  selectedFile: any;
 
   constructor(private modalService: BsModalService,
     private newCampaignService: NewCampaignService) { }
@@ -60,8 +63,80 @@ export class DeployCampaignComponent implements OnInit {
     this.modalRef = this.modalService.show(template);
   }
 
-  deployCampaign(next?: boolean): void {
-    this.nextStepEvent.emit(next);
+  async deployCampaign(): Promise<void> {
+    forkJoin([await this.saveMobileNotificationChannel(), ...this.saveOtherChannels()]).subscribe(
+      () => {
+        this.saveCampaign();
+      },
+      () => {
+        this.saveCampaign();
+      }
+    );
+  }
+
+  saveCampaign(): void {
+    this.saveCampaignModel.status = 'In-Progress';
+    if (this.selectedChannels.some(channel => channel.marketingChannel === 'CSV Download')) {
+      this.saveCampaignModel.csvDownloadOnly = true;
+    }
+    this.newCampaignService.saveCampaign(this.saveCampaignModel).subscribe(result => {
+      this.saveCampaignModel.channels = result.channels;
+      this.newCampaignService.setSaveCampaignModel(this.saveCampaignModel);
+      this.modalRef?.hide();
+      this.nextStepEvent.emit(true);
+    });
+  }
+
+  async saveMobileNotificationChannel(): Promise<Observable<SaveChannelResponseModel>> {
+    const mobileChannel = this.selectedChannels.find(channel => channel.marketingChannel === 'Mobile Notification');
+    if (mobileChannel) {
+      const saveChannelRequest: SaveChannelRequestModel =
+      {
+        campaignId: this.saveCampaignModel.campaignId,
+        includeInChannel: this.saveCampaignModel.segmentMobileAppSize,
+        link: this.mobileFormGroup.get('link')?.value,
+        marketingChannelId: mobileChannel.marketingChannelId,
+        marketingChannelName: mobileChannel.marketingChannel,
+        notificationName: this.mobileFormGroup.get('message')?.value,
+        orgId: 10009,
+        scheduleType: this.mobileFormGroup.get('schedule')?.value,
+      };
+
+      if (this.mobileFormGroup.get('schedule')?.value === 'Event-Driven') {
+        saveChannelRequest.eventDriven = this.mobileFormGroup.get('event')?.value;
+        saveChannelRequest.eventThreshold = this.mobileFormGroup.get('threshold')?.value;
+        saveChannelRequest.notificationTimeZone = this.mobileFormGroup.get('timeZone')?.value;
+        saveChannelRequest.notificationTime = this.mobileFormGroup.get('nTime')?.value;
+      }
+      else if (this.mobileFormGroup.get('schedule')?.value === 'Scheduled') {
+        saveChannelRequest.scheduledDateTime = this.mobileFormGroup.get('nDateTime')?.value;
+      }
+
+      if (this.mobileFormGroup.get('image')?.value) {
+        const formData = new FormData();
+        formData.append('file', this.selectedFile);
+        const fileResult = await lastValueFrom(this.newCampaignService.saveFile(formData));
+        saveChannelRequest.content = fileResult.url;
+      }
+      return this.newCampaignService.saveChannel(saveChannelRequest);
+    }
+    return EMPTY;
+  }
+
+  saveOtherChannels(): Observable<SaveChannelResponseModel>[] {
+    return this.selectedChannels.filter(channel => channel.marketingChannel !== 'Mobile Notification').map(channel => {
+      const saveChannelRequest: SaveChannelRequestModel =
+      {
+        campaignId: this.saveCampaignModel.campaignId,
+        includeInChannel: channel.include,
+        marketingChannelId: channel.marketingChannelId,
+        marketingChannelName: channel.marketingChannel,
+        scheduleType: '',
+        notificationName: '',
+        orgId: 10009,
+      };
+      return this.newCampaignService.saveChannel(saveChannelRequest);
+    })
   }
 
   public findInvalidControls() {
@@ -103,12 +178,12 @@ export class DeployCampaignComponent implements OnInit {
   imageSelected(event: any): void {
     if (event && event.target.files && event.target.files[0]) {
       if (['image/png', 'image/jpeg', 'image/jpg'].includes(event.target.files[0].type)) {
-        const file = event.target.files[0];
+        this.selectedFile = event.target.files[0];
         const reader = new FileReader();
         reader.onload = e => this.campaignImageFile = reader.result;
-        reader.readAsDataURL(file);
+        reader.readAsDataURL(this.selectedFile);
       }
-      
+
     }
   }
 }

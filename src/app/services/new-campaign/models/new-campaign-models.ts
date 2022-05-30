@@ -31,7 +31,7 @@ export interface SaveCampaignModel {
     application: string,
     budget: number,
     campaignId: string,
-    channels: string,
+    channels: ChannelNameSizeModel[],
     conversionResult: string,
     conversionTarget: number,
     created: Date,
@@ -53,7 +53,7 @@ export interface SaveCampaignModel {
     service: string,
     startDate: Date,
     status: string,
-    system: string,
+    system: any,
     zipPlusFour?: string[],
     zipcode?: string[],
 }
@@ -67,26 +67,25 @@ export interface ChannelCampaignModel {
     marketingChannel: string,
     marketingChannelId: string,
     scheduleCampaigns: number,
-    include: string,
+    include: string | number,
 }
 export interface SaveChannelRequestModel {
     campaignId: string,
-    includeInChannel: string,
+    includeInChannel: string | number,
     marketingChannelId: string,
     marketingChannelName: string,
-    notificationNam: string,
-    orgId: string,
-    scheduleType: string,
-    content: string,
-    eventDriven: string,
-    eventThreshold: string,
-    link: string,
-    notificationName: string,
-    notificationTime: string,
-    notificationTimeZone: string,
-    scheduledDateTime: string,
-    errorReason: string,
-    estimatedCost: string,
+    orgId: number,
+    scheduleType?: string,
+    content?: string,
+    eventDriven?: string,
+    eventThreshold?: string,
+    link?: string,
+    notificationName?: string,
+    notificationTime?: string,
+    notificationTimeZone?: string,
+    scheduledDateTime?: string,
+    errorReason?: string,
+    estimatedCost?: string,
 }
 export interface SaveChannelResponseModel {
     applicableSubscriber: number
@@ -108,4 +107,13 @@ export interface SaveChannelResponseModel {
     scheduleType: string,
     scheduledDateTime: string,
     status: string,
+}
+
+export interface FileUploadResponseModel {
+    url: string
+}
+
+export interface ChannelNameSizeModel {
+    channelName: string
+    channelSize: number
 }

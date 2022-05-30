@@ -33,8 +33,10 @@
                     <span class="ms-1">{{channel.marketingChannel}}</span>
                 </div>
                 <div class="col">
-                    <span *ngIf="channel.marketingChannel === 'Mobile Notification'">{{saveCampaignModel.segmentMobileAppSize}}</span>
-                    <span *ngIf="channel.marketingChannel !== 'Mobile Notification'">{{saveCampaignModel.segmentSize}}</span>
+                    <span
+                        *ngIf="channel.marketingChannel === 'Mobile Notification'">{{saveCampaignModel.segmentMobileAppSize}}</span>
+                    <span
+                        *ngIf="channel.marketingChannel !== 'Mobile Notification'">{{saveCampaignModel.segmentSize}}</span>
                 </div>
                 <div class="col">
                     <ng-container *ngIf="channelFormGroup.controls[channel.marketingChannelId].value">
@@ -42,9 +44,11 @@
                             <span>All ({{saveCampaignModel.segmentMobileAppSize}})</span>
                         </div>
                         <div *ngIf="channel.marketingChannel !== 'Mobile Notification'">
-                            <select class="form-select" [value]="'All'" (change)="selectChannelInclude($event, channel)">
+                            <select class="form-select" [value]="'All'"
+                                (change)="selectChannelInclude($event, channel)">
                                 <option value="All">All ({{ saveCampaignModel.segmentSize }})</option>
-                                <option value="Non-Mobile">Non-Mobile Message ({{ saveCampaignModel.segmentSize - saveCampaignModel.segmentMobileAppSize }})
+                                <option value="Non-Mobile">Non-Mobile Message ({{ saveCampaignModel.segmentSize -
+                                    saveCampaignModel.segmentMobileAppSize }})
                                 </option>
                             </select>
                         </div>
@@ -69,8 +73,10 @@
                 <div class="col">
                     <div *ngIf="channelFormGroup.controls['csvDownload'].value">
                         <select class="form-select" [value]="'All'" (change)="selectChannelInclude($event, csvChannel)">
-                            <option value="All">All ({{ saveCampaignModel.segmentSize }})</option>
-                            <option value="Non-Mobile">Non-Mobile Message ({{ saveCampaignModel.segmentSize - saveCampaignModel.segmentMobileAppSize }})
+                            <option value="All">All ({{ saveCampaignModel.segmentSize }})
+                            </option>
+                            <option value="Non-Mobile">Non-Mobile Message ({{ saveCampaignModel.segmentSize -
+                                saveCampaignModel.segmentMobileAppSize }})
                             </option>
                         </select>
                     </div>

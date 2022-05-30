@@ -16,6 +16,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { DeployCampaignComponent } from './components/campaign/deploy-campaign/deploy-campaign.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
+import { ResultCampaignComponent } from './components/campaign/result-campaign/result-campaign.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
     DefineCampaignComponent,
     ChannelCampaignComponent,
     CampaignContainerComponent,
-    DeployCampaignComponent
+    DeployCampaignComponent,
+    ResultCampaignComponent
   ],
   imports: [
     BrowserModule,
