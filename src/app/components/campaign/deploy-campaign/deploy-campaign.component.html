@@ -1,5 +1,5 @@
 <div class="flex my-4">
-        <div class="float-end">
+    <div class="float-end">
         <button type="button" [disabled]="mobileFormGroup.invalid" class="btn btn-primary"
             (click)="openModal(template)">Deploy</button>
     </div>
@@ -57,7 +57,8 @@
                     <ng-container *ngIf="mobileFormGroup.controls['schedule'].value !=='Immediate'">
                         <ng-container *ngIf="mobileFormGroup.controls['schedule'].value ==='Event-Driven'">
                             <div class="input-group mb-3">
-                                <label class="input-group-text w-25">Event<span class="text-danger">*</span></label>
+                                <label class="input-group-text w-25
+                                ">Event<span class="text-danger">*</span></label>
                                 <select type="text" class="form-select" formControlName="event">
                                     <option value="Competitor">Competitor Visit Minute</option>
                                     <option value="serviceLimit">Service Limit Hits</option>
@@ -91,11 +92,16 @@
                             <div class="input-group mb-3">
                                 <label class="input-group-text w-25">Notification Date and Time<span
                                         class="text-danger">*</span></label>
-                                <input type="datetime-local" class="form-control" formControlName="nDateTime">
+                                <input type="text" class="form-control" bsDatepicker formControlName="nDateTime"
+                                    [bsConfig]="{withTimepicker: true, dateInputFormat: 'MM-DD-YYYY, h:mm:ss a', rangeInputFormat : 'MM-DD-YYYY, h:mm:ss a', adaptivePosition: true}"
+                                    [minDate]="minimumDateTime">
                             </div>
                         </ng-container>
                     </ng-container>
                 </form>
+            </div>
+            <div class="col" *ngIf="campaignImageFile">
+                <img [src]="campaignImageFile" class="img-thumbnail" alt="...">
             </div>
             <div class="col mobile-frame">
                 <div class="mobile-box float-end">
