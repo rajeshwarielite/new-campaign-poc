@@ -29,11 +29,11 @@ export interface PropensityModel {
 
 export interface SaveCampaignModel {
     application: string,
-    budget: number,
+    budget: 0,
     campaignId: string,
     channels: ChannelNameSizeModel[],
     conversionResult: string,
-    conversionTarget: number,
+    conversionTarget: 0,
     created: Date,
     csvDownloadOnly: boolean,
     endDate: Date,

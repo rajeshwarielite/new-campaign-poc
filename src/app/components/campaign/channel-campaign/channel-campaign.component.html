@@ -4,14 +4,14 @@
             <button type="button" (click)="setSelectedChannels(false)" class="btn btn-primary">
                 < Previous</button>
         </div>
-        <div class="float-end">
+        <div class="float-end" *ngIf="formValid">
             <button type="button" [disabled]="!formValid" (click)="setSelectedChannels(true)"
                 class="btn btn-primary">Next ></button>
         </div>
-        <div class="float-end me-2">
+        <!-- <div class="float-end me-2">
             <button type="button" [disabled]="!formValid" (click)="setSelectedChannels()"
                 class="btn btn-success">Save</button>
-        </div>
+        </div> -->
     </div>
     <br>
     <div class="table-striped">
@@ -47,7 +47,7 @@
                             <select class="form-select" [value]="'All'"
                                 (change)="selectChannelInclude($event, channel)">
                                 <option value="All">All ({{ saveCampaignModel.segmentSize }})</option>
-                                <option value="Non-Mobile">Non-Mobile Message ({{ saveCampaignModel.segmentSize -
+                                <option value="Non-Mobile Message">Non-Mobile Message ({{ saveCampaignModel.segmentSize -
                                     saveCampaignModel.segmentMobileAppSize }})
                                 </option>
                             </select>
@@ -75,7 +75,7 @@
                         <select class="form-select" [value]="'All'" (change)="selectChannelInclude($event, csvChannel)">
                             <option value="All">All ({{ saveCampaignModel.segmentSize }})
                             </option>
-                            <option value="Non-Mobile">Non-Mobile Message ({{ saveCampaignModel.segmentSize -
+                            <option value="Non-Mobile Message">Non-Mobile Message ({{ saveCampaignModel.segmentSize -
                                 saveCampaignModel.segmentMobileAppSize }})
                             </option>
                         </select>

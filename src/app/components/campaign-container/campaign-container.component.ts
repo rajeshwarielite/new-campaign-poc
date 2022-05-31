@@ -79,9 +79,9 @@ export class CampaignContainerComponent implements OnInit {
     if (next) {
       this.disableAllTabs();
       this.activeTab = ActiveTab.Result;
-      // this.staticTabs.tabs[0].disabled = false;
-      // this.staticTabs.tabs[1].disabled = false;
-      // this.staticTabs.tabs[2].disabled = false;
+      this.staticTabs.tabs[0].disabled = true;
+      this.staticTabs.tabs[1].disabled = true;
+      this.staticTabs.tabs[2].disabled = true;
       this.staticTabs.tabs[3].disabled = false;
       this.staticTabs.tabs[3].active = true;
       this.staticTabs.tabs[2].customClass = 'done';

@@ -155,8 +155,8 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
       saveModel.segmentSize = selectedSegment.subscriberCount;
       saveModel.subscriberCount = selectedSegment.subscriberCount;
       saveModel.orgId = 12903101;
-      saveModel.budget = this.defineFormGroup.value.campaignBudget;
-      saveModel.conversionTarget = this.defineFormGroup.value.campaignConversionTarget;
+      saveModel.budget = this.defineFormGroup.value.campaignBudget?this.defineFormGroup.value.campaignBudget:0;
+      saveModel.conversionTarget = this.defineFormGroup.value.campaignConversionTarget?this.defineFormGroup.value.campaignConversionTarget:0;
       saveModel.startDate = this.defineFormGroup.value.campaignStart.toISOString().split('T')[0];
       saveModel.endDate = this.defineFormGroup.value.campaignEnd.toISOString().split('T')[0];
 

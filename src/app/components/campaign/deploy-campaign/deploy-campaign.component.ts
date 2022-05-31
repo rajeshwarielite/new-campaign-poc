@@ -15,6 +15,8 @@ export class DeployCampaignComponent implements OnInit {
   modalRef?: BsModalRef;
   @Output() nextStepEvent = new EventEmitter<boolean>();
 
+  minimumDateTime = new Date();
+
   mobileFormGroup: FormGroup = new FormGroup({
     message: new FormControl(''),
     link: new FormControl(''),
@@ -24,7 +26,7 @@ export class DeployCampaignComponent implements OnInit {
     threshold: new FormControl(),
     timeZone: new FormControl(),
     nTime: new FormControl(),
-    nDateTime: new FormControl(),
+    nDateTime: new FormControl(this.minimumDateTime),
   });
 
   campaignImageFile: any = '';
@@ -39,6 +41,7 @@ export class DeployCampaignComponent implements OnInit {
     private newCampaignService: NewCampaignService) { }
 
   ngOnInit(): void {
+    this.minimumDateTime = new Date(this.minimumDateTime.getTime() + 15 * 60000);
     this.newCampaignService.$selectedChannels.subscribe(result => {
       result.sort((a, b) => (a.marketingChannel === 'Mobile Notification') ? -1 : ((a.marketingChannel > b.marketingChannel) ? 1 : 0));
       if (result.some(channel => channel.marketingChannel === 'Mobile Notification')) {
@@ -124,7 +127,7 @@ export class DeployCampaignComponent implements OnInit {
   }
 
   saveOtherChannels(): Observable<SaveChannelResponseModel>[] {
-    return this.selectedChannels.filter(channel => channel.marketingChannel !== 'Mobile Notification').map(channel => {
+    return this.selectedChannels.filter(channel => !['Mobile Notification', 'CSV Download'].includes(channel.marketingChannel)).map(channel => {
       const saveChannelRequest: SaveChannelRequestModel =
       {
         campaignId: this.saveCampaignModel.campaignId,
@@ -170,7 +173,7 @@ export class DeployCampaignComponent implements OnInit {
         });
         break;
       case 'Scheduled':
-        this.mobileFormGroup.addControl('nDateTime', new FormControl('', Validators.required));
+        this.mobileFormGroup.addControl('nDateTime', new FormControl(this.minimumDateTime, Validators.required));
         break;
     }
   }

@@ -1,23 +1,25 @@
-<div class="row ">
-    <div class="col">Segment</div>
-    <div class="col">Segment Size </div>
-    <div class="col">Start Date </div>
-    <div class="col">End Date</div>
-    <div class="col">Conversion Rate</div>
-    <div class="col">Budget </div>
-</div>
-<div class="row text-primary">
-    <div class="col">{{saveCampaignModel.segmentName}} </div>
-    <div class="col">{{saveCampaignModel.segmentSize}} </div>
-    <div class="col">{{saveCampaignModel.startDate}} </div>
-    <div class="col">{{saveCampaignModel.endDate}} </div>
-    <div class="col">{{saveCampaignModel.conversionTarget}} </div>
-    <div class="col">{{saveCampaignModel.budget}} </div>
+<div class="my-4">
+    <div class="row my-2 fs-5">
+        <div class="col">Segment</div>
+        <div class="col">Segment Size </div>
+        <div class="col">Start Date </div>
+        <div class="col">End Date</div>
+        <div class="col">Conversion Rate</div>
+        <div class="col">Budget </div>
+    </div>
+    <div class="row text-primary">
+        <div class="col">{{saveCampaignModel.segmentName}} </div>
+        <div class="col">{{saveCampaignModel.segmentSize}} </div>
+        <div class="col">{{saveCampaignModel.startDate}} </div>
+        <div class="col">{{saveCampaignModel.endDate}} </div>
+        <div class="col">{{saveCampaignModel.conversionTarget}} </div>
+        <div class="col">{{saveCampaignModel.budget}} </div>
+    </div>
 </div>
 <ng-container *ngFor="let channel of savedChannels">
     <ng-container *ngIf="channel.marketingChannelName === 'Mobile Notification'">
         <h3><u> CommandIQ {{channel.marketingChannelName}}</u></h3>
-        <div class="row" >
+        <div class="row my-2 fs-5">
             <div class="col">Schedule</div>
             <div class="col">Segment Members Included</div>
             <div class="col">Notifications Sent</div>
@@ -32,13 +34,39 @@
     </ng-container>
     <ng-container *ngIf="channel.marketingChannelName !== 'Mobile Notification'">
         <h3><u> {{channel.marketingChannelName}}</u></h3>
-        <div class="row">
+        <div class="row my-2 fs-5">
             <div class="col">Deployment Status</div>
-            <div class="col">{{channel.status}}</div>
-            <ng-container *ngIf="channel.errorReason">
-                <span> {{ channel.errorReason}} </span>
-                <button type="button" (click)="redeployChannel(channel)">Re-Deploy</button>
-            </ng-container>
         </div>
+        <div class="row">
+            <div class="col">{{channel.status}}</div>
+        </div>
+        <ng-container *ngIf="channel.errorReason">
+            <span> {{ channel.errorReason}} </span>
+            <button type="button" class="btn btn-primary"
+                (click)="openRedeployModal(channel, template)">Re-Deploy</button>
+        </ng-container>
     </ng-container>
 </ng-container>
+<ng-template #template>
+    <div class="modal-header">
+        <img src="./assets/images/info-icon.svg" class="me-2">
+        <h4 class="modal-title pull-left">Deploy Campaign</h4>
+        <button type="button" class="btn-close close pull-right" aria-label="Close" (click)="modalRef?.hide()">
+            <span aria-hidden="true" class="visually-hidden">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        The following actions will be executed
+        <ul>
+            <li *ngIf="deployChannel.marketingChannelName !== 'Mobile Notification' && deployChannel.marketingChannelName !== 'CSV Download'"
+                class="my-2">
+                Send segment to {{deployChannel.marketingChannelName}}. This action may take up to 60 minutes</li>
+            <li *ngIf="deployChannel.marketingChannelName === 'Mobile Notification'" class="my-2">Send Command IQ Mobile
+                Notification
+            </li>
+            <li *ngIf="deployChannel.marketingChannelName === 'CSV Download'" class="my-2">Download CSV file</li>
+        </ul>
+        <button type="button" (click)="redeployChannel(deployChannel)" class="btn btn-primary">Deploy Campaign</button>
+        <button type="button" (click)="modalRef?.hide()" class="btn btn-secondary float-end">Close</button>
+    </div>
+</ng-template>
