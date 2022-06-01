@@ -44,11 +44,16 @@ export class ChannelCampaignComponent implements OnInit {
       this.allMarkettingChannels = result;
     });
     this.newCampaignService.$saveCampaignModel.subscribe(result => {
-      if (result.segmentType == 'Acquisition') {
+      if (result.segmentType === 'Acquisition') {
         this.markettingChannels = this.allMarkettingChannels.filter(ch => ch.marketingChannel !== 'Mobile Notification');
+        this.csvChannel.available = false;
+        this.channelFormGroup.removeControl(this.csvChannel.marketingChannelId);
       }
       else {
         this.markettingChannels = this.allMarkettingChannels;
+        this.csvChannel.available = true;
+        this.channelFormGroup.removeControl(this.csvChannel.marketingChannelId);
+        this.channelFormGroup.addControl(this.csvChannel.marketingChannelId, new FormControl({ value: false, disabled: !this.csvChannel.available }));
       }
       this.markettingChannels.forEach(channel => {
         this.channelFormGroup.addControl(channel.marketingChannelId, new FormControl({ value: false, disabled: !channel.available }));

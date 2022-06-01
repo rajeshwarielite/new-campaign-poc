@@ -1,6 +1,7 @@
 import { ThisReceiver } from '@angular/compiler';
 import { Component, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Chart } from 'angular-highcharts';
 import { forkJoin, Subscription } from 'rxjs';
 import { LoginProviderService } from 'src/app/services/login-provider/login-provider.service';
 import { LocationModel, PropensityModel, RegionModel, SaveCampaignModel, SegmentModel, ServiceModel, ZipcodeModel } from 'src/app/services/new-campaign/models/new-campaign-models';
@@ -154,9 +155,9 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
       saveModel.segmentType = selectedSegment.segmentType;
       saveModel.segmentSize = selectedSegment.subscriberCount;
       saveModel.subscriberCount = selectedSegment.subscriberCount;
-      saveModel.orgId = 12903101;
-      saveModel.budget = this.defineFormGroup.value.campaignBudget?this.defineFormGroup.value.campaignBudget:0;
-      saveModel.conversionTarget = this.defineFormGroup.value.campaignConversionTarget?this.defineFormGroup.value.campaignConversionTarget:0;
+      saveModel.orgId = 10009;
+      saveModel.budget = this.defineFormGroup.value.campaignBudget ? this.defineFormGroup.value.campaignBudget : 0;
+      saveModel.conversionTarget = this.defineFormGroup.value.campaignConversionTarget ? this.defineFormGroup.value.campaignConversionTarget : 0;
       saveModel.startDate = this.defineFormGroup.value.campaignStart.toISOString().split('T')[0];
       saveModel.endDate = this.defineFormGroup.value.campaignEnd.toISOString().split('T')[0];
 
@@ -173,7 +174,6 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
       this.subscriptions.push(
         this.newCampaignService.saveCampaign(saveModel).subscribe(
           (result) => {
-            this.newCampaignService.getCampaignById(result.campaignId).subscribe();
             this.saveModelResult = result;
             this.newCampaignService.setSaveCampaignModel(result);
             if (result.campaignId) {
@@ -183,6 +183,7 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
               this.successMessage = 'New Campaign Saved Successfully';
             }
             this.nextStepEvent.emit(next);
+            this.newCampaignService.getCampaignById(result.campaignId).subscribe();
           },
           (err) => {
             this.errorMessage = err.error.errorDesc;
@@ -233,6 +234,5 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
     this.successMessage = '';
     this.errorMessage = '';
   }
-
 }
 

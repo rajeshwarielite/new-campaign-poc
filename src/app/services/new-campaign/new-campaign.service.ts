@@ -20,7 +20,7 @@ export class NewCampaignService {
   private saveCampaignModelSubject = new Subject<SaveCampaignModel>();
   public $saveCampaignModel = this.saveCampaignModelSubject.asObservable();
 
-  //#region Segment
+  //#get campaign Segment
   getSavedSegments(): Observable<SegmentModel[]> {
     return this.httpClient.get<SegmentModel[]>(this.apiUrl + 'cmc/segments/savedSegments?details=false&counts=false');
   }
@@ -33,10 +33,7 @@ export class NewCampaignService {
   //#region Camapaign
   saveCampaign(saveCampaignModel: SaveCampaignModel): Observable<SaveCampaignModel> {
     if (saveCampaignModel.campaignId) {
-      return this.httpClient.put<SaveCampaignModel>(this.apiUrl + 'cmc-campaigns/campaign', saveCampaignModel).pipe(
-        delay(1000),
-        switchMap(result => this.getCampaignById(result.campaignId))
-      );
+      return this.httpClient.put<SaveCampaignModel>(this.apiUrl + 'cmc-campaigns/campaign', saveCampaignModel);
     }
     else {
       return this.httpClient.post<SaveCampaignModel>(this.apiUrl + 'cmc-campaigns/campaign', saveCampaignModel);
@@ -74,7 +71,7 @@ export class NewCampaignService {
   }
   //#endregion
 
-  //#region Static Data
+  //#region DefinePage Static Data
   getZipcodes(): Observable<ZipcodeModel[]> {
     const zipcodes: ZipcodeModel[] = [
       { item_id: 0, item_text: '68025' }

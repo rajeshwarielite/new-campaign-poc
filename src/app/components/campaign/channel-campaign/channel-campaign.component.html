@@ -47,7 +47,8 @@
                             <select class="form-select" [value]="'All'"
                                 (change)="selectChannelInclude($event, channel)">
                                 <option value="All">All ({{ saveCampaignModel.segmentSize }})</option>
-                                <option value="Non-Mobile Message">Non-Mobile Message ({{ saveCampaignModel.segmentSize -
+                                <option value="Non-Mobile Message">Non-Mobile Message ({{ saveCampaignModel.segmentSize
+                                    -
                                     saveCampaignModel.segmentMobileAppSize }})
                                 </option>
                             </select>

@@ -1,3 +1,6 @@
+<div class="row my-4">
+    <a class="float-end">CSV Download</a>
+</div>
 <div class="my-4">
     <div class="row my-2 fs-5">
         <div class="col">Segment</div>
@@ -25,28 +28,29 @@
             <div class="col">Notifications Sent</div>
             <div class="col">Deployment Status</div>
         </div>
-        <div class="row text-primary">
+        <div class="row mb-4 text-primary">
             <div class="col">{{channel.scheduleType}}</div>
             <div class="col">{{channel.includeInChannel}}</div>
             <div class="col">{{saveCampaignModel.notificationSent}}</div>
             <div class="col">{{channel.status}}</div>
-        </div>
+        </div>        
     </ng-container>
     <ng-container *ngIf="channel.marketingChannelName !== 'Mobile Notification'">
         <h3><u> {{channel.marketingChannelName}}</u></h3>
         <div class="row my-2 fs-5">
             <div class="col">Deployment Status</div>
         </div>
-        <div class="row">
+        <div class="row mb-4 text-primary">
             <div class="col">{{channel.status}}</div>
         </div>
-        <ng-container *ngIf="channel.errorReason">
-            <span> {{ channel.errorReason}} </span>
-            <button type="button" class="btn btn-primary"
-                (click)="openRedeployModal(channel, template)">Re-Deploy</button>
-        </ng-container>
+    </ng-container>
+    <ng-container *ngIf="channel.errorReason">
+        <span> {{ channel.errorReason}} </span>
+        <button type="button" class="btn btn-primary" (click)="openRedeployModal(channel, template)">Re-Deploy</button>
     </ng-container>
 </ng-container>
+
+<div class="my-4" [chart]="chart"></div>
 <ng-template #template>
     <div class="modal-header">
         <img src="./assets/images/info-icon.svg" class="me-2">
@@ -56,17 +60,20 @@
         </button>
     </div>
     <div class="modal-body">
-        The following actions will be executed
-        <ul>
-            <li *ngIf="deployChannel.marketingChannelName !== 'Mobile Notification' && deployChannel.marketingChannelName !== 'CSV Download'"
-                class="my-2">
-                Send segment to {{deployChannel.marketingChannelName}}. This action may take up to 60 minutes</li>
-            <li *ngIf="deployChannel.marketingChannelName === 'Mobile Notification'" class="my-2">Send Command IQ Mobile
-                Notification
-            </li>
-            <li *ngIf="deployChannel.marketingChannelName === 'CSV Download'" class="my-2">Download CSV file</li>
-        </ul>
-        <button type="button" (click)="redeployChannel(deployChannel)" class="btn btn-primary">Deploy Campaign</button>
+        <div *ngIf="deployChannel.marketingChannelName !== 'Mobile Notification'">
+            The following actions will be executed
+            <ul>
+                <li class="my-2">
+                    Send segment to {{deployChannel.marketingChannelName}}. This action may take up to 60 minutes</li>
+
+                <li *ngIf="deployChannel.marketingChannelName === 'CSV Download'" class="my-2">Download CSV file</li>
+            </ul>
+        </div>
+        <div *ngIf="deployChannel.marketingChannelName === 'Mobile Notification'">
+            <app-mobile-campaign [mobileFormGroup]="mobileFormGroup" (fileSelected)="imageSelected($event)">
+            </app-mobile-campaign>
+        </div>
+        <button type="button" (click)="redeployChannel(deployChannel)" class="btn btn-primary">ReDeploy</button>
         <button type="button" (click)="modalRef?.hide()" class="btn btn-secondary float-end">Close</button>
     </div>
 </ng-template>

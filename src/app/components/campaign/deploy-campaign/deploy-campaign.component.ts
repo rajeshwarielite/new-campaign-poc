@@ -29,13 +29,11 @@ export class DeployCampaignComponent implements OnInit {
     nDateTime: new FormControl(this.minimumDateTime),
   });
 
-  campaignImageFile: any = '';
+  selectedFile: any;
 
   selectedChannels: ChannelCampaignModel[] = [];
   // @ts-ignore
   saveCampaignModel: SaveCampaignModel = {};
-
-  selectedFile: any;
 
   constructor(private modalService: BsModalService,
     private newCampaignService: NewCampaignService) { }
@@ -67,7 +65,8 @@ export class DeployCampaignComponent implements OnInit {
   }
 
   async deployCampaign(): Promise<void> {
-    forkJoin([await this.saveMobileNotificationChannel(), ...this.saveOtherChannels()]).subscribe(
+    (await this.saveMobileNotificationChannel()).subscribe();
+    forkJoin(this.saveOtherChannels()).subscribe(
       () => {
         this.saveCampaign();
       },
@@ -101,7 +100,7 @@ export class DeployCampaignComponent implements OnInit {
         marketingChannelId: mobileChannel.marketingChannelId,
         marketingChannelName: mobileChannel.marketingChannel,
         notificationName: this.mobileFormGroup.get('message')?.value,
-        orgId: 10009,
+        orgId:'10009',
         scheduleType: this.mobileFormGroup.get('schedule')?.value,
       };
 
@@ -136,57 +135,13 @@ export class DeployCampaignComponent implements OnInit {
         marketingChannelName: channel.marketingChannel,
         scheduleType: '',
         notificationName: '',
-        orgId: 10009,
+        orgId: '10009',
       };
       return this.newCampaignService.saveChannel(saveChannelRequest);
     })
   }
 
-  public findInvalidControls() {
-    const controls = this.mobileFormGroup.controls;
-    for (const name in controls) {
-      if (controls[name].invalid) {
-        console.log(name);
-      }
-    }
-  }
-
-  selectSchedule() {
-
-    ['event', 'threshold', 'timeZone', 'nTime', 'nDateTime'].forEach(ctrl => {
-      this.mobileFormGroup.removeControl(ctrl);
-    });
-
-    const selectedSchedule = this.mobileFormGroup.value.schedule;
-
-    switch (selectedSchedule) {
-      case 'Immediate':
-        break;
-      case 'Event-Driven':
-        ['event', 'threshold', 'timeZone', 'nTime'].forEach(ctrl => {
-          if (ctrl === 'threshold') {
-            this.mobileFormGroup.addControl(ctrl, new FormControl('', [Validators.required, Validators.min(1), Validators.max(65535)]));
-          }
-          else {
-            this.mobileFormGroup.addControl(ctrl, new FormControl('', Validators.required));
-          }
-        });
-        break;
-      case 'Scheduled':
-        this.mobileFormGroup.addControl('nDateTime', new FormControl(this.minimumDateTime, Validators.required));
-        break;
-    }
-  }
-
   imageSelected(event: any): void {
-    if (event && event.target.files && event.target.files[0]) {
-      if (['image/png', 'image/jpeg', 'image/jpg'].includes(event.target.files[0].type)) {
-        this.selectedFile = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = e => this.campaignImageFile = reader.result;
-        reader.readAsDataURL(this.selectedFile);
-      }
-
-    }
+    this.selectedFile = event;
   }
 }

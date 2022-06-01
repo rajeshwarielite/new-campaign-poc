@@ -5,3 +5,9 @@
 
 /* Importing Datepicker SCSS file. */
 @import "node_modules/ngx-bootstrap/datepicker/bs-datepicker";
+
+
+.modal-content {
+    width: 150%;
+    margin-left: -25%;
+}
