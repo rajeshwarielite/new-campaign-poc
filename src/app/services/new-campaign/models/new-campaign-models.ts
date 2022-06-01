@@ -74,7 +74,7 @@ export interface SaveChannelRequestModel {
     includeInChannel: string | number,
     marketingChannelId: string,
     marketingChannelName: string,
-    orgId: number,
+    orgId:string,
     scheduleType?: string,
     content?: string,
     eventDriven?: string,

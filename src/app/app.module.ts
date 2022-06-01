@@ -17,6 +17,8 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { DeployCampaignComponent } from './components/campaign/deploy-campaign/deploy-campaign.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { ResultCampaignComponent } from './components/campaign/result-campaign/result-campaign.component';
+import { MobileCampaignComponent } from './components/campaign/mobile-campaign/mobile-campaign.component';
+import { ChartModule } from 'angular-highcharts';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,8 @@ import { ResultCampaignComponent } from './components/campaign/result-campaign/r
     ChannelCampaignComponent,
     CampaignContainerComponent,
     DeployCampaignComponent,
-    ResultCampaignComponent
+    ResultCampaignComponent,
+    MobileCampaignComponent,
   ],
   imports: [
     BrowserModule,
@@ -39,7 +42,8 @@ import { ResultCampaignComponent } from './components/campaign/result-campaign/r
     BsDropdownModule.forRoot(),
     NgbDropdownModule,
     NgSelectModule,
-    ModalModule.forRoot()
+    ModalModule.forRoot(),
+    ChartModule,
   ],
   providers: [
     {
