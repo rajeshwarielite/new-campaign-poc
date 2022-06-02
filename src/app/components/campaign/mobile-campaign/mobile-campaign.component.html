@@ -59,16 +59,22 @@
                     </div>
                     <div class="input-group mb-3">
                         <label class="input-group-text w-25">Notification Time<span class="text-danger">*</span></label>
-                        <input type="time" class="form-control" formControlName="nTime">
+                        <p-calendar class="form-control" formControlName="nTime"
+                            [style]="{'width': '100%','height': '36px'  }" [inputStyle]="{'height': '36px'}"
+                            appendTo="body" [autoZIndex]="true" [showIcon]="false" [timeOnly]="true" [showTime]="true"
+                            hourFormat="12">
+                        </p-calendar>
                     </div>
                 </ng-container>
                 <ng-container *ngIf="mobileFormGroup.controls['schedule'].value ==='Scheduled'">
                     <div class="input-group mb-3">
                         <label class="input-group-text w-25">Notification Date and Time<span
                                 class="text-danger">*</span></label>
-                        <input type="text" class="form-control" bsDatepicker formControlName="nDateTime"
-                            [bsConfig]="{withTimepicker: true, dateInputFormat: 'MM-DD-YYYY, h:mm:ss a', rangeInputFormat : 'MM-DD-YYYY, h:mm:ss a', adaptivePosition: true}"
-                            [minDate]="minimumDateTime">
+                        <p-calendar class="form-control" formControlName="nDateTime"
+                            [style]="{'width': '100%','height': '36px'  }" [inputStyle]="{'height': '36px'}"
+                            appendTo="body" [autoZIndex]="true" [showIcon]="false" [minDate]="minimumDateTime"
+                            [showTime]="true" hourFormat="12">
+                        </p-calendar>
                     </div>
                 </ng-container>
             </ng-container>

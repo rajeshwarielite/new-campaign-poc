@@ -19,6 +19,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { ResultCampaignComponent } from './components/campaign/result-campaign/result-campaign.component';
 import { MobileCampaignComponent } from './components/campaign/mobile-campaign/mobile-campaign.component';
 import { ChartModule } from 'angular-highcharts';
+import { ChartCampaignComponent } from './components/campaign/result-campaign/chart-campaign/chart-campaign.component';
+import {CalendarModule} from 'primeng/calendar';
 
 @NgModule({
   declarations: [
@@ -29,6 +31,7 @@ import { ChartModule } from 'angular-highcharts';
     DeployCampaignComponent,
     ResultCampaignComponent,
     MobileCampaignComponent,
+    ChartCampaignComponent,
   ],
   imports: [
     BrowserModule,
@@ -44,6 +47,7 @@ import { ChartModule } from 'angular-highcharts';
     NgSelectModule,
     ModalModule.forRoot(),
     ChartModule,
+    CalendarModule,
   ],
   providers: [
     {

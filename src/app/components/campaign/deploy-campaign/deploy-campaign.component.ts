@@ -5,6 +5,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Message } from '@angular/compiler/src/i18n/i18n_ast';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { EMPTY, forkJoin, lastValueFrom, Observable } from 'rxjs';
+import { async } from '@angular/core/testing';
 @Component({
   selector: 'app-deploy-campaign',
   templateUrl: './deploy-campaign.component.html',
@@ -65,15 +66,9 @@ export class DeployCampaignComponent implements OnInit {
   }
 
   async deployCampaign(): Promise<void> {
-    (await this.saveMobileNotificationChannel()).subscribe();
-    forkJoin(this.saveOtherChannels()).subscribe(
-      () => {
-        this.saveCampaign();
-      },
-      () => {
-        this.saveCampaign();
-      }
-    );
+    await this.saveMobileNotificationChannel();
+    await this.saveOtherChannels()
+    this.saveCampaign();
   }
 
   saveCampaign(): void {
@@ -89,7 +84,7 @@ export class DeployCampaignComponent implements OnInit {
     });
   }
 
-  async saveMobileNotificationChannel(): Promise<Observable<SaveChannelResponseModel>> {
+  async saveMobileNotificationChannel(): Promise<void> {
     const mobileChannel = this.selectedChannels.find(channel => channel.marketingChannel === 'Mobile Notification');
     if (mobileChannel) {
       const saveChannelRequest: SaveChannelRequestModel =
@@ -100,7 +95,7 @@ export class DeployCampaignComponent implements OnInit {
         marketingChannelId: mobileChannel.marketingChannelId,
         marketingChannelName: mobileChannel.marketingChannel,
         notificationName: this.mobileFormGroup.get('message')?.value,
-        orgId:'10009',
+        orgId: '10009',
         scheduleType: this.mobileFormGroup.get('schedule')?.value,
       };
 
@@ -113,32 +108,41 @@ export class DeployCampaignComponent implements OnInit {
       else if (this.mobileFormGroup.get('schedule')?.value === 'Scheduled') {
         saveChannelRequest.scheduledDateTime = this.mobileFormGroup.get('nDateTime')?.value;
       }
-
-      if (this.mobileFormGroup.get('image')?.value) {
-        const formData = new FormData();
-        formData.append('file', this.selectedFile);
-        const fileResult = await lastValueFrom(this.newCampaignService.saveFile(formData));
-        saveChannelRequest.content = fileResult.url;
+      try {
+        if (this.mobileFormGroup.get('image')?.value) {
+          const formData = new FormData();
+          formData.append('file', this.selectedFile);
+          const fileResult = await lastValueFrom(this.newCampaignService.saveFile(formData));
+          saveChannelRequest.content = fileResult.url;
+        }
+        await lastValueFrom(this.newCampaignService.saveChannel(saveChannelRequest));
       }
-      return this.newCampaignService.saveChannel(saveChannelRequest);
+      catch {
+
+      }
     }
-    return EMPTY;
   }
 
-  saveOtherChannels(): Observable<SaveChannelResponseModel>[] {
-    return this.selectedChannels.filter(channel => !['Mobile Notification', 'CSV Download'].includes(channel.marketingChannel)).map(channel => {
+  async saveOtherChannels(): Promise<void> {
+    const channelsToSave = this.selectedChannels.filter(channel => !['Mobile Notification', 'CSV Download'].includes(channel.marketingChannel));
+    for (let i = 0; i < channelsToSave.length; i++) {
       const saveChannelRequest: SaveChannelRequestModel =
       {
         campaignId: this.saveCampaignModel.campaignId,
-        includeInChannel: channel.include,
-        marketingChannelId: channel.marketingChannelId,
-        marketingChannelName: channel.marketingChannel,
+        includeInChannel: channelsToSave[i].include,
+        marketingChannelId: channelsToSave[i].marketingChannelId,
+        marketingChannelName: channelsToSave[i].marketingChannel,
         scheduleType: '',
         notificationName: '',
         orgId: '10009',
       };
-      return this.newCampaignService.saveChannel(saveChannelRequest);
-    })
+      try {
+        await lastValueFrom(this.newCampaignService.saveChannel(saveChannelRequest));
+      }
+      catch {
+
+      }
+    }
   }
 
   imageSelected(event: any): void {

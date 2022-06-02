@@ -1,0 +1,24 @@
+<div>
+    <h3>Campaign Performance</h3>
+    <select class="form-select w-25 float-end" (change)="monthChanged()" [(ngModel)]="selectedMonth">
+        <option value="1">Past 1 Months</option>
+        <option value="3" selected>Past 3 Months</option>
+        <option value="6">Past 6 Months</option>
+        <option value="9">Past 9 Months</option>
+        <option value="12">Past 12 Months</option>
+    </select>
+    <tabset>
+        <tab heading="Revenue" (selectTab)="getRevenue()">
+            <div *ngIf="segmentRevenueChartAvailable" class="my-4" [chart]="segmentRevenueChart"></div>
+            <div *ngIf="!segmentRevenueChartAvailable" class="my-4 text-danger">No Data Available</div>
+            <div *ngIf="totalRevenueChartAvailable" class="my-4" [chart]="totalRevenueChart"></div>
+            <div *ngIf="!totalRevenueChartAvailable" class="text-danger">No Data Available</div>
+        </tab>
+        <tab heading="Subscribers" (selectTab)="getSubscriber()">
+            <div *ngIf="segmentSubscriberChartAvailable" class="my-4" [chart]="segmentSubscriberChart"></div>
+            <div *ngIf="!segmentSubscriberChartAvailable" class="my-4 text-danger">No Data Available</div>
+            <div *ngIf="totaltSubscriberChartAvailable" class="my-4" [chart]="totaltSubscriberChart"></div>
+            <div *ngIf="!totaltSubscriberChartAvailable" class="my-4 text-danger">No Data Available</div>
+        </tab>
+    </tabset>
+</div>

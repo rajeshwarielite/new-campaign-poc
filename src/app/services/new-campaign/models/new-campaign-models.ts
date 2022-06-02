@@ -74,7 +74,7 @@ export interface SaveChannelRequestModel {
     includeInChannel: string | number,
     marketingChannelId: string,
     marketingChannelName: string,
-    orgId:string,
+    orgId: string | number,
     scheduleType?: string,
     content?: string,
     eventDriven?: string,
@@ -114,6 +114,18 @@ export interface FileUploadResponseModel {
 }
 
 export interface ChannelNameSizeModel {
-    channelName: string
-    channelSize: number
+    channelName: string,
+    channelSize: number,
 }
+export interface  SubscriberRevenueModel {
+    campaignId: string,
+    data: SubscriberRevenueDataModel[],
+    orgId: number,
+}
+export interface SubscriberRevenueDataModel {
+    potentialRevenue: number,
+    timestamp: Date,
+    totalNonOptOutRevenue: string,
+    totalRevenue: number,
+    totalSubscribers: string,
+} 

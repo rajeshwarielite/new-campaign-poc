@@ -33,7 +33,7 @@
             <div class="col">{{channel.includeInChannel}}</div>
             <div class="col">{{saveCampaignModel.notificationSent}}</div>
             <div class="col">{{channel.status}}</div>
-        </div>        
+        </div>
     </ng-container>
     <ng-container *ngIf="channel.marketingChannelName !== 'Mobile Notification'">
         <h3><u> {{channel.marketingChannelName}}</u></h3>
@@ -51,6 +51,8 @@
 </ng-container>
 
 <div class="my-4" [chart]="chart"></div>
+<app-chart-campaign></app-chart-campaign>
+
 <ng-template #template>
     <div class="modal-header">
         <img src="./assets/images/info-icon.svg" class="me-2">

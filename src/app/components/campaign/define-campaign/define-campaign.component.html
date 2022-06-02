@@ -74,7 +74,7 @@
     <ng-container *ngIf="isRecommenedSelected && !isAcquisitionSelected">
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Region</label>
-            <select type="text" class="form-select" formControlName="campaignRegion">
+            <select class="form-select" formControlName="campaignRegion">
                 <option value="">All</option>
                 <ng-container *ngFor="let region of regions;">
                     <option [value]="region.Region">{{region.Region}}
@@ -84,7 +84,7 @@
         </div>
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Location</label>
-            <select type="text" class="form-select" formControlName="campaignLocation">
+            <select class="form-select" formControlName="campaignLocation">
                 <option value="">All</option>
                 <ng-container *ngFor="let location of locations;">
                     <option [value]="location.Location">{{location.Location}}
@@ -94,7 +94,7 @@
         </div>
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Service</label>
-            <select type="text" class="form-select" formControlName="campaignService">
+            <select class="form-select" formControlName="campaignService">
                 <option value="">All</option>
                 <ng-container *ngFor="let service of services;">
                     <option [value]="service.Service">{{service.Service}}
@@ -104,7 +104,7 @@
         </div>
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Propensity</label>
-            <select type="text" class="form-select" formControlName="campaignPropensity">
+            <select class="form-select" formControlName="campaignPropensity">
                 <option value="">All</option>
                 <ng-container *ngFor="let propensity of propensities;">
                     <option [value]="propensity.Propensity">{{propensity.Propensity}}
@@ -117,13 +117,13 @@
     <ng-container *ngIf="isAcquisitionSelected">
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Zipcode</label>
-            <ng-select class="form-select" [multiple]="true" [items]="zipcodes" bindValue="item_text"
+            <ng-select class="form-control" [multiple]="true" [items]="zipcodes" bindValue="item_text"
                 bindLabel="item_text" formControlName="campaignZipzode">
             </ng-select>
         </div>
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Zipplus</label>
-            <ng-select class="form-select" [multiple]="true" [items]="zippluses" bindValue="item_text"
+            <ng-select class="form-control" [multiple]="true" [items]="zippluses" bindValue="item_text"
                 bindLabel="item_text" formControlName="campaignZipplus">
             </ng-select>
         </div>

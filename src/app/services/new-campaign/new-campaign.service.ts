@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, EMPTY, Observable, of, Subject } from 'rxjs';
-import { delay, expand, switchMap, take } from 'rxjs/operators'
-import { ChannelCampaignModel, FileUploadResponseModel, LocationModel, PropensityModel, RegionModel, SaveCampaignModel, SaveChannelRequestModel, SaveChannelResponseModel, SegmentModel, ServiceModel, ZipcodeModel } from './models/new-campaign-models';
+import { BehaviorSubject, EMPTY, Observable, of, Subject, switchMap } from 'rxjs';
+import { ChannelCampaignModel, FileUploadResponseModel, LocationModel, PropensityModel, RegionModel, SaveCampaignModel, SaveChannelRequestModel, SaveChannelResponseModel, SegmentModel, ServiceModel, SubscriberRevenueModel, ZipcodeModel } from './models/new-campaign-models';
 
 @Injectable({
   providedIn: 'root'
@@ -33,10 +32,12 @@ export class NewCampaignService {
   //#region Camapaign
   saveCampaign(saveCampaignModel: SaveCampaignModel): Observable<SaveCampaignModel> {
     if (saveCampaignModel.campaignId) {
-      return this.httpClient.put<SaveCampaignModel>(this.apiUrl + 'cmc-campaigns/campaign', saveCampaignModel);
+      return this.httpClient.put<SaveCampaignModel>(this.apiUrl + 'cmc-campaigns/campaign', saveCampaignModel)
+        .pipe(switchMap(result => this.getCampaignById(result.campaignId)));
     }
     else {
-      return this.httpClient.post<SaveCampaignModel>(this.apiUrl + 'cmc-campaigns/campaign', saveCampaignModel);
+      return this.httpClient.post<SaveCampaignModel>(this.apiUrl + 'cmc-campaigns/campaign', saveCampaignModel)
+        .pipe(switchMap(result => this.getCampaignById(result.campaignId)));
     }
   }
 
@@ -61,7 +62,7 @@ export class NewCampaignService {
   saveChannel(saveChannelRequestModel: SaveChannelRequestModel): Observable<SaveChannelResponseModel> {
     return this.httpClient.post<SaveChannelResponseModel>(this.apiUrl + 'cmc-channel/channel', saveChannelRequestModel);
   }
-  
+
   updateChannel(saveChannelRequestModel: SaveChannelRequestModel): Observable<SaveChannelResponseModel> {
     return this.httpClient.put<SaveChannelResponseModel>(this.apiUrl + 'cmc-channel/channel', saveChannelRequestModel);
   }
@@ -132,4 +133,21 @@ export class NewCampaignService {
     this.saveCampaignModelSubject.next(saveCampaignModel);
   }
   //#endregion
+
+  //#region RevenueChart
+  getSegmentRevenue(campaignId: string, months: string): Observable<SubscriberRevenueModel> {
+    return this.httpClient.get<SubscriberRevenueModel>(this.apiUrl + 'cmc-campaigns/dailyTotals/revenue/campaign/' + campaignId + '?months=' + months);
+  }
+  getTotalRevenue(months: string): Observable<SubscriberRevenueModel> {
+    return this.httpClient.get<SubscriberRevenueModel>(this.apiUrl + 'cmc-campaigns/dailyTotals/revenue/org?months=' + months);
+  }
+  //#endregion
+  getSegmentSubscriber(campaignId: string, months: string): Observable<SubscriberRevenueModel> {
+    return this.httpClient.get<SubscriberRevenueModel>(this.apiUrl + 'cmc-campaigns/dailyTotals/subscriber/campaign/' + campaignId + '?months=' + months);
+  }
+  getTotalSubscriber(months: string): Observable<SubscriberRevenueModel> {
+    return this.httpClient.get<SubscriberRevenueModel>(this.apiUrl + 'cmc-campaigns/dailyTotals/subscriber/org?months=' + months);
+  }
+
+
 }

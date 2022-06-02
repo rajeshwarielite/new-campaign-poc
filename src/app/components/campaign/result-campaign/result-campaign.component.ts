@@ -46,16 +46,23 @@ export class ResultCampaignComponent implements OnInit {
     this.minimumDateTime = new Date(this.minimumDateTime.getTime() + 15 * 60000);
     this.newCampaignService.$saveCampaignModel.subscribe(result => {
       this.saveCampaignModel = result;
+      if (result.channels && result.channels.length > 0) {
+        this.channelNameSizeModel = result.channels;
+
+        this.createChart(result.channels.map(ch => ch.channelName));
+
+        result.channels.forEach(channel => this.chart.addSeries({
+          name: channel.channelName,
+          //@ts-ignore
+          data: [channel.channelName, channel.channelSize],
+          color: '#0d6efd'
+        }, true, false));
+      }
       if (result.status === 'In-Progress') {
         this.newCampaignService.getCampaignChannels(this.saveCampaignModel.campaignId).subscribe(result => {
           if (Array.isArray(result)) {
             result.sort((a, b) => (a.marketingChannelName === 'Mobile Notification') ? -1 : ((a.marketingChannelName > b.marketingChannelName) ? 1 : 0));
             this.savedChannels = result;
-            this.newCampaignService.getCampaignById(this.saveCampaignModel.campaignId).subscribe(result => {
-              this.channelNameSizeModel = result.channels;
-              //@ts-ignore
-              result.channels.forEach(channel => this.chart.addSeries({ name: channel.channelName, data: [channel.channelSize] }, true, true));
-            });
           }
         });
       }
@@ -85,15 +92,8 @@ export class ResultCampaignComponent implements OnInit {
         marketingChannelId: channel.marketingChannelId,
         marketingChannelName: channel.marketingChannelName,
         notificationName: channel.notificationName,
-        orgId: channel.orgId.toString(),
+        orgId: channel.orgId,
         scheduleType: channel.scheduleType,
-        content: channel.content,
-        eventDriven: channel.eventDriven,
-        eventThreshold: channel.eventThreshold,
-        link: channel.link,
-        notificationTime: channel.notificationTime,
-        notificationTimeZone: channel.notificationTimeZone,
-        scheduledDateTime: channel.scheduledDateTime
       };
       this.newCampaignService.updateChannel(saveChannelRequestModel).subscribe(result => {
         this.modalRef?.hide();
@@ -116,7 +116,7 @@ export class ResultCampaignComponent implements OnInit {
       marketingChannelId: this.deployChannel.marketingChannelId,
       marketingChannelName: this.deployChannel.marketingChannelName,
       notificationName: this.mobileFormGroup.get('message')?.value,
-      orgId: '10009',
+      orgId: 10009,
       scheduleType: this.mobileFormGroup.get('schedule')?.value,
     };
 
@@ -148,23 +148,29 @@ export class ResultCampaignComponent implements OnInit {
     this.selectedFile = event;
   }
 
-  chart = new Chart({
-    chart: {
-      type: 'column',
-    },
-    title: {
-      text: 'Segment Distribution'
-    },
-    xAxis:{
-      title:{
-        text:'Channel(s)'
-      }
-    },
-    yAxis:{
-      title:{
-        text:'Segment Members'
-      }
-    },
-    series: []
-  });
+  createChart(categories: string[]): void {
+    this.chart = new Chart({
+      chart: {
+        type: 'column',
+        animation: false
+      },
+      title: {
+        text: 'Segment Distribution'
+      },
+      xAxis: {
+        title: {
+          text: 'Channel(s)'
+        },
+        categories: categories
+      },
+      yAxis: {
+        title: {
+          text: 'Segment Members'
+        }
+      },
+      series: []
+    });
+  }
+
+  chart = new Chart();
 }

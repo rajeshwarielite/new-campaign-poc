@@ -183,7 +183,6 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
               this.successMessage = 'New Campaign Saved Successfully';
             }
             this.nextStepEvent.emit(next);
-            this.newCampaignService.getCampaignById(result.campaignId).subscribe();
           },
           (err) => {
             this.errorMessage = err.error.errorDesc;
