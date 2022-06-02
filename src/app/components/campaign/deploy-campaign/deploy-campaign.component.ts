@@ -100,10 +100,11 @@ export class DeployCampaignComponent implements OnInit {
       };
 
       if (this.mobileFormGroup.get('schedule')?.value === 'Event-Driven') {
+       const ntime = new Date(this.mobileFormGroup.get('nTime')?.value);
         saveChannelRequest.eventDriven = this.mobileFormGroup.get('event')?.value;
         saveChannelRequest.eventThreshold = this.mobileFormGroup.get('threshold')?.value;
         saveChannelRequest.notificationTimeZone = this.mobileFormGroup.get('timeZone')?.value;
-        saveChannelRequest.notificationTime = this.mobileFormGroup.get('nTime')?.value;
+        saveChannelRequest.notificationTime = ntime.getHours() + ':' + ntime.getMinutes();
       }
       else if (this.mobileFormGroup.get('schedule')?.value === 'Scheduled') {
         saveChannelRequest.scheduledDateTime = this.mobileFormGroup.get('nDateTime')?.value;
