@@ -124,8 +124,8 @@ export interface  SubscriberRevenueModel {
 }
 export interface SubscriberRevenueDataModel {
     potentialRevenue: number,
-    timestamp: Date,
-    totalNonOptOutRevenue: string,
+    timestamp: string,
+    totalNonOptOutRevenue: number,
     totalRevenue: number,
-    totalSubscribers: string,
+    totalSubscribers: number,
 } 

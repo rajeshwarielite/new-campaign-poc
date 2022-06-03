@@ -1,24 +1,111 @@
 <div>
-    <h3>Campaign Performance</h3>
-    <select class="form-select w-25 float-end" (change)="monthChanged()" [(ngModel)]="selectedMonth">
-        <option value="1">Past 1 Months</option>
-        <option value="3" selected>Past 3 Months</option>
-        <option value="6">Past 6 Months</option>
-        <option value="9">Past 9 Months</option>
-        <option value="12">Past 12 Months</option>
-    </select>
-    <tabset>
-        <tab heading="Revenue" (selectTab)="getRevenue()">
-            <div *ngIf="segmentRevenueChartAvailable" class="my-4" [chart]="segmentRevenueChart"></div>
-            <div *ngIf="!segmentRevenueChartAvailable" class="my-4 text-danger">No Data Available</div>
-            <div *ngIf="totalRevenueChartAvailable" class="my-4" [chart]="totalRevenueChart"></div>
-            <div *ngIf="!totalRevenueChartAvailable" class="text-danger">No Data Available</div>
-        </tab>
-        <tab heading="Subscribers" (selectTab)="getSubscriber()">
-            <div *ngIf="segmentSubscriberChartAvailable" class="my-4" [chart]="segmentSubscriberChart"></div>
-            <div *ngIf="!segmentSubscriberChartAvailable" class="my-4 text-danger">No Data Available</div>
-            <div *ngIf="totaltSubscriberChartAvailable" class="my-4" [chart]="totaltSubscriberChart"></div>
-            <div *ngIf="!totaltSubscriberChartAvailable" class="my-4 text-danger">No Data Available</div>
-        </tab>
-    </tabset>
+    <div class="row">
+        <h3 class="my-4 w-75">Campaign Performance</h3>
+        <select class="form-select w-25 float-end" (change)="monthChanged()" [(ngModel)]="selectedMonth">
+            <option value="1">Past 1 Months</option>
+            <option value="3" selected>Past 3 Months</option>
+            <option value="6">Past 6 Months</option>
+            <option value="9">Past 9 Months</option>
+            <option value="12">Past 12 Months</option>
+        </select>
+    </div>
+    <div class="row w-100 float-end">
+        <small class="my-4 fw-light" style="margin-left: 70%;">
+            - Campaign Period
+            <br>
+            .. Pre/Post Campaign Period
+        </small>
+    </div>
+    <div class="row w-100">
+        <tabset>
+            <tab heading="Revenue" (selectTab)="getRevenueTab()">
+                <div class="my-4" [hidden]="totalRevenueChartSelected">
+                    <div class="row">
+                        <div class="col">
+                            <h3>Segment Revenue </h3>
+                        </div>
+                        <div class="col">
+                            <div *ngIf="!segmentRevenueChartSelected" class="btn-expand float-end" title="maximize"
+                                (click)="segmentRevenueChartSelected = true"></div>
+                            <div *ngIf="segmentRevenueChartSelected" class="btn-shrink float-end" title="Dismiss"
+                                (click)="segmentRevenueChartSelected = false"></div>
+                            <div class="btn-download float-end"
+                                (click)="downloadCsv(segmentRevenueChartData, 'Segment_Revenue')"></div>
+                        </div>
+                    </div>
+                    <div *ngIf="segmentRevenueChartAvailable" class="row my-4">
+                        <h6 class="mb-1">Campaign Segment Revenue</h6>
+                        <p class="mb-4 text-primary">{{segmentRevenue}}</p>
+                        <div [chart]="segmentRevenueChart"></div>
+                    </div>
+                    <div *ngIf="!segmentRevenueChartAvailable" class="my-4 text-danger">No Data Available</div>
+                </div>
+                <div class="my-4" [hidden]="segmentRevenueChartSelected">
+                    <div class="row">
+                        <div class="col">
+                            <h3>Total Revenue </h3>
+                        </div>
+                        <div class="col">
+                            <div *ngIf="!totalRevenueChartSelected" class="btn-expand float-end" title="maximize"
+                                (click)="totalRevenueChartSelected = true"></div>
+                            <div *ngIf="totalRevenueChartSelected" class="btn-shrink float-end" title="Dismiss"
+                                (click)="totalRevenueChartSelected = false"></div>
+                            <div class="btn-download float-end"
+                                (click)="downloadCsv(totalRevenueChartData, 'Total_Revenue')"></div>
+                        </div>
+                    </div>
+                    <div *ngIf="totalRevenueChartAvailable" class="row my-4">
+                        <h6 class="mb-1">Total Business Revenue</h6>
+                        <p class="mb-4 text-primary">{{totalRevenue}}</p>
+                        <div [chart]="totalRevenueChart"></div>
+                    </div>
+                    <div *ngIf="!totalRevenueChartAvailable" class="my-4 text-danger">No Data Available</div>
+                </div>
+            </tab>
+            <tab heading="Subscribers" (selectTab)="getSubscriberTab()">
+                <div class="my-4" [hidden]="totaltSubscriberChartSelected">
+                    <div class="row">
+                        <div class="col">
+                            <h3>Segment Subscribers </h3>
+                        </div>
+                        <div class="col">
+                            <div *ngIf="!segmentSubscriberChartSelected" class="btn-expand float-end" title="maximize"
+                                (click)="segmentSubscriberChartSelected = true"></div>
+                            <div *ngIf="segmentSubscriberChartSelected" class="btn-shrink float-end" title="Dismiss"
+                                (click)="segmentSubscriberChartSelected = false"></div>
+                            <div class="btn-download float-end"
+                                (click)="downloadCsv(segmentSubscriberChartData, 'Segment_Subscribers')"></div>
+                        </div>
+                    </div>
+                    <div *ngIf="segmentSubscriberChartAvailable" class="row my-4">
+                        <h6 class="mb-1">Total Segment Subscribers</h6>
+                        <p class="mb-4 text-primary">{{segmentSubscribers}}</p>
+                        <div [chart]="segmentSubscriberChart"></div>
+                    </div>
+                    <div *ngIf="!segmentSubscriberChartAvailable" class="my-4 text-danger">No Data Available</div>
+                </div>
+                <div class="my-4" [hidden]="segmentSubscriberChartSelected">
+                    <div class="row">
+                        <div class="col">
+                            <h3>Total Subscribers </h3>
+                        </div>
+                        <div class="col">
+                            <div *ngIf="!totaltSubscriberChartSelected" class="btn-expand float-end" title="maximize"
+                                (click)="totaltSubscriberChartSelected = true"></div>
+                            <div *ngIf="totaltSubscriberChartSelected" class="btn-shrink float-end" title="Dismiss"
+                                (click)="totaltSubscriberChartSelected = false"></div>
+                            <div class="btn-download float-end"
+                                (click)="downloadCsv(totaltSubscriberChartData, 'Total_Subscribers')"></div>
+                        </div>
+                    </div>
+                    <div *ngIf="totaltSubscriberChartAvailable" class="row my-4">
+                        <h6 class="mb-1">Total Subscribers</h6>
+                        <p class="mb-4 text-primary">{{totaltSubscribers}}</p>
+                        <div [chart]="totaltSubscriberChart"></div>
+                    </div>
+                    <div *ngIf="!totaltSubscriberChartAvailable" class="my-4 text-danger">No Data Available</div>
+                </div>
+            </tab>
+        </tabset>
+    </div>
 </div>

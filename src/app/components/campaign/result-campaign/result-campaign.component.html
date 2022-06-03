@@ -50,9 +50,25 @@
     </ng-container>
 </ng-container>
 
-<div class="my-4" [chart]="chart"></div>
-<app-chart-campaign></app-chart-campaign>
-
+<div [ngClass]="shrinkedChart ? 'w-50' : 'w-100'">
+    <div class="row">
+        <div class="col">
+            <h3>Segment Distribution </h3>
+        </div>
+        <div class="col">
+            <div *ngIf="shrinkedChart" title="Maximize" class="btn-expand float-end" (click)="expandChart()"></div>
+            <div *ngIf="!shrinkedChart"  title="Dismiss"class="btn-shrink float-end" (click)="shrinkChart()"></div>
+            <div class="btn-download float-end" (click)="downloadChannelCsv()"></div>
+        </div>
+        <h6>Segment Members Included in Selected Channels</h6>
+    </div>
+    <div class="row my-4">
+        <div [chart]="distributionChart"></div>
+    </div>
+</div>
+<div class="my-4">
+    <app-chart-campaign></app-chart-campaign>
+</div>
 <ng-template #template>
     <div class="modal-header">
         <img src="./assets/images/info-icon.svg" class="me-2">

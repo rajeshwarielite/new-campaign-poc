@@ -3,6 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Chart } from 'angular-highcharts';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { EMPTY, lastValueFrom, Observable } from 'rxjs';
+import { ChartCampaignService } from 'src/app/services/chart-campaign.service';
 import { ChannelNameSizeModel, SaveCampaignModel, SaveChannelRequestModel, SaveChannelResponseModel } from 'src/app/services/new-campaign/models/new-campaign-models';
 import { NewCampaignService } from 'src/app/services/new-campaign/new-campaign.service';
 
@@ -38,8 +39,11 @@ export class ResultCampaignComponent implements OnInit {
   //@ts-ignore
   deployChannel: SaveChannelResponseModel;
 
+  distributionChart = Chart.prototype;
+
   constructor(private modalService: BsModalService,
-    private newCampaignService: NewCampaignService
+    private newCampaignService: NewCampaignService,
+    private chartCampaignService: ChartCampaignService
   ) { }
 
   ngOnInit(): void {
@@ -48,15 +52,7 @@ export class ResultCampaignComponent implements OnInit {
       this.saveCampaignModel = result;
       if (result.channels && result.channels.length > 0) {
         this.channelNameSizeModel = result.channels;
-
-        this.createChart(result.channels.map(ch => ch.channelName));
-
-        result.channels.forEach(channel => this.chart.addSeries({
-          name: channel.channelName,
-          //@ts-ignore
-          data: [channel.channelName, channel.channelSize],
-          color: '#0d6efd'
-        }, true, false));
+        this.distributionChart = this.chartCampaignService.createCampaignChannelsChart(this.channelNameSizeModel);
       }
       if (result.status === 'In-Progress') {
         this.newCampaignService.getCampaignChannels(this.saveCampaignModel.campaignId).subscribe(result => {
@@ -148,29 +144,18 @@ export class ResultCampaignComponent implements OnInit {
     this.selectedFile = event;
   }
 
-  createChart(categories: string[]): void {
-    this.chart = new Chart({
-      chart: {
-        type: 'column',
-        animation: false
-      },
-      title: {
-        text: 'Segment Distribution'
-      },
-      xAxis: {
-        title: {
-          text: 'Channel(s)'
-        },
-        categories: categories
-      },
-      yAxis: {
-        title: {
-          text: 'Segment Members'
-        }
-      },
-      series: []
-    });
+  downloadChannelCsv(): void {
+    this.chartCampaignService.downloadCsvFile(this.channelNameSizeModel, 'SegmentDistribution');
   }
 
-  chart = new Chart();
+  shrinkedChart = false;
+  expandChart(): void {
+    this.shrinkedChart = false;
+    this.distributionChart = this.chartCampaignService.createCampaignChannelsChart(this.channelNameSizeModel);
+  }
+
+  shrinkChart(): void {
+    this.shrinkedChart = true;
+    this.distributionChart = this.chartCampaignService.createCampaignChannelsChart(this.channelNameSizeModel);
+  }
 }
