@@ -6,6 +6,7 @@ import { EMPTY, lastValueFrom, Observable } from 'rxjs';
 import { ChartCampaignService } from 'src/app/services/chart-campaign.service';
 import { ChannelNameSizeModel, SaveCampaignModel, SaveChannelRequestModel, SaveChannelResponseModel } from 'src/app/services/new-campaign/models/new-campaign-models';
 import { NewCampaignService } from 'src/app/services/new-campaign/new-campaign.service';
+import { QlikProviderService } from 'src/app/services/qlik-provider/qlik-provider.service';
 
 @Component({
   selector: 'app-result-campaign',
@@ -43,7 +44,8 @@ export class ResultCampaignComponent implements OnInit {
 
   constructor(private modalService: BsModalService,
     private newCampaignService: NewCampaignService,
-    private chartCampaignService: ChartCampaignService
+    private chartCampaignService: ChartCampaignService,
+    private qlikProviderService:QlikProviderService,
   ) { }
 
   ngOnInit(): void {
@@ -157,5 +159,8 @@ export class ResultCampaignComponent implements OnInit {
   shrinkChart(): void {
     this.shrinkedChart = true;
     this.distributionChart = this.chartCampaignService.createCampaignChannelsChart(this.channelNameSizeModel);
+  }
+  downloadQlikCSVreport():void{
+    this.qlikProviderService.downloadQlikCSVreport();
   }
 }

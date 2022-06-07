@@ -3,7 +3,15 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  APP_ID: 'fe340011-d818-4750-b84d-f5456674a714',
+  APP_ID_QLIK: '"y6b2per1608308687294"',
+  QLIK_CONFIG: {
+    host: "clouddashboards-stg.calix.com",
+    isSecure: true,
+    port: 443,
+    prefix: "/ticket/"
+  },
 };
 
 /*

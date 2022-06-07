@@ -5,7 +5,7 @@ export interface SegmentModel {
     subscriberCount: number,
     createdDateSec: Date,
     campaignsInProgress: number,
-    campaignDetail: any
+    campaignDetail: any,
 }
 
 export interface ZipcodeModel {
@@ -129,3 +129,7 @@ export interface SubscriberRevenueDataModel {
     totalRevenue: number,
     totalSubscribers: number,
 } 
+
+export interface TicketTokenResponse{
+    Ticket:string
+}

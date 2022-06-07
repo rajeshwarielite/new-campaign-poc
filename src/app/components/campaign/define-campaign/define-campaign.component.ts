@@ -2,10 +2,11 @@ import { ThisReceiver } from '@angular/compiler';
 import { Component, OnDestroy, OnInit, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Chart } from 'angular-highcharts';
-import { forkJoin, Subscription } from 'rxjs';
+import { delay, forkJoin, Subscription } from 'rxjs';
 import { LoginProviderService } from 'src/app/services/login-provider/login-provider.service';
 import { LocationModel, PropensityModel, RegionModel, SaveCampaignModel, SegmentModel, ServiceModel, ZipcodeModel } from 'src/app/services/new-campaign/models/new-campaign-models';
 import { NewCampaignService } from 'src/app/services/new-campaign/new-campaign.service';
+import { QlikProviderService } from 'src/app/services/qlik-provider/qlik-provider.service';
 
 @Component({
   selector: 'app-define-campaign',
@@ -25,10 +26,10 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
     campaignEnd: new FormControl('', Validators.required),
 
     // Upsell || !acquisation
-    campaignRegion: new FormControl(''),
-    campaignLocation: new FormControl(''),
-    campaignService: new FormControl(''),
-    campaignPropensity: new FormControl(''),
+    campaignRegion: new FormControl('All'),
+    campaignLocation: new FormControl('All'),
+    campaignService: new FormControl('All'),
+    campaignPropensity: new FormControl('All'),
 
     // acquisation
     campaignZipzode: new FormControl(''),
@@ -43,7 +44,7 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
   maxDate: Date = new Date(new Date().setDate(new Date().getDate() + 12));
 
   isRecommenedSelected: boolean = false;
-  isAcquisitionSelected: boolean = false;;
+  isAcquisitionSelected: boolean = false;
   savedSegments: SegmentModel[] = [];
   recommendedSegments: SegmentModel[] = [];
 
@@ -58,15 +59,17 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
 
   zipcodes: ZipcodeModel[] = [];
   zippluses: ZipcodeModel[] = [];
-  locations: LocationModel[] = [];
-  regions: RegionModel[] = [];
-  services: ServiceModel[] = [];
-  propensities: PropensityModel[] = [];
+  regions: RegionModel[] = [{ Region: 'All' }];
+  locations: LocationModel[] = [{ Location: 'All' }];
+  services: ServiceModel[] = [{ Service: 'All' }];
+  propensities: PropensityModel[] = [{ Propensity: 'All' }];
   private subscriptions: Subscription[] = [];
 
   constructor(
     private loginProviderService: LoginProviderService,
-    private newCampaignService: NewCampaignService) {
+    private newCampaignService: NewCampaignService,
+    private qlikProviderService: QlikProviderService) {
+    this.qlikProviderService.qlikInitialize();
     this.loginProviderService.getToken();
   }
 
@@ -87,23 +90,95 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
       ),
       forkJoin([
         this.newCampaignService.getZipcodes(),
-        this.newCampaignService.getZippluses(),
-        this.newCampaignService.getLocations(),
-        this.newCampaignService.getRegions(),
-        this.newCampaignService.getServices(),
-        this.newCampaignService.getPropensity(),
-      ]).subscribe(
-        result => {
-          this.zipcodes = result[0].length > 0 ? result[0] : [];
-          this.zippluses = result[1].length > 0 ? result[1] : [];
-          this.locations = result[2].length > 0 ? result[2] : [];
-          this.regions = result[3].length > 0 ? result[3] : [];
-          this.services = result[4].length > 0 ? result[4] : [];
-          this.propensities = result[5].length > 0 ? result[5] : [];
-        }
-      ),
+        this.newCampaignService.getZippluses()]).subscribe(
+          result => {
+            this.zipcodes = result[0].length > 0 ? result[0] : [];
+            this.zippluses = result[1].length > 0 ? result[1] : [];
+          }
+        ),
       //this.newCampaignService.getCampaigns().subscribe(result => this.allCampaignModels = result)
     );
+    setTimeout(() => {
+      this.getRegions();
+      this.getLocations();
+      this.getServices();
+      this.getPropensity();
+      this.getZipcodes();
+      this.getZippluses();
+    }, 10000);
+  }
+
+  getRegions(): void {
+    this.qlikProviderService.getRegions().then(result => {
+      this.regions = [{ Region: 'All' }, ...result];
+      const selectedRegion = this.defineFormGroup.controls['campaignRegion'].value;
+      if (selectedRegion) {
+        this.defineFormGroup.controls['campaignRegion'].setValue(selectedRegion);
+      }
+      else {
+        this.defineFormGroup.controls['campaignRegion'].setValue('All');
+      }
+    });
+  }
+
+  getLocations(): void {
+    this.qlikProviderService.getLocations().then(result => {
+      this.locations = [{ Location: 'All' }, ...result];
+      const selectedLocation = this.defineFormGroup.controls['campaignLocation'].value;
+      if (selectedLocation) {
+        this.defineFormGroup.controls['campaignLocation'].setValue(selectedLocation);
+      }
+      else {
+        this.defineFormGroup.controls['campaignLocation'].setValue('All');
+      }
+    });
+  }
+
+  getServices(): void {
+    this.qlikProviderService.getServices().then(result => {
+      this.services = [{ Service: 'All' }, ...result];
+      const selectedService = this.defineFormGroup.controls['campaignService'].value;
+      if (selectedService) {
+        this.defineFormGroup.controls['campaignService'].setValue(selectedService);
+      }
+      else {
+        this.defineFormGroup.controls['campaignService'].setValue('All');
+      }
+    });
+  }
+
+  getPropensity(): void {
+    this.qlikProviderService.getPropensity().then(result => {
+      this.propensities = [{ Propensity: 'All' }, ...result];
+      const selectedPropensity = this.defineFormGroup.controls['campaignPropensity'].value;
+      if (selectedPropensity) {
+        this.defineFormGroup.controls['campaignPropensity'].setValue(selectedPropensity);
+      }
+      else {
+        this.defineFormGroup.controls['campaignPropensity'].setValue('All');
+      }
+    });
+  }
+
+  getZipcodes(): void {
+    this.qlikProviderService.getZipcodes().then(result => {
+      this.zipcodes = result;
+      const selectedZipcode = this.defineFormGroup.controls['campaignZipzode'].value;
+      if (selectedZipcode) {
+        this.defineFormGroup.controls['campaignZipzode'].setValue(selectedZipcode);
+      }
+      this.getZippluses();
+    });
+  }
+
+  getZippluses(): void {
+    this.qlikProviderService.getZippluses().then(result => {
+      this.zippluses = result;
+      const selectedZipplus = this.defineFormGroup.controls['campaignZipplus'].value;
+      if (selectedZipplus) {
+        this.defineFormGroup.controls['campaignZipplus'].setValue(selectedZipplus);
+      }
+    });
   }
 
   campaignNameChanged(): void {
@@ -195,12 +270,14 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
     this.selectedSegment = segment;
     const selectedSegmentId = segment.segmentId;
     this.isRecommenedSelected = this.recommendedSegments.some(s => s.segmentId === selectedSegmentId);
-    this.isisAcquisitionSegment(selectedSegmentId);
+    if (this.isisAcquisitionSegment(selectedSegmentId)) {
+      this.getZipcodes();
+    }
     this.defineFormGroup.controls['campaignSegment'].setValue(segment.segmentId);
-    this.defineFormGroup.controls['campaignRegion'].setValue('');
-    this.defineFormGroup.controls['campaignLocation'].setValue('');
-    this.defineFormGroup.controls['campaignService'].setValue('');
-    this.defineFormGroup.controls['campaignPropensity'].setValue('');
+    this.defineFormGroup.controls['campaignRegion'].setValue('All');
+    this.defineFormGroup.controls['campaignLocation'].setValue('All');
+    this.defineFormGroup.controls['campaignService'].setValue('All');
+    this.defineFormGroup.controls['campaignPropensity'].setValue('All');
     this.defineFormGroup.controls['campaignZipzode'].setValue('');
     this.defineFormGroup.controls['campaignZipplus'].setValue('');
   }
@@ -210,13 +287,14 @@ export class DefineCampaignComponent implements OnInit, OnDestroy {
     this.savedSegmentsDropdown = this.savedSegments.filter(segment => segment.segmentName.toLocaleLowerCase().includes(query.target.value.toLocaleLowerCase()));
   }
 
-  private isisAcquisitionSegment(selectedSegmentId: string): void {
+  private isisAcquisitionSegment(selectedSegmentId: string): boolean {
     let selectedSegment = [...this.recommendedSegments, ...this.savedSegments].find(s => s.segmentId === selectedSegmentId);
     if (selectedSegment) {
       this.isAcquisitionSelected = selectedSegment.segmentType === 'Acquisition';
     } else {
       this.isAcquisitionSelected = false;
     }
+    return this.isAcquisitionSelected;
   }
 
   ngOnDestroy(): void {

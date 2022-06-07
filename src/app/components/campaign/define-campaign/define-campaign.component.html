@@ -74,8 +74,7 @@
     <ng-container *ngIf="isRecommenedSelected && !isAcquisitionSelected">
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Region</label>
-            <select class="form-select" formControlName="campaignRegion">
-                <option value="">All</option>
+            <select class="form-select" [value]="'All'" formControlName="campaignRegion">
                 <ng-container *ngFor="let region of regions;">
                     <option [value]="region.Region">{{region.Region}}
                     </option>
@@ -85,7 +84,6 @@
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Location</label>
             <select class="form-select" formControlName="campaignLocation">
-                <option value="">All</option>
                 <ng-container *ngFor="let location of locations;">
                     <option [value]="location.Location">{{location.Location}}
                     </option>
@@ -95,7 +93,6 @@
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Service</label>
             <select class="form-select" formControlName="campaignService">
-                <option value="">All</option>
                 <ng-container *ngFor="let service of services;">
                     <option [value]="service.Service">{{service.Service}}
                     </option>
@@ -105,7 +102,6 @@
         <div class="input-group mb-3">
             <label class="input-group-text w-25">Propensity</label>
             <select class="form-select" formControlName="campaignPropensity">
-                <option value="">All</option>
                 <ng-container *ngFor="let propensity of propensities;">
                     <option [value]="propensity.Propensity">{{propensity.Propensity}}
                     </option>
