@@ -29,7 +29,7 @@ export class NewCampaignService {
   }
   //#endregion
 
-  //#region Camapaign
+  //#region Campaign
   saveCampaign(saveCampaignModel: SaveCampaignModel): Observable<SaveCampaignModel> {
     if (saveCampaignModel.campaignId) {
       return this.httpClient.put<SaveCampaignModel>(this.apiUrl + 'cmc-campaigns/campaign', saveCampaignModel)

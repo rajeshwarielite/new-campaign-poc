@@ -65,4 +65,8 @@ export class QlikProviderService {
   downloadQlikCSVreport(): void {
     downloadQSReports(this.qlikApp, 'CSV Download');
   }
+  downloadCSVSegmentFilters():void
+  {
+
+  }
 }
