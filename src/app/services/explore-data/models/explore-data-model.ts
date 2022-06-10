@@ -15,5 +15,15 @@ export interface SubscriberExploreDataModel {
     activesubscribers: number
 }
 export interface StreamingGamingWfhUsersExploreDataModel {
-    streamingUsers: number, gamingUsers: number, wfhUsers: number
+    streamingUsers: number; gamingUsers: number; wfhUsers: number;
+}
+
+export interface AreaFilterModel {
+    region: string;
+    location: string;
+    timeFrame: string;
+}
+export interface DataUsageTrendsModel {
+    categories: string[];
+    series: Highcharts.SeriesOptionsType[];
 }

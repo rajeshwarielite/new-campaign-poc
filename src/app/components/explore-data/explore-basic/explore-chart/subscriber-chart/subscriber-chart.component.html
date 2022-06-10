@@ -1,0 +1,24 @@
+<div class="m-4">
+    <div class="row">
+        <div class="col">Subscribers</div>
+        <div class="col border-start">Streaming</div>
+        <div class="col border-start">Gaming</div>
+        <div class="col border-start">Work From Home Users</div>
+    </div>
+    <div class="row">
+        <div class="col text-primary">{{subscriberData.activesubscribers}}</div>
+        <div class="col text-primary border-start">{{streamingGamingWfhUsers.streamingUsers}}</div>
+        <div class="col text-primary border-start">{{streamingGamingWfhUsers.gamingUsers}}</div>
+        <div class="col text-primary border-start">{{streamingGamingWfhUsers.wfhUsers}}</div>
+    </div>
+    <div class="row my-4">
+        <div class="col me-2">
+            <h5 class="mb-3">Subscriber Data Usage</h5>
+            <div [chart]="subscriberDataUsageChart"></div>
+        </div>
+        <div class="col ms-2">
+            <h5 class="mb-4">Data Usage Trends</h5>
+            <div [chart]="dataUsageTrendsChart"></div>
+        </div>
+    </div>
+</div>

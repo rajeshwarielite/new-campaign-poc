@@ -3,7 +3,7 @@
         <div class="col input-group mb-3">
             <label class="input-group-text w-25">Region</label>
             <select class="form-select" (change)="regionSelected($event)">
-                <option value="All">All</option>
+                <option value="">All</option>
                 <ng-container *ngFor="let region of regionData;">
                     <option [value]="region">{{region}}
                     </option>
@@ -13,7 +13,7 @@
         <div class="col input-group mb-3">
             <label class="input-group-text w-25">Location</label>
             <select class="form-select">
-                <option value="All">All</option>
+                <option value="">All</option>
                 <ng-container *ngFor="let loc of locationData;">
                     <option [value]="loc">{{loc}}
                     </option>
@@ -23,9 +23,9 @@
         <div class="col input-group mb-3">
             <label class="input-group-text w-25">Time Frame</label>
             <select class="form-select">
-                <option value="2 Prior Months">2 Prior Months</option>
-                <option value="Prior Months">Prior Months</option>
-                <option value="30 Days">30 Days</option>
+                <option value="last-2m">2 Prior Months</option>
+                <option value="last-1m" selected>Prior Months</option>
+                <option value="last-30d">30 Days</option>
             </select>
         </div>
         <div class="col">
@@ -35,22 +35,24 @@
     </div>
     <div class="row m-4">
         <div class="col-md-2 mb-4">
-            <label class="text-primary w-100 m-2 border-bottom" role="button" (click)="selectTab(1)">Subscribers</label>
-            <label class="text-primary w-100 m-2 border-bottom" role="button" (click)="selectTab(2)">Services</label>
+            <label class="text-primary w-100 m-2 border-bottom" role="button" (click)="selectTab(0)">Subscribers</label>
+            <label class="text-primary w-100 m-2 border-bottom" role="button" (click)="selectTab(1)">Services</label>
             <label class="text-primary w-100 m-2 border-bottom" role="button" (click)="selectTab(2)">Applications</label>
-            <label class="text-primary w-100 m-2 border-bottom" role="button" (click)="selectTab(2)">Retention</label>
-            <label class="text-primary w-100 m-2 border-bottom" role="button" (click)="selectTab(2)">Service Provider Acquisition Insights</label>
-            <label class="text-primary w-100 m-2 border-bottom" role="button" (click)="selectTab(2)">Sysytems</label>
+            <label class="text-primary w-100 m-2 border-bottom" role="button" (click)="selectTab(3)">Retention</label>
+            <label class="text-primary w-100 m-2 border-bottom" role="button" (click)="selectTab(4)">Service Provider Acquisition Insights</label>
+            <label class="text-primary w-100 m-2 border-bottom" role="button" (click)="selectTab(5)">Sysytems</label>
 
         </div>
 
         <div class="col-md-10 mb-4">
             <tabset #staticTabs>
                 <tab>
-                    Subscriber
+                    <app-subscriber-chart></app-subscriber-chart>
                 </tab>
                 <tab>Static content 1</tab>
                 <tab>Static content 2</tab>
+                <tab>Static content 3</tab>
+                <tab>Static content 3</tab>
                 <tab>Static content 3</tab>
             </tabset>
         </div>

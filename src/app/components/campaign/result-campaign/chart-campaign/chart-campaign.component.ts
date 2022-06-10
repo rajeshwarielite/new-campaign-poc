@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Chart } from 'angular-highcharts';
-import { chart } from 'highcharts';
 import { ChartCampaignService } from 'src/app/services/chart-campaign.service';
 import { SaveCampaignModel, SubscriberRevenueDataModel } from 'src/app/services/new-campaign/models/new-campaign-models';
 import { NewCampaignService } from 'src/app/services/new-campaign/new-campaign.service';

@@ -22,6 +22,7 @@ import { ChartModule } from 'angular-highcharts';
 import { ChartCampaignComponent } from './components/campaign/result-campaign/chart-campaign/chart-campaign.component';
 import {CalendarModule} from 'primeng/calendar';
 import { ExploreBasicComponent } from './components/explore-data/explore-basic/explore-basic.component';
+import { SubscriberChartComponent } from './components/explore-data/explore-basic/explore-chart/subscriber-chart/subscriber-chart.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { ExploreBasicComponent } from './components/explore-data/explore-basic/e
     MobileCampaignComponent,
     ChartCampaignComponent,
     ExploreBasicComponent,
+    SubscriberChartComponent,
   ],
   imports: [
     BrowserModule,
