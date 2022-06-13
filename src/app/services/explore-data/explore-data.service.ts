@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import { AreaFilterModel, DataUsageTrendsModel, ExploreDataModel, StreamingGamingWfhUsersExploreDataModel, SubscriberExploreDataModel } from './models/explore-data-model';
+import { AreaFilterModel, DataUsageTrendsModel, ExploreDataModel, HeatMapModel, StreamingGamingWfhUsersExploreDataModel, SubscriberExploreDataModel } from './models/explore-data-model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class ExploreDataService {
   public areaFilterModel: AreaFilterModel = {
     location: '',
     region: '',
-    timeFrame: 'last-1m'
+    timeFrame: 'last-2m'
   };
 
   constructor(private httpClient: HttpClient) { }
@@ -40,11 +40,20 @@ export class ExploreDataService {
   getSubscriberDataUsageTrendsChart(): Observable<DataUsageTrendsModel> {
     return this.httpClient.get<DataUsageTrendsModel>(this.apiUrl + 'insights/total-and-streaming-usage-trend?month=6&org-id=10009&period=' + this.areaFilterModel.timeFrame + '&region=' + this.areaFilterModel.region + '&location=' + this.areaFilterModel.location);
   }
-  getApplicationUsageByTypeChart(period: string, region: string, location: string): Observable<any> {
-    return this.httpClient.get(this.apiUrl + 'insights/application-group-usage?limit=4&others=true&org-id=10009&period=' + period + '&region=Tamil%20Nadu&location=' + location);
+
+  getServicesBlockedThreatsInsightsChart(): Observable<[{ WG: number }, { AV: number }, { IPS: number }]> {
+    return this.httpClient.get<[{ WG: number }, { AV: number }, { IPS: number }]>(this.apiUrl + 'marketing/subscriber-protectiq-insight?org-id=10009&period=' + this.areaFilterModel.timeFrame + '&region=' + this.areaFilterModel.region + '&location=' + this.areaFilterModel.location);
   }
-  getApplicationHeatMapChart(period: string, region: string, location: string): Observable<any> {
-    return this.httpClient.get(this.apiUrl + 'insights/social-channel-list?timezone=05.30&org-id=10009&period=' + period + '&region=Tamil%20Nadu&location=' + location);
+
+  getApplicationUsageByTypeChart(): Observable<[{ [key: string]: number }]> {
+    return this.httpClient.get<[{ [key: string]: number }]>(this.apiUrl + 'insights/application-group-usage?limit=4&others=true&org-id=10009&period=' + this.areaFilterModel.timeFrame + '&region=' + this.areaFilterModel.region + '&location=' + this.areaFilterModel.location);
+  }
+  getApplicationSocials(): Observable<[{ [key: string]: number }]> {
+
+    return this.httpClient.get<[{ [key: string]: number }]>(this.apiUrl + 'insights/social-channel-list?timezone=05.30&org-id=10009&period=' + this.areaFilterModel.timeFrame + '&region=' + this.areaFilterModel.region + '&location=' + this.areaFilterModel.location);
+  }
+  getApplicationHeatMapChart(channelName: string,): Observable<HeatMapModel> {
+    return this.httpClient.get<HeatMapModel>(this.apiUrl + 'insights/application-heatmap?social-channel-name=' + channelName + '&timezone=05.30&interval=2&org-id=10009&period=last-30d&region=' + this.areaFilterModel.region + '&location=' + this.areaFilterModel.location);
   }
   getRetentionChurnRiskChart(period: string, region: string, location: string): Observable<any> {
     return this.httpClient.get(this.apiUrl + 'insights/churn-user-count-by-month?org-id=10009&period=' + period + '&region=Tamil%20Nadu&location=' + location);

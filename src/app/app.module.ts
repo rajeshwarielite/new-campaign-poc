@@ -23,6 +23,8 @@ import { ChartCampaignComponent } from './components/campaign/result-campaign/ch
 import {CalendarModule} from 'primeng/calendar';
 import { ExploreBasicComponent } from './components/explore-data/explore-basic/explore-basic.component';
 import { SubscriberChartComponent } from './components/explore-data/explore-basic/explore-chart/subscriber-chart/subscriber-chart.component';
+import { ServicesChartComponent } from './components/explore-data/explore-basic/explore-chart/services-chart/services-chart.component';
+import { ApplicationsChartComponent } from './components/explore-data/explore-basic/explore-chart/applications-chart/applications-chart.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +38,8 @@ import { SubscriberChartComponent } from './components/explore-data/explore-basi
     ChartCampaignComponent,
     ExploreBasicComponent,
     SubscriberChartComponent,
+    ServicesChartComponent,
+    ApplicationsChartComponent,
   ],
   imports: [
     BrowserModule,

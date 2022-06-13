@@ -25,5 +25,10 @@ export interface AreaFilterModel {
 }
 export interface DataUsageTrendsModel {
     categories: string[];
-    series: Highcharts.SeriesOptionsType[];
+    series: [{ name: string, data: number[] }];
 }
+export interface HeatMapModel {
+    column: [string];
+    data: [number[]];
+}
+

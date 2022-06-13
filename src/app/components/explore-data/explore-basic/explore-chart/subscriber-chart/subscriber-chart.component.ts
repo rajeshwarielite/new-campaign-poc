@@ -45,6 +45,7 @@ export class SubscriberChartComponent implements OnInit {
     this.exploreDataService.getSubscriberDataUsageTrendsChart().subscribe(result => {
       this.dataUsageTrendsChart=this.exploreChartService.getSubscriberUsageDataTrendsChart(result);
     });
+    
   }
 
 }
