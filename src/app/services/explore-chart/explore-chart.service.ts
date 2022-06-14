@@ -10,6 +10,10 @@ Heatmap(Highcharts);
   providedIn: 'root'
 })
 export class ExploreChartService {
+  stackedAqiteColors = ['#0027FF', '#FF489D', '#FF8238', '#B926F0', '#F7C343', '#5ACFEA', '#836ee8', '#ff8238', '#029a7c', '#f7c343', '#ff489d', '#28527a', '#5ACFEA', '#e9896a', '#b3d974', '#5ACFEA', '#5ACFEA', '#FF8238'
+    , '#ff96c5', '#ffcccd', '#efdeco', '#DB7093', '#DA70D6', '#D8BFD8', '#DDA0DD', '#9370DB', '#FFC0CB', '#7B68EE', '#5F9EA0', '#2F4F4F', '#66CDAA', '#3CB371', '#90EE90', '#6B8E23', '#BDB76B', '#FFE4B5', '#CD853F', '#E9967A',
+    '#A52A2A', '#DC143C', '#FF00FF', '#800080', '#00CED1', '#00FF00', '#FF8C00', '#D2691E', '#FF4500', '#B22222', '#FFA500', '#800000', '#008B45', '#36648B', '#551011', '#551A8B', '#543948', '#A6D785', '#A5435C', '#B3C95A', '#C71585',
+    '#DCA2CD', '#EECBAD', '#FFC125', '#ADEAEA', '#9F9F5F', '#8C1717', '#8B6508', '#86C67C', '#7FFFD4', '#4DBD33']
   commonHighChartOptions = {
     exporting: {
       enabled: false
@@ -694,9 +698,341 @@ export class ExploreChartService {
     }
     return timeZone;
   }
+  getchurnRateInsightsChart(result: Map<string, Map<string, number[]>>): Chart {
+    return new Chart(
+      {
+        ...this.commonHighChartOptions,
+        colors: this.stackedAqiteColors,
+        chart: {
+          type: 'column',
+          style: {
+            ...this.styleOptions
+          },
+        },
+        xAxis: {
+          categories: Object.keys(result),
+          labels: {
+            ...this.xAxisLabels,
+            style: {
+              ...this.styleOptions_xaxis
+            },
+          },
+        },
+        legend: {
+          reversed: false,
+          itemStyle: {
+            ...this.styleOptions
+          }
+        },
+        /*tooltip: {
+          formatter: function () {
+             let percent = data.categoryExistingTotal[this.point.x] != 0 ? ' (' + Highcharts.numberFormat((data.categoryFeatureTotal[this.point.x] / data.categoryExistingTotal[this.point.x]) * 100, 2) + '%)' : '';
+            return this.series.xAxis.categories[this.point.x] + ', ' + this.series.name + percent +
+              '<br><b>' + "Churned subscribers" + ': ' + Highcharts.numberFormat(this.point.y, 0, '', ',') + '</b><br>' +
+              '<b>' + "Existing subscribers" + ':' + Highcharts.numberFormat(data.totalObj[this.series.name][this.point.index], 0, '', ',') +
+              '</b><br>'; 
+          },
+          style: {
+            ...this.styleOptions_tooltip
+          }
+        },*/
+        plotOptions: {
+          series: {
+            ...this.plotOptions,
+            allowPointSelect: true,
+            //@ts-ignore
+            maxPointWidth: 16,
+            cursor: 'pointer',
+            point: {
+              events: {}
+            },
+            states: {
+              inactive: {
+                enabled: false
+              },
+              select: {
+                ...this.selectOptions,
+              }
+            },
+          },
+          column: {
+            borderWidth: 0,
+            minPointLength: 3,
+          }
+        },
+        // series: data.series,
+        series: [],
+        //@ts-ignore
+        yAxis: {
+          min: 0,
+          // softMax: 1,
+          softMax: 10,
+          title: {
+            text: 'Subscribers',
+            style: {
+              stacking: 'normal',
+              ...this.styleOptions
+            },
+          },
+          labels:
+          {
+            formatter: function () {
+              //@ts-ignore
+              return this.value.toFixed(0) >= 1000 ? (this.value.toFixed(0) / 1000) + 'K' : this.value.toFixed(0);
+            },
+            style: {
+              ...this.styleOptions_yaxis
+            },
+          },
+          gridLineColor: '#E6E6E6',
+          stackLabels: {
+            enabled: true,
+            allowOverlap: true,
+            formatter: function () {
+              //return Highcharts.numberFormat((data.categoryFeatureTotal[this.x] / data.categoryExistingTotal[this.x]) * 100, 2) + '%';
+            },
+            style: {
+              ...this.styleOptions
+            },
+          },
+          reversedStacks: false,
+        }
+      },
+    )
+  }
+
+  /* getAcquisitionRateInsightsChart(result: [{ [key: string]: [{ [key: string]: number[] }] }]): Chart {
+    return new Chart({
+      ...this.commonHighChartOptions,
+      colors: this.stackedAqiteColors,
+      chart: {
+        type: 'column',
+        style: {
+          ...this.styleOptions
+        },
+      },
+      xAxis: {
+        categories: category,
+        labels: {
+          ...this.xAxisLabels,
+          style: {
+            ...this.styleOptions_xaxis
+          }
+        },
+      },
+      yAxis: {
+        min: 0,
+        softMax: 1,
+        allowDecimals: false,
+        reversedStacks: false,
+        labels:
+        {
+          style: {
+            ...this.styleOptions_yaxis
+          },
+        },
+        title: {
+          text: this.language.Subscribers,
+          style: {
+            stacking: 'normal',
+            ...this.styleOptions
+          },
+          labels:
+          {
+            formatter: function () {
+              var label = this.axis.defaultLabelFormatter.call(this);
+              // Use thousands separator for four-digit numbers too
+              if (/^[0-9]{4,}$/.test(label)) {
+                return Highcharts.numberFormat(this.value, 0);
+              }
+              return label;
+            },
+            style: {
+              ...this.styleOptions_yaxis
+            }
+          },
+        },
+
+        stackLabels: {
+          enabled: true,
+          allowOverlap: true,
+          formatter: function () {
+            return Highcharts.numberFormat(data.categoryFeatureTotal[this.x], 0, '', ',');
+          },
+          style: {
+            stacking: 'normal',
+            ...this.styleOptions
+          }
+        },
+      },
+      legend: {
+        // width: 300,
+        fontSize: '10px',
+        reversed: false,
+        align: 'center',
+        itemStyle: {
+          ...this.styleOptions
+        }
+      },
+      tooltip: {
+        formatter: function () {
+          return ` ${category[this.point.x]}, ${this.series.name} <br/>                             <b>Acquired Subscribers:   ${Highcharts.numberFormat(this.point.y, 0, '', ',')}</b> <br/> 
+                      <b>Total Acquired Subscribers:  ${Highcharts.numberFormat(data.categoryFeatureTotal[this.point.x], 0, '', ',')} </b> <br/> 
+                      <b>Existing Subscribers:  ${Highcharts.numberFormat(data.totalObj[this.series.name][this.point.x], 0, '', ',')}  </b>    `;
+        },
+        style: {
+          ...this.styleOptions_tooltip
+        }
+      },
+      plotOptions: {
+        series: {
+          ...this.plotOptions,
+          allowPointSelect: true,
+          maxPointWidth: 16,
+          cursor: 'pointer',
+          point: {
+            events: {}
+          },
+          states: {
+            inactive: {
+              enabled: false
+            },
+            select: {
+              ...this.selectOptions,
+            }
+          },
+        },
+        column: {
+          minPointLength: 3,
+          borderWidth: 0,
+        }
+      },
+      series: this.data_RateInsight_series
+    }
+
+    );
+  }*/
+  getsystemByModelChart(result: Map<string, number>[]): Chart {
+    const categories = result.map(r => new Date(r.get('time') as number).toLocaleDateString('en-US')).flat().reverse();
+    result.forEach(r => r.delete('time'));
+    const seriesNames = new Set(result.map(r => Array.from(r.keys())).flat());
+    const series = Array.from(seriesNames).map(s => {
+      return { name: s, data: result.map(r => r.get(s)).reverse() }
+    });
+    return new Chart({
+      ...this.commonHighChartOptions,
+      credits: {
+        enabled: false
+      },
+      chart: {
+        type: 'line',
+        style: {
+          fontFamily: 'Source Sans Pro,Regular',
+          fontSize: '12px',
+          color: '#4c4c4c'
+        },
+        plotBorderWidth: 1,
+      },
+      colors: ['#0027FF', '#5ACFEA', '#B926F0', '#FF8238', '#029A7C', '#F7C343', '#FF489D', '#F7500F'],
+      title: {
+        text: ''
+      },
+      xAxis: [{
+        min: 0,
+        gridLineWidth: 1,
+        categories: categories,
+        //tickInterval: 5,
+        tickmarkPlacement: 'on',
+        tickInterval: (function () {
+          let sLength = result.length;
+          let xCategLength = categories.length;
+          let xAxisLen = Math.floor(xCategLength / sLength);
+          let f = 1;
+          if (xCategLength <= 6) {
+            f = 1;
+          } else if (xCategLength > 6 && xCategLength < 13) {
+            f = 2;
+          } else {
+            f = Math.floor(xCategLength / 6) ? Math.floor(xCategLength / 6) : 1;
+          }
+          return f;
+        })(),
+        //crosshair: true,
+        labels: {
+          rotation: -25
+        }
+      }],
+      yAxis: [
+        { // Primary yAxis
+          min: 0,
+          softMax: 1,
+          allowDecimals: false,
+
+          title: {
+            text: 'Systems',
+            style: {
+              color: '#727272'
+            }
+          },
+          //@ts-ignore
+          style: {
+            fontFamily: 'Source Sans Pro,Regular',
+            fontSize: '13px',
+            color: '#4c4c4c'
+          }
+        }
+      ],
+      lang: {
+        noData: "No Data Available"
+      },
+      legend: {
+        squareSymbol: true,
+        enabled: true
+      },
+      tooltip: {
+        shared: true,
+        //@ts-ignore
+        crosshairs: true,
+        outside: true,
+      },
+      //@ts-ignore
+      series: series,
+      plotOptions: {
+        series: {
+          // ...this.plotOptions,
+          cursor: 'pointer',
+          //pointPadding: 2, // Defaults to 0.1
+          //@ts-ignore
+          groupPadding: 0.1,
+          marker: {
+            enabled: false
+          },
+          pointPlacement: 'on',
+          point: {
+            events: {
+
+            }
+          }
+        },
+        states: {
+          inactive: {
+            enabled: false
+          }
+        }
+      },
+      responsive: {
+        rules: [{
+          condition: {
+          },
+        }]
+      }
+    }
+
+
+    );
+  }
 
 }
-
 function arraysObjectsPercentageCalculator(obj: any, value: any, digit?: any): string {
   let numbersArray = obj;
   if (typeof obj == 'object') {

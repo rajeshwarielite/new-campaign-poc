@@ -55,14 +55,14 @@ export class ExploreDataService {
   getApplicationHeatMapChart(channelName: string,): Observable<HeatMapModel> {
     return this.httpClient.get<HeatMapModel>(this.apiUrl + 'insights/application-heatmap?social-channel-name=' + channelName + '&timezone=05.30&interval=2&org-id=10009&period=last-30d&region=' + this.areaFilterModel.region + '&location=' + this.areaFilterModel.location);
   }
-  getRetentionChurnRiskChart(period: string, region: string, location: string): Observable<any> {
-    return this.httpClient.get(this.apiUrl + 'insights/churn-user-count-by-month?org-id=10009&period=' + period + '&region=Tamil%20Nadu&location=' + location);
+  getRetentionChurnRateInsightsChart(): Observable<[{ [key: string]: [{ [key: string]: number[] }] }]> {
+    return this.httpClient.get<[{ [key: string]: [{ [key: string]: number[] }] }]>(this.apiUrl + 'insights/churn-user-count-by-month?org-id=10009&period=' + this.areaFilterModel.timeFrame + '&location=' + this.areaFilterModel.location);
   }
-  getServiceProviderAcqInsightsChart(period: string, region: string, location: string): Observable<any> {
-    return this.httpClient.get(this.apiUrl + 'acquisition/acquisition-user-count-by-month?page=1&size=10&output=json&org-id=10009&period=' + period + '&region=Tamil%20Nadu&location=' + location);
+  getServiceProviderAcqInsightsChart(): Observable<[{ [key: string]: [{ [key: string]: number[] }] }]> {
+    return this.httpClient.get<[{ [key: string]: [{ [key: string]: number[] }] }]>(this.apiUrl + 'acquisition/acquisition-user-count-by-month?page=1&size=10&output=json&org-id=10009&period=' + this.areaFilterModel.timeFrame + '&region=' + this.areaFilterModel.region + '&location=' + this.areaFilterModel.location);
   }
-  getSysytemByModelChart(): Observable<any> {
-    return this.httpClient.get(this.apiUrl = 'https://stage.api.calix.ai/v1/foundation/dashboard/system-model/10009?productType=all&limit=30');
+  getSystemByModelChart(): Observable<[{ [key: string]: number }]> {
+    return this.httpClient.get<[{ [key: string]: number }]>('https://stage.api.calix.ai/v1/foundation/dashboard/system-model/10009?productType=all&limit=30');
   }
 
 }

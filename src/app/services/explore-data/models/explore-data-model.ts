@@ -31,4 +31,3 @@ export interface HeatMapModel {
     column: [string];
     data: [number[]];
 }
-
