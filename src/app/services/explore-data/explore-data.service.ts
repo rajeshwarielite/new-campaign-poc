@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import * as saveAs from 'file-saver';
 import { Observable, Subject } from 'rxjs';
 import { AreaFilterModel, DataUsageTrendsModel, ExploreDataModel, HeatMapModel, StreamingGamingWfhUsersExploreDataModel, SubscriberExploreDataModel } from './models/explore-data-model';
-
 @Injectable({
   providedIn: 'root'
 })
@@ -15,7 +15,7 @@ export class ExploreDataService {
   public areaFilterModel: AreaFilterModel = {
     location: '',
     region: '',
-    timeFrame: 'last-2m'
+    timeFrame: 'last-30d'
   };
 
   constructor(private httpClient: HttpClient) { }
@@ -63,6 +63,18 @@ export class ExploreDataService {
   }
   getSystemByModelChart(): Observable<[{ [key: string]: number }]> {
     return this.httpClient.get<[{ [key: string]: number }]>('https://stage.api.calix.ai/v1/foundation/dashboard/system-model/10009?productType=all&limit=30');
+  }
+  public downloadCsvFile(data: any, fileName: string) {
+    if (data.length > 0) {
+      const replacer = (key: any, value: any) => value === null ? '' : value; // specify how you want to handle null values here
+      const header = Object.keys(data[0]);
+      let csv = data.map((row: any) => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
+      csv.unshift(header.map(k => k.toUpperCase()).join(','));
+      let csvArray = csv.join('\r\n').replaceAll('"', '');
+
+      var blob = new Blob([csvArray], { type: 'text/csv' })
+      saveAs(blob, fileName + ".csv");
+    }
   }
 
 }

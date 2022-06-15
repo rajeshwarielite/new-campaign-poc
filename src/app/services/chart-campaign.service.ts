@@ -483,7 +483,7 @@ export class ChartCampaignService {
       const replacer = (key: any, value: any) => value === null ? '' : value; // specify how you want to handle null values here
       const header = Object.keys(data[0]);
       let csv = data.map((row: any) => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','));
-      csv.unshift(header.join(','));
+      csv.unshift(header.map(h => h.toUpperCase()).join(','));
       let csvArray = csv.join('\r\n').replaceAll('"', '');
 
       var blob = new Blob([csvArray], { type: 'text/csv' })

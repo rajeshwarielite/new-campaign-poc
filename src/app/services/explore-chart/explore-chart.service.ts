@@ -699,6 +699,20 @@ export class ExploreChartService {
     return timeZone;
   }
   getchurnRateInsightsChart(result: Map<string, Map<string, number[]>>): Chart {
+
+    const seriesNames = Array.from(new Set(Array.from(result.keys()).map(k =>
+      //@ts-ignore
+      Array.from(result.get(k).keys())
+    ).flat()));
+
+    const featureTotal = Array.from(result.keys()).map(c => this.getFeatureTotal(result, c));
+    const existingTotal = Array.from(result.keys()).map(c => this.getExistingTotal(result, c));
+
+    const series = seriesNames.map(s => this.getChurnSeries(result, s));
+    const existingSeries = seriesNames.map(s => this.getExistingSeries(result, s));
+
+    console.log(Array.from(result.keys()));
+
     return new Chart(
       {
         ...this.commonHighChartOptions,
@@ -710,7 +724,7 @@ export class ExploreChartService {
           },
         },
         xAxis: {
-          categories: Object.keys(result),
+          categories: Array.from(result.keys()).map(c => this.getMonthName(c)),
           labels: {
             ...this.xAxisLabels,
             style: {
@@ -724,18 +738,18 @@ export class ExploreChartService {
             ...this.styleOptions
           }
         },
-        /*tooltip: {
+        tooltip: {
           formatter: function () {
-             let percent = data.categoryExistingTotal[this.point.x] != 0 ? ' (' + Highcharts.numberFormat((data.categoryFeatureTotal[this.point.x] / data.categoryExistingTotal[this.point.x]) * 100, 2) + '%)' : '';
+            let percent = existingTotal[this.point.x] != 0 ? ' (' + Highcharts.numberFormat((featureTotal[this.point.x] / existingTotal[this.point.x]) * 100, 2) + '%)' : '';
             return this.series.xAxis.categories[this.point.x] + ', ' + this.series.name + percent +
-              '<br><b>' + "Churned subscribers" + ': ' + Highcharts.numberFormat(this.point.y, 0, '', ',') + '</b><br>' +
-              '<b>' + "Existing subscribers" + ':' + Highcharts.numberFormat(data.totalObj[this.series.name][this.point.index], 0, '', ',') +
-              '</b><br>'; 
+              '<br><b>' + "Churned subscribers" + ': ' + Highcharts.numberFormat(this.point.y as number, 0, '', ',') + '</b><br>' +
+              '<b>' + "Existing subscribers" + ':' + Highcharts.numberFormat(existingSeries.find(s => s.name == this.series.name)?.data[this.point.index] as number, 0, '', ',') +
+              '</b><br>';
           },
           style: {
             ...this.styleOptions_tooltip
           }
-        },*/
+        },
         plotOptions: {
           series: {
             ...this.plotOptions,
@@ -761,7 +775,8 @@ export class ExploreChartService {
           }
         },
         // series: data.series,
-        series: [],
+        //@ts-ignore
+        series: series,
         //@ts-ignore
         yAxis: {
           min: 0,
@@ -789,7 +804,7 @@ export class ExploreChartService {
             enabled: true,
             allowOverlap: true,
             formatter: function () {
-              //return Highcharts.numberFormat((data.categoryFeatureTotal[this.x] / data.categoryExistingTotal[this.x]) * 100, 2) + '%';
+              return Highcharts.numberFormat((featureTotal[this.x] / existingTotal[this.x]) * 100, 2) + '%';
             },
             style: {
               ...this.styleOptions
@@ -799,6 +814,59 @@ export class ExploreChartService {
         }
       },
     )
+  }
+  getFeatureTotal(result: Map<string, Map<string, number[]>>, key: string): number {
+    let response = 0;
+
+    const some = result.get(key);
+    some?.forEach(r => {
+      if (r && r.length) {
+        response = response + r[0];
+      }
+    });
+
+    return response;
+  }
+  getExistingTotal(result: Map<string, Map<string, number[]>>, key: string): number {
+    let response = 0;
+
+    const some = result.get(key);
+    some?.forEach(r => {
+      if (r && r.length) {
+        response = response + r[1];
+      }
+    });
+
+    return response;
+  }
+  getMonthName(ym: string): string {
+    const y = ym.split('-')[0].substring(0, 2);
+    const m = parseInt(ym.split('-')[1]);
+    const mName = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m];
+
+    return mName + '-' + y;
+  }
+  getChurnSeries(result: Map<string, Map<string, number[]>>, key: string): { name: string, data: number[] } {
+    let response: { name: string, data: number[] } = { name: key, data: [] };
+    result.forEach(r => {
+      const numlist = r.get(key);
+      if (numlist && numlist.length) {
+        response.data.push(numlist[0]);
+      }
+    })
+
+    return response;
+  }
+  getExistingSeries(result: Map<string, Map<string, number[]>>, key: string): { name: string, data: number[] } {
+    let response: { name: string, data: number[] } = { name: key, data: [] };
+    result.forEach(r => {
+      const numlist = r.get(key);
+      if (numlist && numlist.length) {
+        response.data.push(numlist[1]);
+      }
+    })
+
+    return response;
   }
 
   /* getAcquisitionRateInsightsChart(result: [{ [key: string]: [{ [key: string]: number[] }] }]): Chart {
@@ -913,7 +981,7 @@ export class ExploreChartService {
     );
   }*/
   getsystemByModelChart(result: Map<string, number>[]): Chart {
-    const categories = result.map(r => new Date(r.get('time') as number).toLocaleDateString('en-US')).flat().reverse();
+    const categories = result.map(r => new Date(r.get('time') as number).toLocaleDateString('en-US')).reverse();
     result.forEach(r => r.delete('time'));
     const seriesNames = new Set(result.map(r => Array.from(r.keys())).flat());
     const series = Array.from(seriesNames).map(s => {

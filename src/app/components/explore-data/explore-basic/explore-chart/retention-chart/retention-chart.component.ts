@@ -13,11 +13,19 @@ export class RetentionChartComponent implements OnInit {
 
   constructor(private exploreDataService: ExploreDataService,
     private exploreChartService: ExploreChartService) { }
+  retentionChartDataCSV: any;
 
   ngOnInit(): void {
+    this.refreshSubscriber();
+    this.exploreDataService.areaFilterProvider$.subscribe(() => {
+      this.refreshSubscriber();
+    });
+  }
+  refreshSubscriber(): void {
     this.exploreDataService.getRetentionChurnRateInsightsChart().subscribe(result => {
+      this.retentionChartDataCSV = result;
       const retentionChartData = new Map<string, Map<string, number[]>>();
-      result.forEach(m => {        
+      result.forEach(m => {
         const key = Object.keys(m)[0];
         const innerMap = new Map<string, number[]>();
         m[key].forEach(n => {
@@ -28,6 +36,9 @@ export class RetentionChartComponent implements OnInit {
       });
       this.churnRateInsightsChart = this.exploreChartService.getchurnRateInsightsChart(retentionChartData)
     });
+  }
+  downloadChannelCsv(): void {
+    this.exploreDataService.downloadCsvFile(this.retentionChartDataCSV, 'Churn Rate & Insights');
   }
 
 }

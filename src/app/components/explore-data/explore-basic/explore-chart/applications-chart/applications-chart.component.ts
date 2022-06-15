@@ -17,15 +17,21 @@ export class ApplicationsChartComponent implements OnInit {
 
   usagebyApplicationTypeChart: Chart = Chart.prototype;
   socialChannelHeatmapChart: Chart = chart.prototype;
+  usagebyApplicationTypeChartData: any;
+  socialChannelHeatmapChartData: any;
+  HeatMapModelDate: any;
   socialChannels: string[] = [];
   selectedChannel = '';
 
   ngOnInit(): void {
     this.refreshSubscriber();
+    this.exploreDataService.areaFilterProvider$.subscribe(() => {
+      this.refreshSubscriber();
+    });
   }
   refreshSubscriber(): void {
     this.exploreDataService.getApplicationUsageByTypeChart().subscribe(result => {
-
+      this.usagebyApplicationTypeChartData = result;
       const appTypeChartData = new Map<string, number>();
       result.forEach(m => {
         const key = Object.keys(m)[0];
@@ -36,6 +42,7 @@ export class ApplicationsChartComponent implements OnInit {
 
     });
     this.exploreDataService.getApplicationSocials().subscribe(result => {
+      this.socialChannelHeatmapChartData = result;
       result.forEach(m => {
         const key = Object.keys(m)[0];
         this.socialChannels.push(key);
@@ -51,6 +58,14 @@ export class ApplicationsChartComponent implements OnInit {
       this.socialChannelHeatmapChart = this.exploreChartService.getheatMapChart(result);
     });
 
+  }
+
+  downloadUsageCsv(): void {
+    this.exploreDataService.downloadCsvFile(this.usagebyApplicationTypeChartData, 'usage');
+  }
+
+  downloadHeatCsv(): void {
+    this.exploreDataService.downloadCsvFile(this.HeatMapModelDate, 'heatmap');
   }
 
 }

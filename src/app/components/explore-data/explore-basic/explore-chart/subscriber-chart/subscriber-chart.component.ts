@@ -28,6 +28,9 @@ export class SubscriberChartComponent implements OnInit {
 
   ngOnInit(): void {
     this.refreshSubscriber();
+    this.exploreDataService.areaFilterProvider$.subscribe(() => {
+      this.refreshSubscriber();
+    });
   }
 
   refreshSubscriber(): void {
@@ -43,9 +46,9 @@ export class SubscriberChartComponent implements OnInit {
 
     });
     this.exploreDataService.getSubscriberDataUsageTrendsChart().subscribe(result => {
-      this.dataUsageTrendsChart=this.exploreChartService.getSubscriberUsageDataTrendsChart(result);
+      this.dataUsageTrendsChart = this.exploreChartService.getSubscriberUsageDataTrendsChart(result);
     });
-    
+
   }
 
 }

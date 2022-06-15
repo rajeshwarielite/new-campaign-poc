@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { TabsetComponent } from 'ngx-bootstrap/tabs';
 import { ExploreDataService } from 'src/app/services/explore-data/explore-data.service';
+import { AreaFilterModel } from 'src/app/services/explore-data/models/explore-data-model';
 import { LoginProviderService } from 'src/app/services/login-provider/login-provider.service';
 
 @Component({
@@ -10,10 +11,16 @@ import { LoginProviderService } from 'src/app/services/login-provider/login-prov
 })
 export class ExploreBasicComponent implements OnInit {
 
+  public areaFilterModel: AreaFilterModel = {
+    location: '',
+    region: '',
+    timeFrame: 'last-30d'
+  };
+
   constructor(private exploreDataService: ExploreDataService,
     private loginProviderService: LoginProviderService,) {
-      this.loginProviderService.getToken();
-     }
+    this.loginProviderService.getToken();
+  }
   allRegionData: [string[]] = [[]];
   regionData: string[] = [];
   locationData: string[] = [];
@@ -31,11 +38,24 @@ export class ExploreBasicComponent implements OnInit {
   }
 
   @ViewChild('staticTabs', { static: false }) staticTabs?: TabsetComponent;
- 
+
   selectTab(tabId: number) {
     if (this.staticTabs?.tabs[tabId]) {
       this.staticTabs.tabs[tabId].active = true;
     }
+  }
+
+  applyAreaFilter(): void {
+    this.exploreDataService.setAreaFilterModel(this.areaFilterModel);
+  }
+
+  clearAreaFilter(): void {
+    this.areaFilterModel = {
+      location: '',
+      region: '',
+      timeFrame: 'last-30d'
+    };
+    this.exploreDataService.setAreaFilterModel(this.areaFilterModel);
   }
 
 }
