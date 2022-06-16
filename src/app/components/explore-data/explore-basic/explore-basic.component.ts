@@ -11,6 +11,8 @@ import { LoginProviderService } from 'src/app/services/login-provider/login-prov
 })
 export class ExploreBasicComponent implements OnInit {
 
+  enableApply = false;
+
   public areaFilterModel: AreaFilterModel = {
     location: '',
     region: '',
@@ -35,6 +37,7 @@ export class ExploreBasicComponent implements OnInit {
   regionSelected(event: any): void {
     const region = event.target.value;
     this.locationData = this.allRegionData.filter(r => r[0] === region).map(r => r[1]);
+    this.enableApply = true;
   }
 
   @ViewChild('staticTabs', { static: false }) staticTabs?: TabsetComponent;
@@ -47,6 +50,7 @@ export class ExploreBasicComponent implements OnInit {
 
   applyAreaFilter(): void {
     this.exploreDataService.setAreaFilterModel(this.areaFilterModel);
+    this.enableApply = false;
   }
 
   clearAreaFilter(): void {

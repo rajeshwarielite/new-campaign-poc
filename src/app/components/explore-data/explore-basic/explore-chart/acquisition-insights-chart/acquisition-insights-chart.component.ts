@@ -10,12 +10,34 @@ import { ExploreDataService } from 'src/app/services/explore-data/explore-data.s
 })
 export class AcquisitionInsightsChartComponent implements OnInit {
 
+  totalAcquired = 0;
+
   constructor(private exploreDataService: ExploreDataService,
     private exploreChartService: ExploreChartService) { }
   acquisitionRateInsightsChart: Chart = Chart.prototype;
   ngOnInit(): void {
-    this.exploreDataService.getServiceProviderAcqInsightsChart().subscribe(result=>{
-     // this.acquisitionRateInsightsChart=this.exploreChartService.getAcquisitionRateInsightsChart(result);
+    this.refreshSubscriber();
+    this.exploreDataService.areaFilterProvider$.subscribe(() => {
+      this.refreshSubscriber();
+    });
+  }
+  refreshSubscriber(): void {
+
+    this.exploreDataService.getServiceProviderAcqInsightsChart().subscribe(result => {
+      const acquisitionRateInsightsChartData = new Map<string, Map<string, number[]>>();
+      result.forEach(m => {
+        const key = Object.keys(m)[0];
+        const innerMap = new Map<string, number[]>();
+        m[key].forEach(n => {
+          const innerKey = Object.keys(n)[0];
+          innerMap.set(innerKey, n[innerKey]);
+        })
+        acquisitionRateInsightsChartData.set(key, innerMap);
+      });
+      const featureTotal = Array.from(acquisitionRateInsightsChartData.keys()).map(c => this.exploreChartService.getFeatureTotal(acquisitionRateInsightsChartData, c));
+      this.totalAcquired = featureTotal.reduce((a, b) => a + b, 0);
+
+      this.acquisitionRateInsightsChart = this.exploreChartService.getAcquisitionRateInsightsChart(acquisitionRateInsightsChartData);
     });
   }
 

@@ -815,6 +815,127 @@ export class ExploreChartService {
       },
     )
   }
+
+  getAcquisitionRateInsightsChart(result: Map<string, Map<string, number[]>>): Chart {
+
+    const seriesNames = Array.from(new Set(Array.from(result.keys()).map(k =>
+      //@ts-ignore
+      Array.from(result.get(k).keys())
+    ).flat()));
+
+    const featureTotal = Array.from(result.keys()).map(c => this.getFeatureTotal(result, c));
+    const existingTotal = Array.from(result.keys()).map(c => this.getExistingTotal(result, c));
+
+    const series = seriesNames.map(s => this.getChurnSeries(result, s));
+    const existingSeries = seriesNames.map(s => this.getExistingSeries(result, s));
+
+    console.log(Array.from(result.keys()));
+
+    return new Chart(
+      {
+        ...this.commonHighChartOptions,
+        colors: this.stackedAqiteColors,
+        chart: {
+          type: 'column',
+          style: {
+            ...this.styleOptions
+          },
+        },
+        xAxis: {
+          categories: Array.from(result.keys()).map(c => this.getMonthName(c)),
+          labels: {
+            ...this.xAxisLabels,
+            style: {
+              ...this.styleOptions_xaxis
+            },
+          },
+        },
+        legend: {
+          reversed: false,
+          itemStyle: {
+            ...this.styleOptions
+          }
+        },
+        tooltip: {
+          formatter: function () {
+            return ` ${this.series.xAxis.categories[this.point.x]}, ${this.series.name} <br/><b>Acquired Subscribers:   ${Highcharts.numberFormat(this.point.y as number, 0, '', ',')}</b><br/> 
+                            <b>Total Acquired Subscribers:  ${Highcharts.numberFormat(featureTotal[this.point.x], 0, '', ',')} </b> <br/> 
+                            <b>Existing Subscribers:  ${Highcharts.numberFormat(existingSeries.find(s => s.name == this.series.name)?.data[this.point.index] as number, 0, '', ',')}  </b>    `;
+          },
+          style: {
+            ...this.styleOptions_tooltip
+          }
+        },
+        plotOptions: {
+          series: {
+            ...this.plotOptions,
+            allowPointSelect: true,
+            //@ts-ignore
+            maxPointWidth: 16,
+            cursor: 'pointer',
+            point: {
+              events: {}
+            },
+            states: {
+              inactive: {
+                enabled: false
+              },
+              select: {
+                ...this.selectOptions,
+              }
+            },
+          },
+          column: {
+            borderWidth: 0,
+            minPointLength: 3,
+          }
+        },
+        // series: data.series,
+        //@ts-ignore
+        series: series,
+        //@ts-ignore
+        yAxis: {
+          min: 0,
+          // softMax: 1,
+          softMax: 10,
+          title: {
+            text: 'Subscribers',
+            style: {
+              stacking: 'normal',
+              ...this.styleOptions
+            },
+          },
+          labels:
+          {
+            formatter: function () {
+              var label = this.axis.defaultLabelFormatter.call(this);
+              // Use thousands separator for four-digit numbers too
+              if (/^[0-9]{4,}$/.test(label)) {
+                return Highcharts.numberFormat(this.value as number, 0);
+              }
+              return label;
+            },
+            style: {
+              ...this.styleOptions_yaxis
+            },
+          },
+          gridLineColor: '#E6E6E6',
+          stackLabels: {
+            enabled: true,
+            allowOverlap: true,
+            formatter: function () {
+              return Highcharts.numberFormat(featureTotal[this.x], 0, '', ',');
+            },
+            style: {
+              ...this.styleOptions
+            },
+          },
+          reversedStacks: false,
+        }
+      },
+    )
+  }
+
   getFeatureTotal(result: Map<string, Map<string, number[]>>, key: string): number {
     let response = 0;
 
@@ -840,7 +961,7 @@ export class ExploreChartService {
     return response;
   }
   getMonthName(ym: string): string {
-    const y = ym.split('-')[0].substring(0, 2);
+    const y = ym.split('-')[0].substring(2, 4);
     const m = parseInt(ym.split('-')[1]);
     const mName = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m];
 

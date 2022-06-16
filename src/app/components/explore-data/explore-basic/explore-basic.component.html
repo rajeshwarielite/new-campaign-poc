@@ -12,7 +12,7 @@
         </div>
         <div class="col input-group mb-3">
             <label class="input-group-text w-25">Location</label>
-            <select class="form-select" [(ngModel)]="areaFilterModel.location">
+            <select class="form-select" [(ngModel)]="areaFilterModel.location" (change)="enableApply = true">
                 <option value="">All</option>
                 <ng-container *ngFor="let loc of locationData;">
                     <option [value]="loc">{{loc}}
@@ -22,15 +22,15 @@
         </div>
         <div class="col input-group mb-3">
             <label class="input-group-text w-25">Time Frame</label>
-            <select class="form-select" [(ngModel)]="areaFilterModel.timeFrame">
+            <select class="form-select" [(ngModel)]="areaFilterModel.timeFrame" (change)="enableApply = true">
                 <option value="last-2m">2 Prior Months</option>
                 <option value="last-1m" selected>Prior Months</option>
                 <option value="last-30d">30 Days</option>
             </select>
         </div>
         <div class="col">
-            <button type="button" [disabled]="" class="btn btn-success me-2" (click)="applyAreaFilter()">Apply</button>
-            <button type="button" [disabled]="" class="btn btn-success" (click)="clearAreaFilter()">Clear</button>
+            <button type="button" [disabled]="!enableApply" class="btn btn-success me-2" (click)="applyAreaFilter()">Apply</button>
+            <button type="button"  class="btn btn-success" (click)="clearAreaFilter()">Clear</button>
         </div>
     </div>
     <div class="row m-4">

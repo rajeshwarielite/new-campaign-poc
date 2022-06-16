@@ -10,6 +10,7 @@ import { ExploreDataService } from 'src/app/services/explore-data/explore-data.s
 })
 export class RetentionChartComponent implements OnInit {
   churnRateInsightsChart: Chart = Chart.prototype;
+  totalAcquired = 0;
 
   constructor(private exploreDataService: ExploreDataService,
     private exploreChartService: ExploreChartService) { }
@@ -34,6 +35,8 @@ export class RetentionChartComponent implements OnInit {
         })
         retentionChartData.set(key, innerMap);
       });
+      const featureTotal = Array.from(retentionChartData.keys()).map(c => this.exploreChartService.getFeatureTotal(retentionChartData, c));
+      this.totalAcquired = featureTotal.reduce((a, b) => a + b, 0);
       this.churnRateInsightsChart = this.exploreChartService.getchurnRateInsightsChart(retentionChartData)
     });
   }
