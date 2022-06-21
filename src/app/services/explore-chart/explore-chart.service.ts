@@ -259,6 +259,274 @@ export class ExploreChartService {
       ],
     });
   }
+  getServiceTierChart(data: DataUsageTrendsModel): Chart {
+
+    const totalsubs = Object.values(data.totals).reduce((a: any, b: any) => a + b, 0);
+
+    return new Chart(
+      {
+        ...this.commonHighChartOptions,
+        colors: this.stackedAqiteColors,
+        chart: {
+          type: 'column',
+          style: {
+            ...this.styleOptions
+          },
+        },
+        xAxis: {
+          categories: data.categories,
+          labels: {
+            ...this.xAxisLabels,
+            style: {
+              ...this.styleOptions_xaxis
+            },
+          },
+        },
+        legend: {
+          reversed: false,
+          itemStyle: {
+            ...this.styleOptions
+          }
+        },
+        tooltip: {
+          formatter: function () {
+            return this.series.xAxis.categories[this.point.x] + ' ' + 'Total' + ': ' + Highcharts.numberFormat(data.totals[this.key as string], 0, '', ',') +
+              ' (' + Highcharts.numberFormat(data.totals[this.key as string] / (totalsubs / 100), 1) + '%' + ')<br>' +
+              '<b>' + this.series.name + ': ' + Highcharts.numberFormat(this.point.y as number, 0, '', ',') + ' (' +
+              Highcharts.numberFormat(this.point.y as number / (data.totals[this.key as string] / 100), 1) + '%)</b><br>';
+          },
+          style: {
+            ...this.styleOptions_tooltip
+          }
+        },
+        plotOptions: {
+          series: {
+            ...this.plotOptions,
+            allowPointSelect: true,
+            // @ts-ignore
+            maxPointWidth: 24,
+            cursor: 'pointer',
+            point: {
+              events: {}
+            },
+            states: {
+              inactive: {
+                enabled: false
+              },
+
+            },
+          },
+          column: {
+            borderWidth: 0,
+            minPointLength: 3,
+          }
+        },
+      // @ts-ignore
+        series: data.series,
+        yAxis: {
+          min: 0,
+          softMax: 1,
+          title: {
+            text: 'Subscribers',
+            style: {
+              stacking: 'normal',
+              ...this.styleOptions
+            },
+          },
+          labels:
+          {
+            formatter: function () {
+              var label = this.axis.defaultLabelFormatter.call(this);
+              // Use thousands separator for four-digit numbers too
+              if (/^[0-9]{4,}$/.test(label)) {
+                return Highcharts.numberFormat(this.value as number, 0);
+              }
+              return label;
+            },
+            style: {
+              ...this.styleOptions_yaxis
+            },
+          },
+          gridLineColor: '#E6E6E6',
+          stackLabels: {
+            enabled: true,
+            allowOverlap: true,
+            formatter: function () {
+              return Highcharts.numberFormat((this.total / (totalsubs / 100)), 1) + '%';
+            },
+            style: {
+              ...this.styleOptions
+            },
+          },
+          reversedStacks: false,
+        },
+      }
+
+    );
+  }
+  getNewSubscribersChart(data:[{ [key: string]: [{ [key: string]: number[] }] }]): Chart {
+    return new Chart(
+      {
+        ...this.commonHighChartOptions,
+        chart: {
+          type: 'line',
+          style: {
+            ...this.styleOptions
+          }
+        },
+        colors: ['#0027ff'],
+        xAxis: {
+          categories: category,
+          labels: { ...this.xAxisLabels },
+        },
+        yAxis: {
+          min: 0,
+          softMax: 1,
+          allowDecimals: false,
+          title: {
+            text: 'Subscribers',
+            style: {
+              stacking: 'normal',
+              ...this.styleOptions_yaxis
+            },
+          },
+          labels:
+          {
+            formatter: function () {
+              var label = this.axis.defaultLabelFormatter.call(this);
+              // Use thousands separator for four-digit numbers too
+              if (/^[0-9]{4,}$/.test(label)) {
+                return Highcharts.numberFormat(this.value as number, 0);
+              }
+              return label;
+            },
+            style: {
+              ...this.styleOptions
+            }
+          },
+        },
+        legend: {
+          reversed: false,
+          itemStyle: {
+            ...this.styleOptions
+          }
+        },
+        plotOptions: {
+          ...this.linePlotOptions,
+          series: {
+            marker: {
+              enabled: false
+            },
+            states: {
+              inactive: {
+                enabled: false
+              }
+            },
+            point: {
+              events: {
+  
+              }
+            }
+          }
+        },
+        tooltip: {
+          formatter: function () {
+            return `${data.categories[this.point.x]}: <b>${Highcharts.numberFormat(this.point.y as number, 0, '', ',')} Subscribers</b> <br/>`;
+          },
+          style: {
+            ...this.styleOptions_tooltip
+          }
+        },
+        series: [{
+          showInLegend: false,
+          data: data.categoryFeatureTotal
+        }]
+  
+      }
+    );
+  }
+  getChurnTrendsChart(result:[{ [key: string]: [{ [key: string]: number[] }] }]): Chart {
+    return new Chart(
+      {
+        ...this.commonHighChartOptions,
+        chart: {
+          type: 'line',
+          style: {
+            ...this.styleOptions
+          }
+        },
+        colors: ['#0027ff'],
+        xAxis: {
+          categories: category,
+          labels: { ...this.xAxisLabels },
+        },
+        yAxis: {
+          min: 0,
+          softMax: 1,
+          allowDecimals: false,
+          title: {
+            text: 'Subscribers',
+            style: {
+              stacking: 'normal',
+              ...this.styleOptions_yaxis
+            },
+          },
+          labels:
+          {
+            formatter: function () {
+              var label = this.axis.defaultLabelFormatter.call(this);
+              // Use thousands separator for four-digit numbers too
+              if (/^[0-9]{4,}$/.test(label)) {
+                return Highcharts.numberFormat(this.value as number, 0);
+              }
+              return label;
+            },
+            style: {
+              ...this.styleOptions
+            }
+          },
+        },
+        legend: {
+          reversed: false,
+          itemStyle: {
+            ...this.styleOptions
+          }
+        },
+        plotOptions: {
+          ...this.linePlotOptions,
+          series: {
+            marker: {
+              enabled: false
+            },
+            states: {
+              inactive: {
+                enabled: false
+              }
+            },
+            point: {
+              events: {
+  
+              }
+            }
+          }
+        },
+        tooltip: {
+          formatter: function () {
+            return `${data.categories[this.point.x]}: <b>${Highcharts.numberFormat(this.point.y as number, 0, '', ',')} Subscribers </b> <br/>`;
+          },
+          style: {
+            ...this.styleOptions_tooltip
+          }
+        },
+        series: [{
+          showInLegend: false,
+          data: data.categoryFeatureTotal
+        }]
+  
+      }
+    );
+  }
+
   getSubscriberUsageDataTrendsChart(dataUsageTrendsData: DataUsageTrendsModel): Chart {
 
     dataUsageTrendsData.series.forEach(s => {

@@ -26,6 +26,7 @@ export interface AreaFilterModel {
 export interface DataUsageTrendsModel {
     categories: string[];
     series: [{ name: string, data: number[] }];
+    totals:{ [key: string]: number }
 }
 export interface HeatMapModel {
     column: [string];

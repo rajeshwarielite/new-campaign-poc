@@ -28,6 +28,7 @@ import { ApplicationsChartComponent } from './components/explore-data/explore-ba
 import { RetentionChartComponent } from './components/explore-data/explore-basic/explore-chart/retention-chart/retention-chart.component';
 import { AcquisitionInsightsChartComponent } from './components/explore-data/explore-basic/explore-chart/acquisition-insights-chart/acquisition-insights-chart.component';
 import { SystemChartComponent } from './components/explore-data/explore-basic/explore-chart/system-chart/system-chart.component';
+import { HomePageComponent } from './components/home-page/home-page.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { SystemChartComponent } from './components/explore-data/explore-basic/ex
     RetentionChartComponent,
     AcquisitionInsightsChartComponent,
     SystemChartComponent,
+    HomePageComponent,
   ],
   imports: [
     BrowserModule,

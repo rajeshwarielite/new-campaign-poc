@@ -1,9 +1,9 @@
 <div class="w-100">
-    <div class="btn-download float-end" (click)="downloadUsageCsv()"></div>
+    <!-- <div class="btn-download float-end" (click)="downloadUsageCsv()"></div>
     <div class="row my-4">
         <h5 class="mb-3">Usage by Application Type</h5>
         <div [chart]="usagebyApplicationTypeChart"></div>
-    </div>
+    </div> -->
     <div class="col input-group mb-3">
         <select class="form-select" [(ngModel)]="selectedChannel" (change)="refreshChart()">
             <ng-container *ngFor="let soc of socialChannels;">
