@@ -1,17 +1,86 @@
-<app-applications-chart></app-applications-chart>
-<div class="row my-4">
-    <div class="col me-2">
-        <h5 class="mb-3">Service Tier & Technology</h5>
-        <div [chart]="serviceTierChart"></div>
+<div class="container">
+    <div class="row my-4">
+        <div class="col ms-2">
+            <h4 class="mb-4 pb-4">Campaigns</h4>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Status</th>
+                        <th>Type</th>
+                        <th>Subscribers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of   campaignlist">
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.status }}</td>
+                        <td>{{ item.segmentType }}</td>
+                        <td>{{ item.segmentSize }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col me-2">
+            <h4>Segments</h4>
+            <tabset>
+                <tab heading="Recommended">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Subscribers</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of   recommenedSegmentlist">
+                                <td>{{ item.segmentName }}</td>
+                                <td>{{ item.segmentType }}</td>
+                                <td>{{ item.subscriberCount}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </tab>
+                <tab heading="Saved">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Subscribers</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of   savedSegmentList">
+                                <td>{{ item.segmentName }}</td>
+                                <td>{{ item.segmentType }}</td>
+                                <td>{{ item.subscriberCount}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </tab>
+            </tabset>
+        </div>
     </div>
-    <div class="col ms-2">
-        <h5 class="mb-3">New Subscribers</h5>
-        <div [chart]="newSubscribersChart"></div>
+
+    <div class="row my-4">
+        <div class="col ms-2">
+            <h5 class="mb-3">Service Tier & Technology</h5>
+            <div [chart]="serviceTierChart"></div>
+        </div>
+        <div class="col me-2">
+            <app-applications-chart></app-applications-chart>
+        </div>
     </div>
-</div>
-<div class="row my-4">
-    <div class="col me-2">
-        <h5 class="mb-3">Churn Trends</h5>
-        <div [chart]="churnTrendsChart"></div>
+    <div class="row my-4">
+        <div class="col ms-2">
+            <h5 class="mb-3">New Subscribers</h5>
+            <div [chart]="newSubscribersChart"></div>
+        </div>
+        <div class="col me-2">
+            <h5 class="mb-3">Churn Trends</h5>
+            <div [chart]="churnTrendsChart"></div>
+        </div>
     </div>
 </div>

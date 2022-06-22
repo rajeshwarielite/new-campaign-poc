@@ -259,6 +259,7 @@ export class ExploreChartService {
       ],
     });
   }
+
   getServiceTierChart(data: DataUsageTrendsModel): Chart {
 
     const totalsubs = Object.values(data.totals).reduce((a: any, b: any) => a + b, 0);
@@ -321,7 +322,7 @@ export class ExploreChartService {
             minPointLength: 3,
           }
         },
-      // @ts-ignore
+        // @ts-ignore
         series: data.series,
         yAxis: {
           min: 0,
@@ -364,7 +365,10 @@ export class ExploreChartService {
 
     );
   }
-  getNewSubscribersChart(data:[{ [key: string]: [{ [key: string]: number[] }] }]): Chart {
+  getNewSubscribersChart(result: Map<string, Map<string, number[]>>): Chart {
+    const featureTotal = Array.from(result.keys()).map(c => this.getFeatureTotal(result, c));
+    const categories = Array.from(result.keys()).map(c => this.getMonthName(c));
+
     return new Chart(
       {
         ...this.commonHighChartOptions,
@@ -376,7 +380,7 @@ export class ExploreChartService {
         },
         colors: ['#0027ff'],
         xAxis: {
-          categories: category,
+          categories: categories,
           labels: { ...this.xAxisLabels },
         },
         yAxis: {
@@ -393,7 +397,7 @@ export class ExploreChartService {
           labels:
           {
             formatter: function () {
-              var label = this.axis.defaultLabelFormatter.call(this);
+              var label: any = this.axis.defaultLabelFormatter.call(this);
               // Use thousands separator for four-digit numbers too
               if (/^[0-9]{4,}$/.test(label)) {
                 return Highcharts.numberFormat(this.value as number, 0);
@@ -424,14 +428,14 @@ export class ExploreChartService {
             },
             point: {
               events: {
-  
+
               }
             }
           }
         },
         tooltip: {
           formatter: function () {
-            return `${data.categories[this.point.x]}: <b>${Highcharts.numberFormat(this.point.y as number, 0, '', ',')} Subscribers</b> <br/>`;
+            return `${categories[this.point.x]}: <b>${Highcharts.numberFormat(this.point.y as number, 0, '', ',')} Subscribers</b> <br/>`;
           },
           style: {
             ...this.styleOptions_tooltip
@@ -439,90 +443,10 @@ export class ExploreChartService {
         },
         series: [{
           showInLegend: false,
-          data: data.categoryFeatureTotal
+          //@ts-ignore
+          data: featureTotal
         }]
-  
-      }
-    );
-  }
-  getChurnTrendsChart(result:[{ [key: string]: [{ [key: string]: number[] }] }]): Chart {
-    return new Chart(
-      {
-        ...this.commonHighChartOptions,
-        chart: {
-          type: 'line',
-          style: {
-            ...this.styleOptions
-          }
-        },
-        colors: ['#0027ff'],
-        xAxis: {
-          categories: category,
-          labels: { ...this.xAxisLabels },
-        },
-        yAxis: {
-          min: 0,
-          softMax: 1,
-          allowDecimals: false,
-          title: {
-            text: 'Subscribers',
-            style: {
-              stacking: 'normal',
-              ...this.styleOptions_yaxis
-            },
-          },
-          labels:
-          {
-            formatter: function () {
-              var label = this.axis.defaultLabelFormatter.call(this);
-              // Use thousands separator for four-digit numbers too
-              if (/^[0-9]{4,}$/.test(label)) {
-                return Highcharts.numberFormat(this.value as number, 0);
-              }
-              return label;
-            },
-            style: {
-              ...this.styleOptions
-            }
-          },
-        },
-        legend: {
-          reversed: false,
-          itemStyle: {
-            ...this.styleOptions
-          }
-        },
-        plotOptions: {
-          ...this.linePlotOptions,
-          series: {
-            marker: {
-              enabled: false
-            },
-            states: {
-              inactive: {
-                enabled: false
-              }
-            },
-            point: {
-              events: {
-  
-              }
-            }
-          }
-        },
-        tooltip: {
-          formatter: function () {
-            return `${data.categories[this.point.x]}: <b>${Highcharts.numberFormat(this.point.y as number, 0, '', ',')} Subscribers </b> <br/>`;
-          },
-          style: {
-            ...this.styleOptions_tooltip
-          }
-        },
-        series: [{
-          showInLegend: false,
-          data: data.categoryFeatureTotal
-        }]
-  
+
       }
     );
   }

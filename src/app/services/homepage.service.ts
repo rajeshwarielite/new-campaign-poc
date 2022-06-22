@@ -10,7 +10,7 @@ export class HomepageService {
   private apiUrl = " https://stage.api.calix.ai/v1/";
 
   constructor(private httpClient: HttpClient
-    ) { }
+  ) { }
 
   getServiceTierChart(): Observable<DataUsageTrendsModel> {
 
@@ -18,13 +18,25 @@ export class HomepageService {
   }
   getNewSubscribersChart(): Observable<[{ [key: string]: [{ [key: string]: number[] }] }]> {
 
-    return this.httpClient.get<[{ [key: string]: [{ [key: string]: number[] }] }]>(this.apiUrl + 'acquisition/acquisition-user-count-by-month?page=1&size=10&output=json&org-id=10009&period=last-30d');
+    return this.httpClient.get<[{ [key: string]: [{ [key: string]: number[] }] }]>(this.apiUrl + 'cmc/acquisition/acquisition-user-count-by-month?page=1&size=10&output=json&org-id=10009&period=last-30d');
   }
   getChurnTrendsChart(): Observable<[{ [key: string]: [{ [key: string]: number[] }] }]> {
 
-    return this.httpClient.get<[{ [key: string]: [{ [key: string]: number[] }] }]>(this.apiUrl + 'insights/churn-user-count-by-month?org-id=10009&period=last-30d');
+    return this.httpClient.get<[{ [key: string]: [{ [key: string]: number[] }] }]>(this.apiUrl + 'cmc/insights/churn-user-count-by-month?org-id=10009&period=last-30d');
   }
   
+  getcampaignlist():Observable<CampaignModel[]> {
+    return this.httpClient.get<CampaignModel[]>(this.apiUrl + 'cmc-campaigns/campaign')
+  }
 }
 
+
+
+export interface CampaignModel{
+  name:string;
+  status:string,
+  segmentType:string,
+  segmentSize:number,
+  segmentName:string,
+}
 
