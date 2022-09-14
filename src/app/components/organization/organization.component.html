@@ -1,0 +1,38 @@
+<div class="container m-4">
+    <div>
+        <h3 class="float-start">Add Organization</h3>
+        <a routerLink="/organizations" class="float-end mb-2 text-decoration-none font-weight-bold text-secondary">
+            < Back to organization List</a>
+    </div>
+    <div class="pt-4">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" *ngIf="successMessage">
+            <span class="success-img"><img src="./assets/images/success-icon.svg" style="height: 2rem;" /></span>
+            <div class="d-inline-flex w-75 text-left ms-4"> {{successMessage}}</div>
+            <img src="./assets/images/close-icon.svg" role="button" (click)="messageReset()">
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert" *ngIf="errorMessage">
+            <span class="success-img h-4"><img src="./assets/images/error-icon.svg" style="height: 2rem;" /></span>
+            <div class="d-inline-flex w-75 text-left ms-4"> {{errorMessage}}</div>
+            <img src="./assets/images/close-icon.svg" (click)="messageReset()">
+        </div>
+        <form class="m-4" [formGroup]="defineFormGroup">
+            <div class="input-group mb-3">
+                <label class="input-group-text w-25">Organization Name</label>
+                <input type="text" class="form-control" formControlName="organizationName"
+                    placeholder="Enter organization name">
+            </div>
+            <p *ngIf="(defineFormGroup.controls['organizationName'].invalid && defineFormGroup.controls['organizationName'].dirty)"
+                class="text-danger fs-6">Organization Name Required</p>
+            <div class="input-group mb-3">
+                <label class="input-group-text w-25">Description</label>
+                <input type="text" class="form-control" formControlName="description" placeholder="Enter description">
+            </div>
+            <div class="input-group">
+                <button class="btn btn-primary" [disabled]="defineFormGroup.invalid"
+                    (click)="saveOrganization()">Submit</button>
+
+                <a routerLink="/organizations"class="btn btn-primary ms-4">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

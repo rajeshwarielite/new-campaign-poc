@@ -7,15 +7,17 @@ import { Injectable } from '@angular/core';
 export class LoginProviderService {
 
   constructor(private httpClient: HttpClient) {
-    this.getToken();
+
   }
 
   public getToken(): void {
     let body = new HttpParams()
-    .set('grant_type', 'password')
-    .set('username', 'usercmc@calix.com')
-    .set('password', 'calix123')
-    .set('client_secret', 'yyQB4GkG6mQO2fG8');
+      .set('grant_type', 'password')
+      //.set('username', 'usercmc@calix.com')
+      //.set('password', 'calix123')
+      .set('username', 'admin@calix.com')
+      .set('password', 'admin')
+      .set('client_secret', 'yyQB4GkG6mQO2fG8');
 
     let options = {
       headers: new HttpHeaders().set('X-Calix-ClientID', 'UcWGgUfH0guUPG2LkGVU5GbPAjhi22JO')

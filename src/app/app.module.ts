@@ -20,7 +20,7 @@ import { ResultCampaignComponent } from './components/campaign/result-campaign/r
 import { MobileCampaignComponent } from './components/campaign/mobile-campaign/mobile-campaign.component';
 import { ChartModule } from 'angular-highcharts';
 import { ChartCampaignComponent } from './components/campaign/result-campaign/chart-campaign/chart-campaign.component';
-import {CalendarModule} from 'primeng/calendar';
+import { CalendarModule } from 'primeng/calendar';
 import { ExploreBasicComponent } from './components/explore-data/explore-basic/explore-basic.component';
 import { SubscriberChartComponent } from './components/explore-data/explore-basic/explore-chart/subscriber-chart/subscriber-chart.component';
 import { ServicesChartComponent } from './components/explore-data/explore-basic/explore-chart/services-chart/services-chart.component';
@@ -29,6 +29,32 @@ import { RetentionChartComponent } from './components/explore-data/explore-basic
 import { AcquisitionInsightsChartComponent } from './components/explore-data/explore-basic/explore-chart/acquisition-insights-chart/acquisition-insights-chart.component';
 import { SystemChartComponent } from './components/explore-data/explore-basic/explore-chart/system-chart/system-chart.component';
 import { HomePageComponent } from './components/home-page/home-page.component';
+import { OrganizationComponent } from './components/organization/organization.component';
+import { EntitlementsComponent } from './components/entitlements/entitlements.component';
+import { OrganizationListComponent } from './components/organization-list/organization-list.component';
+import { DataTablesModule } from 'angular-datatables';
+import { Route, RouterModule } from '@angular/router';
+import { MappingSourceComponent } from './components/mapping-source/mapping-source.component';
+
+const routes: Route[] = [
+  {
+    path: '',
+    component: OrganizationListComponent
+  },
+  {
+    path: 'organizations',
+    component: OrganizationListComponent
+  },
+  {
+    path: 'organizations/add',
+    component: OrganizationComponent,
+    pathMatch: 'full'
+  },
+  {
+    path: 'organizations/:orgId',
+    component: EntitlementsComponent
+  }
+];
 
 @NgModule({
   declarations: [
@@ -48,6 +74,10 @@ import { HomePageComponent } from './components/home-page/home-page.component';
     AcquisitionInsightsChartComponent,
     SystemChartComponent,
     HomePageComponent,
+    OrganizationComponent,
+    EntitlementsComponent,
+    OrganizationListComponent,
+    MappingSourceComponent,
   ],
   imports: [
     BrowserModule,
@@ -64,6 +94,8 @@ import { HomePageComponent } from './components/home-page/home-page.component';
     ModalModule.forRoot(),
     ChartModule,
     CalendarModule,
+    DataTablesModule,
+    RouterModule.forRoot(routes),
   ],
   providers: [
     {

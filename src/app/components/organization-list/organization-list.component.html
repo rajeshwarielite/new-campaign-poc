@@ -1,0 +1,50 @@
+<div class="container my-4">
+    <div class="my-4">
+        <h3>All Organizations
+        </h3>
+    </div>
+    <div>
+        <a routerLink="../organizations/add" class="btn btn-primary float-end mb-2">Add Organization</a>
+    </div>
+
+    <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" [hidden]="isLoading"
+        class="table w-100 mt-4">
+        <thead>
+            <tr>
+                <th>Organization Name</th>
+                <th>Account Number</th>
+                <th>Oracle ID</th>
+                <th>Org ID</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let org of allOrganizationsData; let i = index">
+                <td>{{org.name}}</td>
+                <td>{{org.externalOrgRef}}</td>
+                <td>{{org.oracleId}}</td>
+                <td>{{org.id}}</td>
+                <td class="w-25">
+                    <button style="font-size: 12px;border: none;background-color: transparent">
+                        <img src="assets/images/user_secure_access_icon.png">
+                    </button>
+                    <a class="text-primary" (click)="navigateEntitlement(org)"
+                        style="background-color: transparent;font-size: 13.5px;border: none;">
+                        <i class="fa fa-pencil primary"></i>
+                    </a>
+                    <button id="users-btn" class="text-primary"
+                        style="background-color: transparent;font-size: 13.5px;border: none;">
+                        <i class="fa fa-user"></i>
+                    </button>
+                    <button id="delete-org-btn" class="text-primary"
+                        style="background-color: transparent;font-size: 13.5px;border: none;">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div *ngIf="isLoading" class="d-flex justify-content-center align-items-center w-100 h-50 mt-5">
+        <div class="spinner-border text-primary loader mt-5"></div>
+    </div>
+</div>
