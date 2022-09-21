@@ -1,1 +1,417 @@
-<p>mapping-source works!</p>
+<div class="container loader-wrapper mt-4 mb-4">
+  <div class="loader-wrapper-info" *ngIf="loading">
+    <div class="loader">
+      <div class="d-flex justify-content-center">
+        <div class="spinner-border text-primary">
+          <span class="sr-only"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row" *ngIf="!edit">
+    <div class="col-md-12 mapping-edit-btn">
+      <button class="btn-default primary my-2" (click)="doEdit()">
+        edit
+      </button>
+    </div>
+    <div class="col-md-4 mt20">
+      <!-- <p>check loading 1</p> -->
+      <div id="accordion" *ngIf="selectList">
+        <!-- <p>check loading 2</p> -->
+        <div class="card violent-bg" *ngFor="let item of selectList; trackBy: trackItem" style="margin-bottom: 6px">
+          <a class="collapsed card-link white" style="height: 30px" data-toggle="collapse"
+            href="#collapse{{ item.name }}">
+            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+            {{ getTitle(item.name) }}
+          </a>
+          <div id="collapse{{ item.name }}" class="ul-li-style collapse">
+            <ul class="mapping-rl">
+              <ng-container *ngFor="let si of item.data">
+                <li class="sxa-color-white">
+                  {{ si ? si : '' }}
+                </li>
+              </ng-container>
+
+            </ul>
+            <ul class="aggre-rl" *ngIf="aggregationMatchRules[item.name] && aggregationMatchRules[item.name].length">
+              <li style="margin-left: 15px; list-style: none;"> <span style="white-space: nowrap;"><i
+                    class="fa fa-th-list"></i> aggregationRule : </span>
+                {{ aggregationRuleNames(item.name) ? aggregationRuleNames(item.name) : '' }}
+              </li>
+            </ul>
+            <ul class="aggre-rl" *ngIf="item.name == 'DHCP' && checkKeyConfigStatus()">
+              <li style="margin-left: 15px; list-style: none;"> <span style="white-space: nowrap;"><i
+                    class="fa fa-th-list"></i> {{ 'Unique key' }}: </span>
+                {{ checkKeyConfigStatus(true) ? checkKeyConfigStatus(true) : '' }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" *ngIf="edit">
+    <div class="col-md-4">
+      <div class="mapping-src-wrapper" style="padding: 10px" style="border: 1px solid black">
+        <section cdkDropList class="added_mapping_src" (cdkDropListDropped)="dropMappingSource($event)">
+          <div cdkDrag class="card violent-bg" *ngFor="let item of selectList" style="margin-bottom: 6px">
+            <p class="card-link white">
+              <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+              {{ getTitle(item.name) }}
+              <i class="fa fa-trash pull-right pointer" aria-hidden="true" *ngIf="!showTab"
+                (click)="deleteMapping(item)">&nbsp;&nbsp;
+              </i>
+              <i class="fas fa-pencil-alt pull-right pointer" aria-hidden="true" *ngIf="!showTab"
+                (click)="getCurrentRule(item.key)">&nbsp;&nbsp;
+              </i>
+
+              <i class="fa fa-arrow-right fa-2x sxa-color-gold pull-right pointer gold-right-pointer" aria-hidden="true"
+                style="display: none" id="sxa-color-gold-{{ item.key }}">&nbsp;&nbsp;
+              </i>
+            </p>
+          </div>
+        </section>
+
+        <div id="add_mapping_src" class="endpoint-dropdown drop-down-container mapping-src-btn-wrapper"
+          data-toggle="dropdown">
+          <button class="fa-custom-btn btn-default primary px-3">
+            <i class="fa fa-plus" aria-hidden="true" style="margin-right: 5px; margin-top: 3px"></i>
+            addMappingSource
+          </button>
+        </div>
+
+        <ul class="dropdown-menu endpoint-dropdown-menu white drop-down" id="main-edit-dropdown">
+          <li id="endpoint_added_RADIUS" class="endpoint-dropdown-menu-list sxa-bgcolor-violet white"
+            data-sname="RADIUS" *ngFor="let item of unselectList" (click)="addItemTolist(item)">
+            <i class="fa fa-ellipsis-v" aria-hidden="true">&nbsp;&nbsp; </i>{{ item.name }}
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-5" *ngIf="showTab">
+      <div class="rule-tabs-wrapper">
+        <div class="rule-tabs-close-icon" (click)="closeTab()">
+          <i id="mapping_src_rule_close_CUSTOM" data-sname="CUSTOM" class="fa fa-times" aria-hidden="false"></i>
+        </div>
+        <ul class="nav mainmenu-fa flow-config-tab" id="myTab" role="tablist">
+          <li class="main-menu-item">
+            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+              aria-selected="true">mappingRule</a>
+          </li>
+          <li class="main-menu-item" *ngIf="showSubsRule">
+            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+              aria-selected="false">Subscriber_Match_Rule</a>
+          </li>
+          <li class="main-menu-item" *ngIf="showKeyConfig">
+            <a class="nav-link" id="key_config-tab" data-toggle="tab" href="#key_config" role="tab"
+              aria-controls="key_config" aria-selected="false">Key Configuration</a>
+          </li>
+          <li class="main-menu-item" *ngIf="showAggregation">
+            <a class="nav-link" id="aggregationRule-tab" data-toggle="tab" href="#aggregationRule" role="tab"
+              aria-controls="aggregationRule" aria-selected="false">aggregationRule</a>
+          </li>
+        </ul>
+
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <ul cdkDropList id="draggable_pool_for_rules" class="draggable_mappring_ul_src ui-sortable"
+              style="overflow: auto !important; overflow-y: hidden !important" *ngIf="currentRuleData"
+              (cdkDropListDropped)="dropCurrentRuleData($event)">
+              <li cdkDrag *ngFor="let data of currentRuleData.rules; let i = index"
+                class="rule_class draggable_mapping_element sxa-color-white draggable">
+                <i class="fa fa-ellipsis-v" style="margin-right: 5px; cursor: n-resize"></i>{{
+                getTitle(currentRuleData.name) }}
+                <i id="mapping_src_rule_delete_DHCP0" class="rule_trash fa fa-trash"
+                  (click)="deleteRule(currentRuleData.name, i)"
+                  style="float: right; margin-top: 5px; cursor: pointer"></i>
+                <ul cdkDropList id="draggable_pool_attrs_DHCP0" class="ui-sortable draggable_pool_attr_ul"
+                  *ngIf="data.attrs" (cdkDropListDropped)="dropFiledToCurrentRuleData($event, i)">
+                  <li cdkDrag class="attr_class draggable sxa-color-white" data-attrname="dhcpSubscriberId"
+                    *ngFor="let ruleItem of data.attrs; let j = index">
+                    <i class="fa fa-ellipsis-v" style="
+                        margin-right: 5px;
+                        margin-left: 5px;
+                        cursor: n-resize;
+                      "></i>{{ getTitle(ruleItem) }}<i id="attr_delete{{ ruleItem }}" data-sname="DHCP"
+                      data-rule-index="0" data-attrname="dhcpSubscriberId" class="rule_trash fa fa-trash"
+                      (click)="deleteAttr(ruleItem, i)" style="
+                        margin-top: 4px;
+                        margin-right: 5px;
+                        cursor: pointer;
+                        float: right;
+                      "></i>
+                  </li>
+                </ul>
+
+                <form class="delimiter-wrapper" *ngIf="checkFieldsLength(ruleName, i)">
+                  <div class="form-group row">
+                    <label for="inputEmail3" class="col-form-label">
+                      delimiter
+                    </label>
+                    <div class="">
+                      <ng-select class="delimiter-select" [items]="delimiters" [multiple]="false" placeholder=""
+                        [(ngModel)]="data.delimiter" [ngModelOptions]="{ standalone: true }" [clearable]="false"
+                        [searchable]="true" appendTo="body" (change)="changeDelimiter($event, i)">
+                      </ng-select>
+                    </div>
+                  </div>
+                </form>
+
+                <div
+                  class="btn-default primary px-3 append_mapping_src_attr fa-custom-btn dropdown endpoint-dropdown pointer"
+                  data-toggle="dropdown" [ngClass]="{ disabled: !mappingRuleFieldsLength }">
+                  <i class="fa fa-plus add-icon"></i>addField
+                </div>
+                <ul class="dropdown-menu endpoint-dropdown-menu">
+                  <li class="endpoint-dropdown-menu-list sxa-bgcolor-violet white" data-sname="RADIUS"
+                    *ngFor="let item of mappingRuleFields" (click)="addItemToMappingRule(ruleName, i, item)">
+                    <i class="fa fa-ellipsis-v" aria-hidden="true">&nbsp;&nbsp; {{ getTitle(item) }}</i>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <div>
+              <div id="add_rule" class="mx-4 btn-default primary px-3 dropdown endpoint-dropdown pointer"
+                data-toggle="dropdown" [ngClass]="{ disabled: !mappingRuleFieldsLength }" style="margin-top: 30px">
+                <i class="fa fa-plus add-icon" aria-hidden="true"></i>
+                addRule
+              </div>
+
+              <ul class="dropdown-menu endpoint-dropdown-menu white">
+                <li id="add-rules-li" class="endpoint-dropdown-menu-list sxa-bgcolor-violet white" data-sname="RADIUS"
+                  *ngFor="let item of mappingRuleFields" (click)="addRule(ruleName, item)">
+                  <i class="fa fa-ellipsis-v" aria-hidden="true">&nbsp;&nbsp; </i>{{ getTitle(item) }}
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <ul cdkDropList id="draggable_pool_for_rules" class="draggable_mappring_ul_src ui-sortable"
+              style="overflow: auto !important; overflow-y: hidden !important" *ngIf="sbscbrCurrentRuleData"
+              (cdkDropListDropped)="dropCurrentRuleData($event)">
+              <li cdkDrag *ngFor="let data of sbscbrCurrentRuleData.rules; let i = index"
+                class="rule_class draggable_mapping_element sxa-color-white draggable">
+                <i class="fa fa-ellipsis-v" style="margin-right: 5px; cursor: n-resize"></i>{{
+                getTitle(sbscbrCurrentRuleData.name) }}
+                Subscriber Rule
+                <ul cdkDropList id="draggable_pool_attrs_DHCP0" class="ui-sortable draggable_pool_attr_ul"
+                  *ngIf="data.attrs" (cdkDropListDropped)="dropFiledToCurrentRuleData($event, i)">
+                  <li cdkDrag class="attr_class draggable sxa-color-white" data-attrname="dhcpSubscriberId"
+                    *ngFor="let ruleItem of data.attrs; let j = index">
+                    <i class="fa fa-ellipsis-v" style="
+                        margin-right: 5px;
+                        margin-left: 5px;
+                        cursor: n-resize;
+                      "></i>{{ getTitle(ruleItem)
+                    }}<i id="attr_delete{{ ruleItem }}" data-sname="DHCP" data-rule-index="0"
+                      data-attrname="dhcpSubscriberId" class="rule_trash fa fa-trash"
+                      (click)="deleteSbscbrAttr(ruleItem, i)" style="
+                        margin-top: 4px;
+                        margin-right: 5px;
+                        cursor: pointer;
+                        float: right;
+                      "></i>
+                  </li>
+                </ul>
+
+                <div
+                  class="btn-default primary append_mapping_src_attr fa-custom-btn dropdown endpoint-dropdown pointer"
+                  data-toggle="dropdown" [ngClass]="{ disabled: !sbscbrRuleFieldsLength }">
+                  <i class="fa fa-plus add-icon"></i>addField
+                </div>
+                <ul class="dropdown-menu endpoint-dropdown-menu">
+                  <li class="endpoint-dropdown-menu-list sxa-bgcolor-violet white" data-sname="RADIUS"
+                    *ngFor="let item of sbscbrRuleFields" (click)="addItemToSbscbrMappingRule(ruleName, i, item)">
+                    <i class="fa fa-ellipsis-v" aria-hidden="true">&nbsp;&nbsp; {{ getTitle(item) }}</i>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div *ngIf="showKeyConfig" class="tab-pane fade key-config" id="key_config" role="tabpanel"
+            aria-labelledby="key_config-tab">
+            <ul>
+              <li>
+                <h4>Unique Key Configuration</h4>
+              </li>
+              <li>
+                <div class="row key-config-checkbox-group">
+                  <div class="col-md-12">
+                    <input class="" type="checkbox" name="macAddress" id="key_config_1"
+                      [(ngModel)]="keyConfigEditObj.macAddress" (change)="changeKeyConfig()">
+                    <label class="" for="key_config_1">
+                      {{getTitle('macAddress')}}
+                    </label>
+                  </div>
+                </div>
+                <div class="row key-config-checkbox-group">
+                  <div class="col-md-12">
+                    <input class="" type="checkbox" name="remoteId" id="key_config_2"
+                      [(ngModel)]="keyConfigEditObj.remoteId" (change)="changeKeyConfig()">
+                    <label class="" for="key_config_2">
+                      {{getTitle('dhcpRemoteId')}}
+                    </label>
+                  </div>
+                </div>
+                <div class="row key-config-checkbox-group">
+                  <div class="col-md-12">
+                    <input class="" type="checkbox" id="key_config_3" name="circuitId"
+                      [(ngModel)]="keyConfigEditObj.circuitId" (change)="changeKeyConfig()">
+                    <label class="" for="key_config_3">
+                      {{getTitle('dhcpCircuitId')}}
+                    </label>
+                  </div>
+                </div>
+                <div class="row key-config-checkbox-group">
+                  <div class="col-md-12">
+                    <input class="" type="checkbox" value="" id="key_config_4" name="subscriberId"
+                      [(ngModel)]="keyConfigEditObj.subscriberId" (change)="changeKeyConfig()">
+                    <label class="" for="key_config_4">
+                      {{getTitle('dhcpSubscriberId')}}
+                    </label>
+                  </div>
+                </div>
+                <div class="row key-config-checkbox-group">
+                  <div class="col-md-12">
+                    <input class="" type="checkbox" value="" id="key_config_5" name="clientHostName"
+                      [(ngModel)]="keyConfigEditObj.clientHostName" (change)="changeKeyConfig()">
+                    <label class="" for="key_config_5">
+                      {{getTitle('dhcpClientHostName')}}
+                    </label>
+                  </div>
+                </div>
+              </li>
+            </ul>
+
+          </div>
+
+          <div class="tab-pane fade" id="aggregationRule" role="tabpanel" aria-labelledby="aggregationRule-tab">
+            <ul id="draggable_pool_for_rules" class="draggable_mappring_ul_src ui-sortable"
+              style="overflow: auto !important; overflow-y: hidden !important" *ngIf="aggregationCurrentRuleData">
+              <li *ngFor="
+                  let data of aggregationCurrentRuleData.rules;
+                  let i = index
+                " class="rule_class draggable_mapping_element sxa-color-white draggable">
+                <i class="fa fa-ellipsis-v" style="margin-right: 5px; cursor: n-resize"></i>{{
+                getTitle(aggregationCurrentRuleData.name) }}
+                Aggregation Rule
+                <ul cdkDropList id="draggable_pool_attrs_DHCP0" class="ui-sortable draggable_pool_attr_ul"
+                  *ngIf="data.attrs" (cdkDropListDropped)="dropFieledToCurrentAggreRuleData($event, i)">
+                  <li cdkDrag class="attr_class draggable sxa-color-white" data-attrname="dhcpSubscriberId"
+                    *ngFor="let ruleItem of data.attrs; let j = index">
+                    <i class="fa fa-ellipsis-v" style="
+                        margin-right: 5px;
+                        margin-left: 5px;
+                        cursor: n-resize;
+                      "></i>{{ getTitle(ruleItem)
+                    }}<i id="attr_delete{{ ruleItem }}" data-sname="DHCP" data-rule-index="0"
+                      data-attrname="dhcpSubscriberId" class="rule_trash fa fa-trash"
+                      (click)="deleteAggregationAttr(ruleItem, i)" style="
+                        margin-top: 4px;
+                        margin-right: 5px;
+                        cursor: pointer;
+                        float: right;
+                      "></i>
+                  </li>
+                </ul>
+
+                <form class="delimiter-wrapper" *ngIf="checkAggreFieldsLength(ruleName, i)">
+                  <div class="form-group row">
+                    <label for="inputEmail3" class="col-form-label">
+                      delimiter
+                    </label>
+                    <div class="">
+                      <ng-select class="delimiter-select" [items]="delimiters" [multiple]="false" placeholder=""
+                        [(ngModel)]="aggregationdelimiterSelected" [ngModelOptions]="{ standalone: true }"
+                        [clearable]="false" [searchable]="true" appendTo="body"
+                        (change)="changeAggregationDelimiter(ruleName)">
+                      </ng-select>
+                    </div>
+                  </div>
+                </form>
+
+                <div
+                  class="btn-default primary append_mapping_src_attr fa-custom-btn dropdown endpoint-dropdown pointer"
+                  data-toggle="dropdown" [ngClass]="{ disabled: !aggregationRuleFieldsLength }">
+                  <i class="fa fa-plus add-icon"></i>addField
+                </div>
+                <ul class="dropdown-menu endpoint-dropdown-menu">
+                  <li class="endpoint-dropdown-menu-list sxa-bgcolor-violet white" data-sname="RADIUS"
+                    *ngFor="let item of aggregationRuleFields"
+                    (click)="addItemToAggregationMappingRule(ruleName, i, item)">
+                    <i class="fa fa-ellipsis-v" aria-hidden="true">&nbsp;&nbsp; {{ getTitle(item) }}</i>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+
+          <div class="my-3" style="text-align: center; margin-top: 30px">
+            <button class="btn-default primary" style="text-align: center" (click)="applyAggregationRuleModalOpen()">
+              apply
+            </button>
+            <button class="btn-default primary" style="text-align: center; margin-left: 15px"
+              (click)="cancelAggregationRuleApply()">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row edit-submit-wrapper my-3" *ngIf="edit && !showTab">
+    <div class="col-md-5" style="display: inline-block">
+      <button id="mapping_src_mgr_submit" class="btn-default primary mx-2" style="text-align: center" (click)="save()">
+        submit
+      </button>
+      <button id="mapping_src_mgr_cancel" class="btn-default primary" style="text-align: center; margin-left: 7px"
+        (click)="cancelWithGet()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<ng-template #infoModal let-data let-ref="dialogRef">
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">{{ infoTitle }}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true"></span>
+    </button>
+  </div>
+  <div class="modal-body">
+    {{ infoBody }}
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn-default primary px-3" data-dismiss="modal" (click)="closeModal()">
+      {{ "Okay" }}
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #aggregWarningModal let-data let-ref="dialogRef">
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">{{ infoTitle }}</h4>
+    <button type="button" class="close" aria-label="Close" (click)="closeModal()">
+      <span aria-hidden="true"></span>
+    </button>
+  </div>
+  <div class="modal-body">
+    {{ ruleName == 'DHCP' ? 'Endpoint history will start over for new key configurations. Proceed ?' :
+    'Endpoint history will start over for new aggregates. Proceed ?'}}
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn-default primary px-3" data-dismiss="modal" (click)="confirmAggregationRuleApply()">
+      {{ "Okay" }}
+    </button>
+    <button type="button" class="btn-default primary px-3" data-dismiss="modal" (click)="closeModal()">
+      Cancel
+    </button>
+  </div>
+</ng-template>
