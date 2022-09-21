@@ -84,7 +84,7 @@
         <ul class="dropdown-menu endpoint-dropdown-menu white drop-down" id="main-edit-dropdown">
           <li id="endpoint_added_RADIUS" class="endpoint-dropdown-menu-list sxa-bgcolor-violet white"
             data-sname="RADIUS" *ngFor="let item of unselectList" (click)="addItemTolist(item)">
-            <i class="fa fa-ellipsis-v" aria-hidden="true">&nbsp;&nbsp; </i>{{ item.name }}
+            <i class="fa fa-ellipsis-v" aria-hidden="true">&nbsp;&nbsp; </i>{{ getTitle(item.name) }}
           </li>
         </ul>
       </div>
@@ -122,7 +122,7 @@
               <li cdkDrag *ngFor="let data of currentRuleData.rules; let i = index"
                 class="rule_class draggable_mapping_element sxa-color-white draggable">
                 <i class="fa fa-ellipsis-v" style="margin-right: 5px; cursor: n-resize"></i>{{
-                getTitle(currentRuleData.name) }}
+                getTitle(currentRuleData.name) }} Mapping Rule
                 <i id="mapping_src_rule_delete_DHCP0" class="rule_trash fa fa-trash"
                   (click)="deleteRule(currentRuleData.name, i)"
                   style="float: right; margin-top: 5px; cursor: pointer"></i>
@@ -382,7 +382,7 @@
   <div class="modal-header">
     <h4 class="modal-title" id="modal-basic-title">{{ infoTitle }}</h4>
     <button type="button" class="close" aria-label="Close" (click)="closeModal()">
-      <span aria-hidden="true"></span>
+      <span aria-hidden="true">X</span>
     </button>
   </div>
   <div class="modal-body">

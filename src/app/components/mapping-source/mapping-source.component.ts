@@ -210,8 +210,10 @@ export class MappingSourceComponent implements OnInit, OnDestroy {
 
   ORG_ID: string;
   loaded: boolean = false;
-  @ViewChild('infoModal', { static: true }) private infoModal: any;
-  @ViewChild('aggregWarningModal', { static: true }) private aggregWarningModal: any;
+  //@ts-ignore
+  @ViewChild('infoModal', { static: true }) private infoModal: TemplateRef<any>;
+  //@ts-ignore
+  @ViewChild('aggregWarningModal', { static: true }) private aggregWarningModal: TemplateRef<any>;
   infoTitle: any;
   infoBody: any;
 
@@ -1033,7 +1035,7 @@ export class MappingSourceComponent implements OnInit, OnDestroy {
         if (selectList.length) {
           this.new = false;
         }
-debugger;
+
         for (let i = 0; i < this.allPrcdns.length; i++) {
           if (slctPrcdnc.indexOf(this.allPrcdns[i]) === -1) {
             unselectList.push({
@@ -1138,7 +1140,6 @@ debugger;
         this.loading = false;
       }, 1000);
 
-debugger;
     }, (err: HttpErrorResponse) => {
       if (err.status == 404) {
         this.new = true;
@@ -1351,6 +1352,7 @@ debugger;
   }
 
   getTitle(key: any): any {
+    //debugger;
     return this.title[key] ? this.title[key] : key;
   }
 

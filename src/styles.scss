@@ -39,3 +39,117 @@
     align-items: center;
     justify-content: center;
 }
+
+.modal-backdrop {
+    z-index: 1040 !important;
+}
+
+body {
+    ::ng-deep ngb-modal-backdrop {
+        z-index: 1050 !important;
+    }
+}
+
+
+.back-text {
+    color: #4c4c4c;
+}
+
+.back-text:hover {
+    color: #0279ff;
+    text-decoration: blink;
+    cursor: pointer;
+}
+
+.btn-default.primary:disabled {
+    background: #0279ff !important;
+    border: 1px solid #0279ff !important;
+    cursor: not-allowed;
+    opacity: 0.5;
+    color: #81bcff;
+}
+
+.btn {
+    background-color: #f8f8fa;
+    border-radius: 26px !important;
+
+    &:hover {
+        background-color: #efefef;
+    }
+
+    &:focus {
+        color: #0279ff;
+    }
+}
+
+.btn-default {
+    padding: 5px 20px !important;
+    box-shadow: none !important;
+    border-radius: 26px !important;
+    min-height: 22px;
+    background-color: #f8f8fa;
+    min-width: 86px;
+    font-size: 16px;
+    line-height: 22px !important;
+
+    &:hover {
+        background-color: #efefef;
+    }
+
+    &:focus {
+        color: #0279ff;
+    }
+}
+
+.btn-primary {
+    min-width: 86px;
+    min-height: 32px;
+    border-radius: 26px;
+    box-shadow: 5px 5px 15px #00000026 !important;
+    color: #fff !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: #0054b2;
+    color: #fff !important;
+}
+
+.btn-default.primary {
+    background: #0279ff;
+    box-shadow: 5px 5px 15px #00000026 !important;
+    color: #fff !important;
+}
+
+.btn-default.primary:hover {
+    background: #0054b2;
+    color: #fff !important;
+}
+
+.btn-default.primary:focus {
+    background: #0279ff !important;
+    color: #fff !important;
+
+    &:hover {
+        background: #0054b2 !important;
+        color: #fff !important;
+    }
+}
+
+.btn-primary:disabled {
+    background: #0279ff !important;
+    border: 1px solid #0279ff !important;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+
+.fa-pencil-alt:hover,
+.fa-pause:hover {
+    color: #0054b2;
+}
+
+.fa-pencil-alt,
+.fa-pause {
+    color: #0279ff;
+}
