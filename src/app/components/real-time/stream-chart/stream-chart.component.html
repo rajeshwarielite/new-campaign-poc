@@ -1,0 +1,39 @@
+<div class="analytic-widget" *ngIf="pageAvailable">
+    <div class="analytic-widget-header">
+        <div class="d-flex justify-content-between">
+            <div class="mx-2">
+                <span class="widget-title" title="{{chartName}}"> {{chartName}} </span>
+                <!-- <span><i class="fas fa-info-circle" style="margin-top:10px;"
+              title="{{language.bandwidthtooltip}}"></i></span>&nbsp;&nbsp; -->
+                <a class="legend-label toggle-up" (click)="toggleUpStream();">
+                    <span class="legend-glyph"
+                        [ngStyle]="{'background-color': isUpStreamVisible === true ? '#0027FF' : 'grey'}"></span>
+                    {{language.up}}
+                </a>
+                <a class="legend-label toggle-down" (click)="toggleDownStream();">
+                    <span class="legend-glyph"
+                        [ngStyle]="{'background-color': isDownStreamVisible === true ? '#00d0ff' : 'grey'}"></span>
+                    {{language.down}}
+                </a>
+
+                <span class="interval">{{language.interval}} 1 sec</span>
+            </div>
+
+            <div class="mr-2" style="text-align: right;">
+                <span class="traffic-volume monitor-status-normal">
+                    <span style="color: #0027FF;" *ngIf="isUpStreamVisible"><i class="fa fa-arrow-up"
+                            aria-hidden="true"></i> {{upRate}} </span>
+                    <span style="color: #5ACFEA;" *ngIf="isDownStreamVisible"><i class="fa fa-arrow-down"
+                            aria-hidden="true"></i>
+                        {{downRate}}</span>
+                </span>
+
+            </div>
+        </div>
+    </div>
+    <div class="analytic-widget-body">
+        <highcharts-chart [Highcharts]="highcharts" [options]="streamOptions" [callbackFunction]="chartCallback"
+            *ngIf="load" id="custom-mirrot-chart" style="width: 100%; display: block;">
+        </highcharts-chart>
+    </div>
+</div>

@@ -29,11 +29,13 @@
     "datatables.net-bs5": "^1.11.3",
     "datatables.net-dt": "^1.12.1",
     "file-saver": "^2.0.5",
+    "highcharts-angular": "^3.0.0",
     "jquery": "^3.6.0",
     "moment": "^2.29.3",
     "ngx-bootstrap": "^8.0.0",
     "primeng": "^13.4.1",
     "rxjs": "^7.5.5",
+    "socket.io-client": "^4.5.4",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },

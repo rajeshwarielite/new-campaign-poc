@@ -35,6 +35,9 @@ import { OrganizationListComponent } from './components/organization-list/organi
 import { DataTablesModule } from 'angular-datatables';
 import { Route, RouterModule } from '@angular/router';
 import { MappingSourceComponent } from './components/mapping-source/mapping-source.component';
+import { RealTimeComponent } from './components/real-time/real-time.component';
+import { StreamChartComponent } from './components/real-time/stream-chart/stream-chart.component';
+import { HighchartsChartModule } from 'highcharts-angular';
 
 const routes: Route[] = [
   {
@@ -78,6 +81,8 @@ const routes: Route[] = [
     EntitlementsComponent,
     OrganizationListComponent,
     MappingSourceComponent,
+    RealTimeComponent,
+    StreamChartComponent,
   ],
   imports: [
     BrowserModule,
@@ -96,6 +101,7 @@ const routes: Route[] = [
     CalendarModule,
     DataTablesModule,
     RouterModule.forRoot(routes),
+    HighchartsChartModule
   ],
   providers: [
     {

@@ -847,6 +847,7 @@ export class ExploreChartService {
 
         series: [{
           type: 'heatmap',
+          //@ts-ignore
           animation: {
             defer: 1000
           },
