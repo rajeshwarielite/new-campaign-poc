@@ -38,6 +38,7 @@ import { MappingSourceComponent } from './components/mapping-source/mapping-sour
 import { RealTimeComponent } from './components/real-time/real-time.component';
 import { StreamChartComponent } from './components/real-time/stream-chart/stream-chart.component';
 import { HighchartsChartModule } from 'highcharts-angular';
+import { BarChartComponent } from './components/real-time/bar-chart/bar-chart.component';
 
 const routes: Route[] = [
   {
@@ -83,6 +84,7 @@ const routes: Route[] = [
     MappingSourceComponent,
     RealTimeComponent,
     StreamChartComponent,
+    BarChartComponent,
   ],
   imports: [
     BrowserModule,

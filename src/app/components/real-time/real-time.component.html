@@ -1,5 +1,36 @@
-<p>real-time works!</p>
+<div id="traffic-network-realtime-rate" class="card m-10">
+    <div class="" id=" ngx-stream-path-chart-rate">
 
-<app-stream-chart [chartName]="''" [yAxixTitle]="''" [data]="data?.maxRate" [time]="data?.sendTime" [windowLen]="100"
-    [history]="[]" [selectedFilter]="1">
-</app-stream-chart>
+        <app-stream-chart [chartName]="'Rate'" [yAxixTitle]="'Gbps'" [data]="data?.maxRate" [time]="data?.sendTime"
+            [windowLen]="100" [history]="[]" [selectedFilter]="1">
+        </app-stream-chart>
+    </div>
+</div>
+
+<div id="traffic-network-realtime-packet" class="card m-10">
+    <div class="" id="ngx-stream-path-chart-packet">
+        <app-stream-chart [chartName]="'packet'" [yAxixTitle]="'Kbps'" [data]="data?.packet" [time]="data?.sendTime"
+            [windowLen]="100" [history]="[]" [selectedFilter]="1">
+        </app-stream-chart>
+    </div>
+</div>
+
+<app-bar-chart id="top-endpoints-up-chart" *ngIf="topEndPointUpChartoptions" [chartOptions]="topEndPointUpChartoptions"
+    [type]="'up'" [updateFlag]="updateFlag">
+</app-bar-chart>
+<app-bar-chart id="top-endpoints-down-chart" *ngIf="topEndPointDownChartoptions"
+    [chartOptions]="topEndPointDownChartoptions" [type]="'down'" [updateFlag]="updateFlag">
+</app-bar-chart>
+<app-bar-chart id="top-apps-up-chart" *ngIf="topAppsUpChartoptions" [chartOptions]="topAppsUpChartoptions" [type]="'up'"
+    [updateFlag]="updateFlag">
+</app-bar-chart>
+<app-bar-chart id="top-apps-down-chart" *ngIf="topAppsDownChartoptions" [chartOptions]="topAppsDownChartoptions"
+    [type]="'down'" [updateFlag]="updateFlag">
+</app-bar-chart>
+<app-bar-chart id="top-apps-up-chart" *ngIf="topLocationsUpChartoptions && true"
+    [chartOptions]="topLocationsUpChartoptions" [type]="'up'" [updateFlag]="updateFlag">
+</app-bar-chart>
+<app-bar-chart id="top-apps-down-chart" *ngIf="topLocationsDownChartoptions"
+    [chartOptions]="topLocationsDownChartoptions" [type]="'down'" [updateFlag]="updateFlag">
+</app-bar-chart>
+<!--   -->

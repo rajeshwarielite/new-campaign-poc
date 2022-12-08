@@ -291,10 +291,10 @@ export class ExploreChartService {
         },
         tooltip: {
           formatter: function () {
-            return this.series.xAxis.categories[this.point.x] + ' ' + 'Total' + ': ' + Highcharts.numberFormat(data.totals[this.key as string], 0, '', ',') +
-              ' (' + Highcharts.numberFormat(data.totals[this.key as string] / (totalsubs / 100), 1) + '%' + ')<br>' +
+            return this.series.xAxis.categories[this.point.x] + ' ' + 'Total' + ': ' + Highcharts.numberFormat(data.totals[this.key as unknown as string], 0, '', ',') +
+              ' (' + Highcharts.numberFormat(data.totals[this.key as unknown as string] / (totalsubs / 100), 1) + '%' + ')<br>' +
               '<b>' + this.series.name + ': ' + Highcharts.numberFormat(this.point.y as number, 0, '', ',') + ' (' +
-              Highcharts.numberFormat(this.point.y as number / (data.totals[this.key as string] / 100), 1) + '%)</b><br>';
+              Highcharts.numberFormat(this.point.y as number / (data.totals[this.key as unknown as string] / 100), 1) + '%)</b><br>';
           },
           style: {
             ...this.styleOptions_tooltip
