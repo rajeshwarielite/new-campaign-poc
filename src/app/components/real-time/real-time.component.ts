@@ -19,6 +19,15 @@ export class RealTimeComponent implements OnInit {
   topLocationsUpChartoptions: any;
   topLocationsDownChartoptions: any;
 
+  windowOptions = [
+    { id: 1, name: '5 Minutes window' },
+    { id: 2, name: '10 Minutes window' },
+    { id: 3, name: '15 Minutes window' },
+    { id: 4, name: '20 Minutes window' },
+    { id: 5, name: '25 Minutes window' },
+    { id: 6, name: '30 Minutes window' }
+  ];
+  selectedWindow: number = 1;
   tAPrcntData = {
     downPercentage: '0',
     upPercentage: '0'
@@ -58,12 +67,22 @@ export class RealTimeComponent implements OnInit {
         result => {
           this.data = result;
           console.log(result.confData.graphType);
-          if (result.confData.graphType != 'TRF') {
+          if (result.confData.graphType === 'TEP') {
             this.makeTEPEvents(result);
+          }
+          if (result.confData.graphType === 'TAPP') {
+            this.makeTAPPEvents(result);
+          }
+          if (result.confData.graphType === 'TLOC') {
+            this.makeTLOCEvents(result);
           }
         });
     });
   }
+  applyFilter()
+  {}
+  clearFilter()
+  {}
 
   makeTEPEvents(data: any): any {
     //let data: any = this.tEPData;
@@ -212,6 +231,264 @@ export class RealTimeComponent implements OnInit {
 
     console.log('up', this.topEndPointUpChartoptions);
     console.log('down', this.topEndPointDownChartoptions);
+  }
+
+  makeTAPPEvents(data?: any): any {
+
+    //let data: any = this.tAData;
+    this.tAPrcntData = {
+      downPercentage: data.downPercentage ? data.downPercentage : 0,
+      upPercentage: data.upPercentage ? data.upPercentage : 0
+    };
+
+    let len = 5;
+    let upLen = data['upData'].length;
+    let downLen = data['downData'].length;
+    if (upLen >= len) {
+      upLen = len;
+    }
+
+    if (downLen >= len) {
+      downLen = len;
+    }
+
+    this.tAPrcntData.upPercentage = this.realTimeTrafficService.calculatePercentage(data.upTotal, data.upData, len);
+    this.tAPrcntData.downPercentage = this.realTimeTrafficService.calculatePercentage(data.downTotal, data.downData, len);
+
+    this.settepUpDataObj(data.upData);
+    this.settepDownDataObj(data.downData);
+
+    this.tAData["upData"] = data.upData;
+    this.tAData["downData"] = data.downData;
+
+    let topAppsUpChartoptions = this.realTimeTrafficService.makeOptionsForRTBC(data, 'bar', 'upData', len, false);
+    let topAppsDownChartoptions = this.realTimeTrafficService.makeOptionsForRTBC(data, 'bar', 'downData', len, false);
+
+    topAppsUpChartoptions.chart.height = 160;
+    delete topAppsUpChartoptions.chart.width;
+    topAppsUpChartoptions.plotOptions.series.pointWidth = 14;
+
+    topAppsDownChartoptions.chart.height = 160;
+    delete topAppsDownChartoptions.chart.width;
+    topAppsDownChartoptions.plotOptions.series.pointWidth = 14;
+
+
+    let that = this;
+    let url = '/cco/traffic/applications/realtime';
+    if (!this.isCcoTraffic) {
+      url = '/organization-admin/flowAnalyze/traffic/application/realtime';
+    }
+    topAppsUpChartoptions.xAxis.labels = {
+      useHTML: true,
+      style: {
+        color: '#007bff',
+        cursor: 'pointer',
+        textOverflow: "ellipsis",
+        overflow: "hidden",
+        fontSize: '13px',
+        fontWeight: 500
+      },
+      formatter: function () {
+        return `<span  class="text-primary axis_label" title="${this.value}" style="cursor:pointer">${this.value}</span>`;
+        // return `${this.value}`
+      },
+      events: {
+        click: function () {
+          // if (that.hasApplicationAccess) {
+          //   that.router.navigate([url], { queryParams: { id: that.tapUpDataObj[this.axis.categories[this.pos]] } });
+          // }
+        },
+        contextmenu: function () {
+          // if (that.hasApplicationAccess) {
+          //   event.preventDefault();
+          //   // that.router.navigate(['/cco/traffic/applications/realtime'], { queryParams: { id: that.tapUpDataObj[this.value] } });
+          //   let newTabUrl = window.location.origin + url + '?id=' + that.tapUpDataObj[this.axis.categories[this.pos]];
+          //   window.open(newTabUrl, '_blank');
+          // }
+        }
+      }
+    }
+    topAppsUpChartoptions.plotOptions.series.point.events = {
+      click: function () {
+        // if (that.hasApplicationAccess) {
+        //   that.router.navigate([url], { queryParams: { id: that.tapUpDataObj[event.point.category] } })
+        // }
+      }
+    }
+    topAppsDownChartoptions.xAxis.labels = {
+      useHTML: true,
+      style: {
+        color: '#007bff',
+        cursor: 'pointer',
+        textOverflow: "ellipsis",
+        overflow: "hidden",
+        fontSize: '13px',
+        fontWeight: 500
+      },
+      formatter: function () {
+        return `<span  class="text-primary axis_label" title="${this.value}" style="cursor:pointer">${this.value}</span>`;
+        // return `${this.value}`
+      },
+      events: {
+        click: function () {
+          // if (that.hasApplicationAccess) {
+          //   that.router.navigate([url], { queryParams: { id: that.tapDownDataObj[this.axis.categories[this.pos]] } });
+          // }
+        },
+        contextmenu: function () {
+          // if (that.hasApplicationAccess) {
+          //   event.preventDefault();
+          //   // that.router.navigate(['/cco/traffic/applications/realtime'], { queryParams: { id: that.tapDownDataObj[this.value] } });
+          //   let newTabUrl = window.location.origin + url + '?id=' + that.tapDownDataObj[this.axis.categories[this.pos]];
+          //   window.open(newTabUrl, '_blank');
+          // }
+        }
+      }
+    }
+    topAppsDownChartoptions.plotOptions.series.point.events = {
+      click: function () {
+        // if (that.hasApplicationAccess) {
+        //   that.router.navigate([url], { queryParams: { id: that.tapDownDataObj[event.point.category] } })
+        // }
+      }
+
+    }
+
+    topAppsDownChartoptions.plotOptions.series.color = '#5ACFEA';
+
+    this.topAppsUpChartoptions = { ...topAppsUpChartoptions };
+    this.topAppsDownChartoptions = { ...topAppsDownChartoptions };
+
+  }
+
+  makeTLOCEvents(data: any): any {
+    //let data: any = this.tAData;
+    this.tLPrcntData = {
+      downPercentage: data.downPercentage ? data.downPercentage : 0,
+      upPercentage: data.upPercentage ? data.upPercentage : 0
+    };
+
+    let len = 5;
+    let upLen = data['upData'].length;
+    let downLen = data['downData'].length;
+    if (upLen >= len) {
+      upLen = len;
+    }
+
+    if (downLen >= len) {
+      downLen = len;
+    }
+
+    this.tLPrcntData.upPercentage = this.realTimeTrafficService.calculatePercentage(data.upTotal, data.upData, len);
+    this.tLPrcntData.downPercentage = this.realTimeTrafficService.calculatePercentage(data.downTotal, data.downData, len);
+
+    this.settepUpDataObj(data.upData);
+    this.settepDownDataObj(data.downData);
+
+    this.tLData["upData"] = data.upData;
+    this.tLData["downData"] = data.downData;
+
+    let topLocationsUpChartoptions = this.realTimeTrafficService.makeOptionsForRTBC(data, 'bar', 'upData', len, false);
+    let topLocationsDownChartoptions = this.realTimeTrafficService.makeOptionsForRTBC(data, 'bar', 'downData', len, false);
+
+    topLocationsUpChartoptions.chart.height = 160;
+    delete topLocationsUpChartoptions.chart.width;
+    topLocationsUpChartoptions.plotOptions.series.pointWidth = 14;
+
+    topLocationsDownChartoptions.chart.height = 160;
+    delete topLocationsDownChartoptions.chart.width;
+    topLocationsDownChartoptions.plotOptions.series.pointWidth = 14;
+
+
+
+    let that = this;
+    let url = '/cco/traffic/locations/realtime';
+    if (!this.isCcoTraffic) {
+      url = '/organization-admin/flowAnalyze/traffic/location/realtime';
+    }
+    topLocationsUpChartoptions.xAxis.labels = {
+      useHTML: true,
+      style: {
+        color: '#007bff',
+        cursor: 'pointer',
+        textOverflow: "ellipsis",
+        overflow: "hidden",
+        fontSize: '13px',
+        fontWeight: 500
+      },
+      formatter: function () {
+        return `<span  class="text-primary axis_label" title="${this.value}" style="cursor:pointer">${this.value}</span>`;
+        // return `${this.value}`
+      },
+      events: {
+        // click: function (event) {
+        //   if (that.hasLocationAccess) {
+        //     that.router.navigate([url], { queryParams: { id: that.tlocUpDataObj[this.axis.categories[this.pos]] } })
+        //   }
+        // },
+        // contextmenu: function (event) {
+        //   if (that.hasLocationAccess) {
+        //     event.preventDefault();
+        //     // that.router.navigate(['/cco/traffic/locations/realtime'], { queryParams: { id: that.tlocUpDataObj[this.value] } })
+        //     let newTabUrl = window.location.origin + url + '?id=' + that.tlocUpDataObj[this.axis.categories[this.pos]];
+        //     window.open(newTabUrl, '_blank');
+        //   }
+        // }
+      }
+
+    }
+    topLocationsUpChartoptions.plotOptions.series.point.events = {
+      // click: function (event) {
+      //   if (that.hasLocationAccess) {
+      //     that.router.navigate([url], { queryParams: { id: that.tlocUpDataObj[event.point.category] } })
+      //   }
+      // }
+
+    };
+    topLocationsDownChartoptions.xAxis.labels = {
+      useHTML: true,
+      style: {
+        color: '#007bff',
+        cursor: 'pointer',
+        textOverflow: "ellipsis",
+        overflow: "hidden",
+        fontSize: '13px',
+        fontWeight: 500
+      },
+      formatter: function () {
+        return `<span  class="text-primary axis_label" title="${this.value}" style="cursor:pointer">${this.value}</span>`;
+        // return `${this.value}`
+      },
+      events: {
+        // click: function (event) {
+        //   if (that.hasLocationAccess) {
+        //     that.router.navigate([url], { queryParams: { id: that.tlocDownDataObj[this.axis.categories[this.pos]] } })
+        //   }
+        // },
+        // contextmenu: function (event) {
+        //   if (that.hasLocationAccess) {
+        //     event.preventDefault();
+        //     // that.router.navigate(['/cco/traffic/locations/realtime'], { queryParams: { id: that.tlocDownDataObj[this.value] } })
+        //     let newTabUrl = window.location.origin + url + '?id=' + that.tlocDownDataObj[this.axis.categories[this.pos]];
+        //     window.open(newTabUrl, '_blank');
+        //   }
+        // }
+      }
+    }
+
+    topLocationsDownChartoptions.plotOptions.series.point.events = {
+      // click: function (event) {
+      //   if (that.hasLocationAccess) {
+      //     that.router.navigate([url], { queryParams: { id: that.tlocDownDataObj[event.point.category] } })
+      //   }
+      // }
+    };
+
+    topLocationsDownChartoptions.plotOptions.series.color = '#5ACFEA';
+
+
+    this.topLocationsUpChartoptions = { ...topLocationsUpChartoptions };
+    this.topLocationsDownChartoptions = { ...topLocationsDownChartoptions };
   }
 
   public settepUpDataObj(data: any): any {

@@ -39,8 +39,6 @@ export class RealTimeTrafficService {
     //   delay: 60, graphType: "TRF,TAPP,TLOC,TEP", monitorId: "12921722_0", monitorType: "NET", networkId: "12921722_0", orgId: "12921722", outputStartTimeDiffToCur: 135114, startTime: new Date().getTime(), windowLen: 1,
     // });
 
-    console.log('socket');
-
     const socket = io(socketUrl, {
       transports: ['websocket'],
       path: '/calix/socket-io/',

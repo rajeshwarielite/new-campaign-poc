@@ -1,36 +1,57 @@
-<div id="traffic-network-realtime-rate" class="card m-10">
-    <div class="" id=" ngx-stream-path-chart-rate">
-
-        <app-stream-chart [chartName]="'Rate'" [yAxixTitle]="'Gbps'" [data]="data?.maxRate" [time]="data?.sendTime"
-            [windowLen]="100" [history]="[]" [selectedFilter]="1">
-        </app-stream-chart>
+<div class="m-5">
+    <div class="my-3">
+        <div class="form-group required">
+            <ng-select [searchable]="false" placeholder='5 Minutes window' [(ngModel)]="selectedWindow">
+                <ng-option *ngFor="let winoption of windowOptions" [value]="winoption.id">{{winoption.name}}</ng-option>
+            </ng-select>
+        </div>
+        <div class="text-right btns-con d-flex justify-content-end">
+            <div class="d-inline-flex mr-3">
+                <button type="button" class="btn-default primary px-3" (click)="applyFilter()">
+                    Apply
+                </button>
+            </div>
+            <div class="d-inline-flex">
+                <button type="button" id="#" class="btn-default btn-dft" (click)="clearFilter()">
+                    Clear
+                </button>
+            </div>
+        </div>
     </div>
-</div>
 
-<div id="traffic-network-realtime-packet" class="card m-10">
-    <div class="" id="ngx-stream-path-chart-packet">
-        <app-stream-chart [chartName]="'packet'" [yAxixTitle]="'Kbps'" [data]="data?.packet" [time]="data?.sendTime"
-            [windowLen]="100" [history]="[]" [selectedFilter]="1">
-        </app-stream-chart>
+    <div id="traffic-network-realtime-rate" class="card m-10">
+        <div class="" id=" ngx-stream-path-chart-rate">
+
+            <app-stream-chart *ngIf="data" [chartName]="'Rate'" [yAxixTitle]="'Gbps'" [data]="data?.maxRate"
+                [time]="data?.sendTime" [windowLen]="100" [history]="[]" [selectedFilter]="1">
+            </app-stream-chart>
+        </div>
     </div>
-</div>
 
-<app-bar-chart id="top-endpoints-up-chart" *ngIf="topEndPointUpChartoptions" [chartOptions]="topEndPointUpChartoptions"
-    [type]="'up'" [updateFlag]="updateFlag">
-</app-bar-chart>
-<app-bar-chart id="top-endpoints-down-chart" *ngIf="topEndPointDownChartoptions"
-    [chartOptions]="topEndPointDownChartoptions" [type]="'down'" [updateFlag]="updateFlag">
-</app-bar-chart>
-<app-bar-chart id="top-apps-up-chart" *ngIf="topAppsUpChartoptions" [chartOptions]="topAppsUpChartoptions" [type]="'up'"
-    [updateFlag]="updateFlag">
-</app-bar-chart>
-<app-bar-chart id="top-apps-down-chart" *ngIf="topAppsDownChartoptions" [chartOptions]="topAppsDownChartoptions"
-    [type]="'down'" [updateFlag]="updateFlag">
-</app-bar-chart>
-<app-bar-chart id="top-apps-up-chart" *ngIf="topLocationsUpChartoptions && true"
-    [chartOptions]="topLocationsUpChartoptions" [type]="'up'" [updateFlag]="updateFlag">
-</app-bar-chart>
-<app-bar-chart id="top-apps-down-chart" *ngIf="topLocationsDownChartoptions"
-    [chartOptions]="topLocationsDownChartoptions" [type]="'down'" [updateFlag]="updateFlag">
-</app-bar-chart>
-<!--   -->
+    <div id="traffic-network-realtime-packet" class="card m-10">
+        <div class="" id="ngx-stream-path-chart-packet">
+            <app-stream-chart *ngIf="data" [chartName]="'packet'" [yAxixTitle]="'Kbps'" [data]="data?.packet"
+                [time]="data?.sendTime" [windowLen]="100" [history]="[]" [selectedFilter]="1">
+            </app-stream-chart>
+        </div>
+    </div>
+
+    <app-bar-chart id="top-endpoints-up-chart" *ngIf="topEndPointUpChartoptions"
+        [chartOptions]="topEndPointUpChartoptions" [type]="'up'" [updateFlag]="updateFlag">
+    </app-bar-chart>
+    <app-bar-chart id="top-endpoints-down-chart" *ngIf="topEndPointDownChartoptions"
+        [chartOptions]="topEndPointDownChartoptions" [type]="'down'" [updateFlag]="updateFlag">
+    </app-bar-chart>
+    <app-bar-chart id="top-apps-up-chart" *ngIf="topAppsUpChartoptions" [chartOptions]="topAppsUpChartoptions"
+        [type]="'up'" [updateFlag]="updateFlag">
+    </app-bar-chart>
+    <app-bar-chart id="top-apps-down-chart" *ngIf="topAppsDownChartoptions" [chartOptions]="topAppsDownChartoptions"
+        [type]="'down'" [updateFlag]="updateFlag">
+    </app-bar-chart>
+    <app-bar-chart id="top-apps-up-chart" *ngIf="topLocationsUpChartoptions && true"
+        [chartOptions]="topLocationsUpChartoptions" [type]="'up'" [updateFlag]="updateFlag">
+    </app-bar-chart>
+    <app-bar-chart id="top-apps-down-chart" *ngIf="topLocationsDownChartoptions"
+        [chartOptions]="topLocationsDownChartoptions" [type]="'down'" [updateFlag]="updateFlag">
+    </app-bar-chart>
+</div>
