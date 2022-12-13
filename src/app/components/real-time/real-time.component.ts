@@ -57,32 +57,45 @@ export class RealTimeComponent implements OnInit {
   tepUpDataObj = {};
   tepDownDataObj = {};
 
+  socketUrl = '';
+
   constructor(private realTimeTrafficService: RealTimeTrafficService) { }
 
   ngOnInit(): void {
     this.realTimeTrafficService.getSocketUrl().subscribe(result => {
-      console.log(result);
-      this.realTimeTrafficService.getSocketConnection(result.signedurl);
-      this.realTimeTrafficService.netSocketStream$.subscribe(
-        result => {
-          this.data = result;
-          console.log(result.confData.graphType);
-          if (result.confData.graphType === 'TEP') {
-            this.makeTEPEvents(result);
-          }
-          if (result.confData.graphType === 'TAPP') {
-            this.makeTAPPEvents(result);
-          }
-          if (result.confData.graphType === 'TLOC') {
-            this.makeTLOCEvents(result);
-          }
-        });
+      this.socketUrl = result.signedurl;
+      this.connectToSocket();
     });
   }
-  applyFilter()
-  {}
-  clearFilter()
-  {}
+
+  connectToSocket(): void {
+    this.realTimeTrafficService.getSocketConnection(this.socketUrl, 'NET',
+      {
+        delay: 60, graphType: "TRF,TAPP,TLOC,TEP", monitorId: "12921722_0", monitorType: "NET", networkId: "12921722_0", orgId: "12921722", outputStartTimeDiffToCur: 135114, startTime: new Date().getTime(), windowLen: this.selectedWindow,
+      });
+    this.realTimeTrafficService.netSocketStream$.subscribe(
+      result => {
+        this.data = result;
+        if (result.confData.graphType === 'TEP') {
+          this.makeTEPEvents(result);
+        }
+        if (result.confData.graphType === 'TAPP') {
+          this.makeTAPPEvents(result);
+        }
+        if (result.confData.graphType === 'TLOC') {
+          this.makeTLOCEvents(result);
+        }
+      });
+  }
+
+  applyFilter() {
+    this.connectToSocket();
+  }
+
+  clearFilter() {
+    this.selectedWindow = 1;
+    this.connectToSocket();
+  }
 
   makeTEPEvents(data: any): any {
     //let data: any = this.tEPData;
@@ -228,9 +241,6 @@ export class RealTimeComponent implements OnInit {
 
     this.topEndPointUpChartoptions = topEndPointUpChartoptions;
     this.topEndPointDownChartoptions = topEndPointDownChartoptions;
-
-    console.log('up', this.topEndPointUpChartoptions);
-    console.log('down', this.topEndPointDownChartoptions);
   }
 
   makeTAPPEvents(data?: any): any {

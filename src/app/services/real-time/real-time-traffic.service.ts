@@ -1,9 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as Highcharts from 'highcharts';
-import { BehaviorSubject, Observable, ReplaySubject } from 'rxjs';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
-import { io } from 'socket.io-client';
+import { Observable, ReplaySubject } from 'rxjs';
+import { io, Socket } from 'socket.io-client';
 
 @Injectable({
   providedIn: 'root'
@@ -16,14 +15,15 @@ export class RealTimeTrafficService {
 
   private apiUrl = 'https://stage.api.calix.ai/v1/';
 
+  private socket: Socket = Socket.prototype;
+
   constructor(private httpClient: HttpClient) { }
 
   getSocketUrl(): Observable<{ signedurl: string }> {
     return this.httpClient.get<{ signedurl: string }>(this.apiUrl + 'realtime/signed-url');
   }
 
-  getSocketConnection(socketUrl: string) {
-
+  getSocketConnection(socketUrl: string, requestType: string, request: any) {
     // const subject = webSocket({
     //   url:socketUrl,
     //   protocol:['websocket'],      
@@ -39,43 +39,25 @@ export class RealTimeTrafficService {
     //   delay: 60, graphType: "TRF,TAPP,TLOC,TEP", monitorId: "12921722_0", monitorType: "NET", networkId: "12921722_0", orgId: "12921722", outputStartTimeDiffToCur: 135114, startTime: new Date().getTime(), windowLen: 1,
     // });
 
-    const socket = io(socketUrl, {
-      transports: ['websocket'],
-      path: '/calix/socket-io/',
-      autoConnect: false,
-      reconnection: false
-    });
+    if (this.socket && this.socket.active) {
+      this.socket.emit(requestType, request);
+    } else {
+      this.socket = io(socketUrl, {
+        transports: ['websocket'],
+        path: '/calix/socket-io/',
+        autoConnect: false,
+        reconnection: false
+      });
 
-    socket.open();
+      this.socket.open();
 
-    socket.on("connect", () => {
-      console.log('connect');
-    });
+      this.socket.emit(requestType, request);
+    }
 
-    socket.on("ping", () => {
-      console.log('ping');
-    });
-
-    socket.on("error", (error) => {
-      console.log('error', error);
-    });
-
-    socket.on("reconnect", (attempt) => {
-      console.log('reconnect', attempt);
-    });
-
-    socket.on("NET", (data) => {
+    this.socket.on(requestType, (data: string) => {
       const result = JSON.parse(data);
       console.log(result);
       this.socketSubject.next(result);
-    });
-
-    socket.on("REPLAY", (data) => {
-      console.log('REPLAY', data);
-    });
-
-    socket.emit('NET', {
-      delay: 60, graphType: "TRF,TAPP,TLOC,TEP", monitorId: "12921722_0", monitorType: "NET", networkId: "12921722_0", orgId: "12921722", outputStartTimeDiffToCur: 135114, startTime: new Date().getTime(), windowLen: 1,
     });
 
     setTimeout(() => {

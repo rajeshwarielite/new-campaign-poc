@@ -34,9 +34,7 @@ export class BarChartComponent implements OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('changes', changes);
     if (changes['chartOptions']?.currentValue) {
-      console.log('chartOptions', changes);
       this.barChartOptions = { ...this.chartOptions };
       this.updateFlag = true;
       this.update = true;

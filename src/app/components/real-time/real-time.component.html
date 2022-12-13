@@ -12,7 +12,8 @@
                 </button>
             </div>
             <div class="d-inline-flex">
-                <button type="button" id="#" class="btn-default btn-dft" (click)="clearFilter()">
+                <button type="button" id="#" [disabled]="selectedWindow === 1" class="btn-default btn-dft"
+                    (click)="clearFilter()">
                     Clear
                 </button>
             </div>
@@ -20,10 +21,9 @@
     </div>
 
     <div id="traffic-network-realtime-rate" class="card m-10">
-        <div class="" id=" ngx-stream-path-chart-rate">
-
+        <div class="" id="ngx-stream-path-chart-rate">
             <app-stream-chart *ngIf="data" [chartName]="'Rate'" [yAxixTitle]="'Gbps'" [data]="data?.maxRate"
-                [time]="data?.sendTime" [windowLen]="100" [history]="[]" [selectedFilter]="1">
+                [time]="data?.sendTime" [windowLen]="100" [history]="[]" [selectedFilter]="selectedWindow">
             </app-stream-chart>
         </div>
     </div>
@@ -31,7 +31,7 @@
     <div id="traffic-network-realtime-packet" class="card m-10">
         <div class="" id="ngx-stream-path-chart-packet">
             <app-stream-chart *ngIf="data" [chartName]="'packet'" [yAxixTitle]="'Kbps'" [data]="data?.packet"
-                [time]="data?.sendTime" [windowLen]="100" [history]="[]" [selectedFilter]="1">
+                [time]="data?.sendTime" [windowLen]="100" [history]="[]" [selectedFilter]="selectedWindow">
             </app-stream-chart>
         </div>
     </div>
