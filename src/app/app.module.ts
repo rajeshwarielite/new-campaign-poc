@@ -39,6 +39,10 @@ import { RealTimeComponent } from './components/real-time/real-time.component';
 import { StreamChartComponent } from './components/real-time/stream-chart/stream-chart.component';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { BarChartComponent } from './components/real-time/bar-chart/bar-chart.component';
+import { TrafficComponent } from './components/real-time/traffic/traffic.component';
+import { NetworkTrafficComponent } from './components/real-time/traffic/network-traffic/network-traffic.component';
+import { LocationTrafficComponent } from './components/real-time/traffic/location-traffic/location-traffic.component';
+import { ApplicationTrafficComponent } from './components/real-time/traffic/application-traffic/application-traffic.component';
 
 const routes: Route[] = [
   {
@@ -85,6 +89,10 @@ const routes: Route[] = [
     RealTimeComponent,
     StreamChartComponent,
     BarChartComponent,
+    TrafficComponent,
+    NetworkTrafficComponent,
+    LocationTrafficComponent,
+    ApplicationTrafficComponent,
   ],
   imports: [
     BrowserModule,

@@ -153,3 +153,212 @@ body {
 .fa-pause {
     color: #0279ff;
 }
+
+
+.modal.fade .modal-dialog {
+    border-radius: 26px;
+    max-width: 680px;
+  
+    .modal-content {
+      border-radius: 26px;
+    }
+  }
+  
+  .modal.fade .modal-dialog {
+    border-radius: 26px;
+    max-width: 680px;
+  
+    .modal-content {
+      border-radius: 26px;
+      padding: 20px;
+      border: none;
+  
+      .modal-header {
+        padding: 0px;
+        border-bottom: transparent;
+  
+        .close {
+          position: absolute;
+          top: 20px;
+          right: 25px;
+          z-index: 11;
+  
+          &:focus {
+            box-shadow: none;
+            outline: 0;
+            box-shadow: none;
+          }
+        }
+      }
+  
+      .modal-body {
+        padding: 0px;
+        border-bottom: 0;
+      }
+  
+      .modal-footer {
+        border-top: 0;
+      }
+    }
+  }
+  
+  // shamu css for modal start
+  .custom-modal.modal.fade {
+    .modal-dialog {
+      .modal-content {
+        padding: 20x;
+  
+        .modal-body {
+          padding: 0px;
+          padding-top: 10px;
+  
+          .custom-body {
+            height: 150px;
+            overflow: hidden;
+          }
+        }
+      }
+    }
+  }
+  
+  .custom-lg-modal.modal.fade {
+    .modal-dialog {
+      max-width: 69%;
+  
+      .modal-content {
+        padding: 40px 30px;
+  
+        .modal-body {
+          padding: 0px;
+          padding-top: 15px;
+        }
+      }
+    }
+  }
+  
+  .custom-xl-modal.modal.fade {
+    .modal-dialog {
+      max-width: 68%;
+  
+      .modal-content {
+        padding: 40px 30px;
+  
+        .modal-body {
+          padding: 0px;
+          padding-top: 15px;
+        }
+      }
+    }
+  }
+  
+  .custom-md-modal.modal.fade {
+    .modal-dialog {
+      max-width: 55%;
+  
+      .modal-content {
+        padding: 40px 60px;
+  
+        .modal-body {
+          padding: 0px;
+          padding-top: 15px;
+        }
+      }
+    }
+  }
+  
+  .custom-mid-modal.modal.fade {
+    .modal-dialog {
+      max-width: 60%;
+  
+      .modal-content {
+        padding: 40px 50px;
+  
+        .modal-body {
+          padding: 0px;
+          padding-top: 15px;
+        }
+      }
+    }
+  }
+  
+  .custom-sm-modal.modal.fade {
+    .modal-dialog {
+      max-width: 35%;
+  
+      .modal-content {
+        padding: 40px 50px;
+  
+        .modal-body {
+          padding: 0px;
+          padding-top: 15px;
+        }
+      }
+    }
+  }
+  
+  .custom-xs-modal.modal.fade {
+    .modal-dialog {
+      max-width: 25%;
+  
+      .modal-content {
+        padding: 40px 20px;
+  
+        .modal-body {
+          padding: 0px;
+          padding-top: 15px;
+        }
+      }
+    }
+  }
+  
+  
+  .table th {
+    font-size: 16px;
+    font-weight: 600 !important;
+  }
+  
+  .table td {
+    font-size: 15px;
+    font-weight: 400 !important;
+  }
+  
+  .modal.fade .modal-dialog .close {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    cursor: pointer;
+  
+    &:focus {
+      box-shadow: none;
+      outline: 0;
+      box-shadow: none;
+    }
+  }
+  
+  .modal-title {
+    margin-bottom: 0;
+    line-height: 1.5;
+    font-size: 38px;
+    font-weight: 300;
+    border-bottom: transparent;
+  }
+  
+  .modal.fade.addprofile-modal .modal-dialog {
+    border-radius: 26px;
+    max-width: 550px;
+  }
+
+  button.close {
+    span {
+      background-image: url(assets/images/ic_close-44px.svg);
+      width: 18px;
+      height: 18px;
+      position: relative;
+      top: 0px;
+      right: 5px;
+      z-index: 1111111;
+      background-repeat: no-repeat;
+      display: block;
+      float: right;
+    }
+  }
