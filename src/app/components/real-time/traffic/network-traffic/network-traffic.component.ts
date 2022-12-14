@@ -1,20 +1,24 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin } from 'rxjs';
 import { RealTimeTrafficService } from 'src/app/services/real-time/real-time-traffic.service';
+import { TrafficLocation } from 'src/app/services/real-time/real-time-traffix.model';
 
 @Component({
   selector: 'app-network-traffic',
   templateUrl: './network-traffic.component.html',
   styleUrls: ['./network-traffic.component.scss']
 })
-export class NetworkTrafficComponent implements OnInit {
+export class NetworkTrafficComponent implements OnInit, OnDestroy {
+
+  @Input() trafficType = 'Network';
 
   @ViewChild('recordingModal', { static: true }) private recordingModal: TemplateRef<any> = TemplateRef.prototype;
 
   updateFlag = true;
   isCcoTraffic = false;
+  showRealTime = false;
 
   data: any;
   topEndPointUpChartoptions: any;
@@ -94,17 +98,48 @@ export class NetworkTrafficComponent implements OnInit {
       name: "2 Hour",
       value: '4'
     }
-  ]
+  ];
+
+  //locations
+  locationItems: TrafficLocation[] = [];
+  locationsSelected: string[] = ['All'];
 
   constructor(private realTimeTrafficService: RealTimeTrafficService, private dialogService: NgbModal) { }
+  ngOnDestroy(): void {
+    this.realTimeTrafficService.closeSocketConnection();
+  }
 
   ngOnInit(): void {
-    this.realTimeTrafficService.getSocketUrl().subscribe(result => {
-      this.socketUrl = result.signedurl;
-      this.connectToSocket();
-
-    });
-    this.getCount();
+    switch (this.trafficType) {
+      case 'Network':
+        this.realTimeTrafficService.getSocketUrl().subscribe(result => {
+          this.socketUrl = result.signedurl;
+          this.connectToSocket();
+        });
+        this.getCount();
+        break;
+      case 'Locations':
+        this.realTimeTrafficService.getSocketUrl().subscribe(result => {
+          this.socketUrl = result.signedurl;
+        });
+        this.realTimeTrafficService.getLocations().subscribe(result => {
+          result.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
+          this.locationItems = result;
+          this.locationItems.unshift({
+            name: 'All', _id: 'All',
+            address: '',
+            geo: '',
+            orgId: '',
+            region: '',
+            subnetsV4: '',
+            subnetsV6: '',
+            tenantId: 0
+          })
+        });
+        break;
+      case 'Applications':
+        break;
+    }
     setTimeout(() => {
       this.getRecordingStatus();
       const recordId = sessionStorage.getItem('recordId');
@@ -115,15 +150,35 @@ export class NetworkTrafficComponent implements OnInit {
   }
 
   connectToSocket(): void {
-    this.realTimeTrafficService.getSocketConnection(this.socketUrl, 'NET',
-      {
-        delay: 60, graphType: "TRF,TAPP,TLOC,TEP",
-        monitorId: "12921722_0", monitorType: "NET",
-        networkId: "12921722_0", orgId: "12921722",
-        outputStartTimeDiffToCur: 135114,
-        startTime: new Date().getTime(),
-        windowLen: this.selectedWindow,
-      });
+    switch (this.trafficType) {
+      case 'Network':
+        this.showRealTime = true;
+        this.realTimeTrafficService.getSocketConnection(this.socketUrl, 'NET',
+          {
+            delay: 60, graphType: "TRF,TAPP,TLOC,TEP",
+            monitorId: "12921722_0", monitorType: "NET",
+            networkId: "12921722_0", orgId: "12921722",
+            outputStartTimeDiffToCur: 135114,
+            startTime: new Date().getTime(),
+            windowLen: this.selectedWindow,
+          });
+        break;
+      case 'Locations':
+        this.showRealTime = false;
+        this.realTimeTrafficService.pushMessage('remove', 'LOC');
+        this.realTimeTrafficService.getSocketConnection(this.socketUrl, 'LOC',
+          {
+            delay: 60, graphType: "TRF,TAPP,TEP",
+            monitorId: this.getLocationMonitorIds(),
+            monitorType: "LOC", networkId: "12921722_0",
+            orgId: "12921722", startTime: new Date().getTime(),
+          });
+        setTimeout(() => this.showRealTime = true, 500);
+        break;
+      case 'Applications':
+        break;
+    }
+    this.clearCacheData();
     this.realTimeTrafficService.netSocketStream$.subscribe(
       result => {
         this.data = result;
@@ -174,6 +229,7 @@ export class NetworkTrafficComponent implements OnInit {
 
   clearFilter() {
     this.selectedWindow = 1;
+    this.locationsSelected = [];
     this.connectToSocket();
   }
 
@@ -571,6 +627,34 @@ export class NetworkTrafficComponent implements OnInit {
 
   closeAllModal(): void {
     this.dialogService.dismissAll();
+  }
+
+  // location
+
+  changeLocation() {
+    if (this.locationsSelected.length > 1 && this.locationsSelected.includes('All')) {
+      if (this.locationsSelected[0] === 'All') {
+        this.locationsSelected = this.locationsSelected.filter(l => l !== 'All');
+      }
+      else if (this.locationsSelected.pop() === 'All') {
+        this.locationsSelected = ['All'];
+      }
+    }
+  }
+
+  getLocationMonitorIds(): string {
+    return (this.locationsSelected.length === 1 && this.locationsSelected[0] === 'All')
+      ? this.locationItems.filter(l => l._id !== 'All').map(l => l._id).join(',')
+      : this.locationsSelected.join(',');
+  }
+
+  clearCacheData() {
+    this.topEndPointUpChartoptions = null;
+    this.topEndPointDownChartoptions = null;
+    this.topAppsUpChartoptions = null;
+    this.topAppsDownChartoptions = null;
+    this.topLocationsUpChartoptions = null;
+    this.topLocationsDownChartoptions = null;
   }
 
 }

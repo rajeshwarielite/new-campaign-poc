@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { Observable, ReplaySubject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
+import { TrafficLocation } from './real-time-traffix.model';
 
 @Injectable({
   providedIn: 'root'
@@ -42,18 +43,34 @@ export class RealTimeTrafficService {
 
       this.socket.open();
 
+      this.socket.removeListener(requestType);
+
       this.socket.emit(requestType, request);
     }
 
     this.socket.on(requestType, (data: string) => {
-      if (requestType == 'NET') {
+      if (['NET', 'LOC'].includes(requestType)) {
         const result = JSON.parse(data);
+        // console.log(requestType, result);
         this.socketSubject.next(result);
       } else {
         const recordId = data.split(' ').pop() ?? '';
         this.recordSubject.next(recordId);
       }
     });
+  }
+
+  pushMessage(event: string, requestType: string) {
+    if (this.socket && (this.socket.active || this.socket.connected)) {
+      this.socket.emit(event, requestType);
+    }
+  }
+
+  closeSocketConnection() {
+    if (this.socket && (this.socket.active || this.socket.connected)) {
+      this.socket.removeAllListeners();
+      this.socket.disconnect();
+    }
   }
 
   getTrafficRecording(): Observable<any> {
@@ -70,6 +87,10 @@ export class RealTimeTrafficService {
 
   getMappedCount(): Observable<number> {
     return this.httpClient.get<number>(this.apiUrl + 'fa/correlator/flowendpoint/unmapped/count?org-id=12921722&source=true')
+  }
+
+  getLocations(): Observable<TrafficLocation[]> {
+    return this.httpClient.get<TrafficLocation[]>(this.apiUrl + 'fa/config/location?org-id=12921722')
   }
 
   makeOptionsForRTBC(data: any, type: any, dataType?: any, sliceNum?: any, fsView?: any): any {

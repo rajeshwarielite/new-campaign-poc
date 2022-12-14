@@ -7,9 +7,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class TrafficComponent implements OnInit {
 
+  selectedTab = 'Network';
+
   constructor() { }
 
   ngOnInit(): void {
+  }
+
+  tabSelected(tab: string) {
+    this.selectedTab = tab;
   }
 
 }

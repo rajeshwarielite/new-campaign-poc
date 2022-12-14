@@ -1,9 +1,12 @@
 <tabset #staticTabs>
-    <tab heading="Netwok">
-        <app-network-traffic></app-network-traffic>
+    <tab heading="Netwok" [active]="true" (selectTab)="tabSelected('Network')">
+        <app-network-traffic [trafficType]="'Network'" *ngIf="selectedTab === 'Network'"></app-network-traffic>
     </tab>
-    <tab heading="Locations" [disabled]="true">
+    <tab heading="Locations" (selectTab)="tabSelected('Locations')">
+        <app-network-traffic [trafficType]="'Locations'" *ngIf="selectedTab === 'Locations'"></app-network-traffic>
     </tab>
-    <tab heading="Applications" [disabled]="true">
+    <tab heading="Applications" (selectTab)="tabSelected('Applications')">
+        <app-network-traffic [trafficType]="'Applications'"
+            *ngIf="selectedTab === 'Applications'"></app-network-traffic>
     </tab>
 </tabset>
