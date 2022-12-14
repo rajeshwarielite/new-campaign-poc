@@ -24,20 +24,6 @@ export class RealTimeTrafficService {
   }
 
   getSocketConnection(socketUrl: string, requestType: string, request: any) {
-    // const subject = webSocket({
-    //   url:socketUrl,
-    //   protocol:['websocket'],      
-    // });
-
-    // subject.subscribe({
-    //   next: msg => console.log('message received: ' + msg), // Called whenever there is a message from the server.
-    //   error: err => console.log(err), // Called if at any point WebSocket API signals some kind of error.
-    //   complete: () => console.log('complete') // Called when connection is closed (for whatever reason).
-    // });
-
-    // subject.next({
-    //   delay: 60, graphType: "TRF,TAPP,TLOC,TEP", monitorId: "12921722_0", monitorType: "NET", networkId: "12921722_0", orgId: "12921722", outputStartTimeDiffToCur: 135114, startTime: new Date().getTime(), windowLen: 1,
-    // });
 
     if (this.socket && this.socket.active) {
       this.socket.emit(requestType, request);
@@ -70,6 +56,14 @@ export class RealTimeTrafficService {
       monitorType: 'NET',
       monitorId: '12921722_0'
     }).subscribe(result => console.log('Record', result));
+  }
+
+  getDiscoveredCount(): Observable<number>{
+    return this.httpClient.get<number>(this.apiUrl + 'fa/correlator/flowendpoint/count?discovered=true&org-id=12921722')
+  }
+
+  getMappedCount(): Observable<number>{
+    return this.httpClient.get<number>(this.apiUrl + 'fa/correlator/flowendpoint/unmapped/count?org-id=12921722&source=true')
   }
 
   makeOptionsForRTBC(data: any, type: any, dataType?: any, sliceNum?: any, fsView?: any): any {

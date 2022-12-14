@@ -19,39 +19,126 @@
             </div>
         </div>
     </div>
-
-    <div id="traffic-network-realtime-rate" class="card m-10">
-        <div class="" id="ngx-stream-path-chart-rate">
-            <app-stream-chart *ngIf="data" [chartName]="'Rate'" [yAxixTitle]="'Gbps'" [data]="data?.maxRate"
-                [time]="data?.sendTime" [windowLen]="100" [history]="[]" [selectedFilter]="selectedWindow">
-            </app-stream-chart>
+    <div class="row">
+        <div class="col-md-3 text-right">
+            1 minute delay
         </div>
     </div>
-
-    <div id="traffic-network-realtime-packet" class="card m-10">
-        <div class="" id="ngx-stream-path-chart-packet">
-            <app-stream-chart *ngIf="data" [chartName]="'packet'" [yAxixTitle]="'Kbps'" [data]="data?.packet"
-                [time]="data?.sendTime" [windowLen]="100" [history]="[]" [selectedFilter]="selectedWindow">
-            </app-stream-chart>
+    <div class="d-flex justify-content-between my-2">
+        <div class="col-4">
+            Discovered Count: {{ discoveredCount }}
+        </div>
+        <div class="col-4 text-center">
+            Mapped Count: {{ mappedCount }}
+        </div>
+        <div class="col-4 text-right">
+            Mapped Percentage: {{ mappedPercentage | number:'1.2-2' }} %
         </div>
     </div>
+    <div class="d-flex justify-content-between md-block">
+        <div class="col-12 col-md-12 pr-0 col-lg-6">
+            <div id="traffic-network-realtime-rate" class="card m-2">
+                <div id="ngx-stream-path-chart-rate">
+                    <app-stream-chart *ngIf="data" [chartName]="'Rate'" [yAxixTitle]="'Gbps'" [data]="data?.maxRate"
+                        [time]="data?.sendTime" [windowLen]="5" [history]="[]" [selectedFilter]="selectedWindow">
+                    </app-stream-chart>
+                </div>
+            </div>
 
-    <app-bar-chart id="top-endpoints-up-chart" *ngIf="topEndPointUpChartoptions"
-        [chartOptions]="topEndPointUpChartoptions" [type]="'up'" [updateFlag]="updateFlag">
-    </app-bar-chart>
-    <app-bar-chart id="top-endpoints-down-chart" *ngIf="topEndPointDownChartoptions"
-        [chartOptions]="topEndPointDownChartoptions" [type]="'down'" [updateFlag]="updateFlag">
-    </app-bar-chart>
-    <app-bar-chart id="top-apps-up-chart" *ngIf="topAppsUpChartoptions" [chartOptions]="topAppsUpChartoptions"
-        [type]="'up'" [updateFlag]="updateFlag">
-    </app-bar-chart>
-    <app-bar-chart id="top-apps-down-chart" *ngIf="topAppsDownChartoptions" [chartOptions]="topAppsDownChartoptions"
-        [type]="'down'" [updateFlag]="updateFlag">
-    </app-bar-chart>
-    <app-bar-chart id="top-apps-up-chart" *ngIf="topLocationsUpChartoptions && true"
-        [chartOptions]="topLocationsUpChartoptions" [type]="'up'" [updateFlag]="updateFlag">
-    </app-bar-chart>
-    <app-bar-chart id="top-apps-down-chart" *ngIf="topLocationsDownChartoptions"
-        [chartOptions]="topLocationsDownChartoptions" [type]="'down'" [updateFlag]="updateFlag">
-    </app-bar-chart>
+            <div id="traffic-network-realtime-packet" class="card m-2">
+                <div id="ngx-stream-path-chart-packet">
+                    <app-stream-chart *ngIf="data" [chartName]="'packet'" [yAxixTitle]="'Kbps'" [data]="data?.packet"
+                        [time]="data?.sendTime" [windowLen]="5" [history]="[]" [selectedFilter]="selectedWindow">
+                    </app-stream-chart>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-12 pr-0 col-lg-6">
+            <div id="traffic-network-realtime-tep" class="card m-2 my-3 h-auto">
+                <div class="board_head">
+                    <div class="orange-text-wrapper d-inline-block">
+                        <p class="orange-text">Top 5 Endpoints </p>
+                    </div>
+                    <span class="ml20">Interval: 15 sec</span>
+                </div>
+                <div class="card-body row board_body no-gutters h-210">
+                    <div class="col-md-6 col-12" id="top-endpoints-up-chart-div">
+                        <div class="chart-info">
+                            <span class="">Up Rate (<b>{{tEPrcntData.upPercentage}}% </b> of Total
+                                )</span>
+                        </div>
+                        <app-bar-chart id="top-endpoints-up-chart" *ngIf="topEndPointUpChartoptions"
+                            [chartOptions]="topEndPointUpChartoptions" [type]="'up'" [updateFlag]="updateFlag">
+                        </app-bar-chart>
+                    </div>
+                    <div class="col-md-6 col-12">
+                        <div class="chart-info">
+                            <span class="">Down Rate(<b>{{tEPrcntData.downPercentage}}%</b>
+                                of Total)</span>
+                        </div>
+                        <app-bar-chart id="top-endpoints-down-chart" *ngIf="topEndPointDownChartoptions"
+                            [chartOptions]="topEndPointDownChartoptions" [type]="'down'" [updateFlag]="updateFlag">
+                        </app-bar-chart>
+                    </div>
+                </div>
+            </div>
+            <div id="traffic-network-realtime-tapp" class="card m-2 my-3 h-auto">
+                <div class="board_head">
+                    <div class="orange-text-wrapper d-inline-block">
+                        <p class="orange-text">Top 5 Applications </p>
+                    </div>
+                    <span class="ml20">Interval: 15 sec</span>
+
+                </div>
+                <div class="card-body row board_body no-gutters h-210">
+                    <div class="col-md-6 col-12" id="top-apps-up-chart-div">
+                        <div class="chart-info">
+                            <span class="">Up Rate
+                                (<b>{{tAPrcntData.upPercentage}}% </b>of Total)</span>
+                        </div>
+                        <app-bar-chart id="top-apps-up-chart" *ngIf="topAppsUpChartoptions"
+                            [chartOptions]="topAppsUpChartoptions" [type]="'up'" [updateFlag]="updateFlag">
+                        </app-bar-chart>
+                    </div>
+                    <div class="col-md-6 col-12" id="top-apps-down-chart-div">
+                        <div class="chart-info">
+                            <span class="">Down Rate (<b>{{tAPrcntData.downPercentage}}%</b>
+                                of Total)</span>
+                        </div>
+                        <app-bar-chart id="top-apps-down-chart" *ngIf="topAppsDownChartoptions"
+                            [chartOptions]="topAppsDownChartoptions" [type]="'down'" [updateFlag]="updateFlag">
+                        </app-bar-chart>
+                    </div>
+                </div>
+            </div>
+            <div id="traffic-network-realtime-location" class="card m-2 my-3 h-auto">
+                <div class="board_head">
+                    <div class="orange-text-wrapper d-inline-block">
+                        <p class="orange-text">Top 5 Locations </p>
+                    </div>
+                    <span class="ml20">Interval: 15 sec</span>
+                </div>
+                <div class="card-body row board_body no-gutters h-210">
+                    <div class="col-md-6 col-12" id="top-apps-up-chart-div">
+                        <div class="chart-info">
+                            <span class="">Up Rate
+                                (<b>{{tLPrcntData.upPercentage}}% </b>of Total)</span>
+                        </div>
+                        <app-bar-chart id="top-apps-up-chart" *ngIf="topLocationsUpChartoptions && true"
+                            [chartOptions]="topLocationsUpChartoptions" [type]="'up'" [updateFlag]="updateFlag">
+                        </app-bar-chart>
+                    </div>
+                    <div class="col-md-6 col-12" id="top-apps-down-chart-div">
+                        <div class="chart-info">
+                            <span class="">Down Rate (<b>{{tLPrcntData.downPercentage}}%</b>
+                                of Total)</span>
+                        </div>
+                        <app-bar-chart id="top-apps-down-chart" *ngIf="topLocationsDownChartoptions"
+                            [chartOptions]="topLocationsDownChartoptions" [type]="'down'" [updateFlag]="updateFlag">
+                        </app-bar-chart>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

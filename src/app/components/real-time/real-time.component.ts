@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import { RealTimeTrafficService } from 'src/app/services/real-time/real-time-traffic.service';
 
 @Component({
@@ -59,6 +60,10 @@ export class RealTimeComponent implements OnInit {
 
   socketUrl = '';
 
+  discoveredCount = 0;
+  mappedCount = 0;
+  mappedPercentage = 0;
+
   constructor(private realTimeTrafficService: RealTimeTrafficService) { }
 
   ngOnInit(): void {
@@ -66,6 +71,7 @@ export class RealTimeComponent implements OnInit {
       this.socketUrl = result.signedurl;
       this.connectToSocket();
     });
+    this.getCount()
   }
 
   connectToSocket(): void {
@@ -95,6 +101,15 @@ export class RealTimeComponent implements OnInit {
   clearFilter() {
     this.selectedWindow = 1;
     this.connectToSocket();
+  }
+
+  getCount() {
+    forkJoin([this.realTimeTrafficService.getDiscoveredCount(), this.realTimeTrafficService.getMappedCount()])
+      .subscribe(result => {
+        this.mappedCount = result[0];
+        this.discoveredCount = result[0] + result[1];
+        this.mappedPercentage = (this.mappedCount / this.discoveredCount) * 100;
+      });
   }
 
   makeTEPEvents(data: any): any {
