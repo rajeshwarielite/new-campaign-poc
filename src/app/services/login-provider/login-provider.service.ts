@@ -17,10 +17,10 @@ export class LoginProviderService {
       //.set('password', 'calix123')
       .set('username', 'admin@calix.com')
       .set('password', 'admin')
-      .set('client_secret', 'yyQB4GkG6mQO2fG8');
+      .set('client_secret', '6QcEcYE6c3kZCklO');
 
     let options = {
-      headers: new HttpHeaders().set('X-Calix-ClientID', 'UcWGgUfH0guUPG2LkGVU5GbPAjhi22JO')
+      headers: new HttpHeaders().set('X-Calix-ClientID', 'kK1cJ0mRp7iSmTFt3vAGO44vobsu36op')
     };
 
     this.httpClient.post<TokenResponse>('https://stage.api.calix.ai/v1/authentication/token', body, options)

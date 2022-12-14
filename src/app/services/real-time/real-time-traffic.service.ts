@@ -13,6 +13,11 @@ export class RealTimeTrafficService {
 
   public netSocketStream$ = this.socketSubject.asObservable();
 
+  private recordSubject = new ReplaySubject<string>();
+
+  public recordStream$ = this.recordSubject.asObservable();
+
+
   private apiUrl = 'https://stage.api.calix.ai/v1/';
 
   private socket: Socket = Socket.prototype;
@@ -41,28 +46,29 @@ export class RealTimeTrafficService {
     }
 
     this.socket.on(requestType, (data: string) => {
-      const result = JSON.parse(data);
-      console.log(result);
-      this.socketSubject.next(result);
+      if (requestType == 'NET') {
+        const result = JSON.parse(data);
+        this.socketSubject.next(result);
+      } else {
+        const recordId = data.split(' ').pop() ?? '';
+        this.recordSubject.next(recordId);
+      }
     });
-
-    setTimeout(() => {
-      this.getTrafficRecording();
-    }, 1000);
   }
 
-  getTrafficRecording() {
-    this.httpClient.post(this.apiUrl + 'record/job/status/Recording', {
-      monitorType: 'NET',
-      monitorId: '12921722_0'
-    }).subscribe(result => console.log('Record', result));
+  getTrafficRecording(): Observable<any> {
+    return this.httpClient.post<any>(this.apiUrl + 'record/job/status/Recording', { "monitorType": "NET", "monitorId": "12921722_0" });
   }
 
-  getDiscoveredCount(): Observable<number>{
+  getrafficRecordDetails(id: string): Observable<Object> {
+    return this.httpClient.get(this.apiUrl + `record/job/list/${id}`);
+  }
+
+  getDiscoveredCount(): Observable<number> {
     return this.httpClient.get<number>(this.apiUrl + 'fa/correlator/flowendpoint/count?discovered=true&org-id=12921722')
   }
 
-  getMappedCount(): Observable<number>{
+  getMappedCount(): Observable<number> {
     return this.httpClient.get<number>(this.apiUrl + 'fa/correlator/flowendpoint/unmapped/count?org-id=12921722&source=true')
   }
 

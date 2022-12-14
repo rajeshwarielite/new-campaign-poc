@@ -17,7 +17,7 @@ export class ApiInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     request = request.clone({
       setHeaders: {
-        'X-Calix-ClientID': 'UcWGgUfH0guUPG2LkGVU5GbPAjhi22JO',
+        'X-Calix-ClientID': 'kK1cJ0mRp7iSmTFt3vAGO44vobsu36op',
         'X-Calix-AccessToken': '' + sessionStorage.getItem('access_token')
       }
     });

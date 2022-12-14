@@ -566,7 +566,7 @@ export class StreamChartComponent implements OnInit {
           //@ts-ignore
           let dateValue = this.point.x;
           //@ts-ignore
-          var dateStr = '';
+          var dateStr = new Date(dateValue).toString().split('GMT')[0];
           //@ts-ignore
           let datakey = that.removeLast3Chars(this.point.x)
           let unit = that.lastChartDataObj[datakey] ? that.lastChartDataObj[datakey][2] : '';
@@ -576,12 +576,12 @@ export class StreamChartComponent implements OnInit {
           //@ts-ignore
           if (this.series.name == 'up') {
             //@ts-ignore
-            return `<b> ${dateStr}  </b><br/>            ${that.language.Upstream}: ${Highcharts.numberFormat(Math.abs(this.point.y), 2)} ${that.yAxixTitle}`;
+            return `<b> ${dateStr}  </b><br/> Upstream: ${Highcharts.numberFormat(Math.abs(this.point.y), 2)} ${that.yAxixTitle}`;
           }
           //@ts-ignore
           if (this.series.name == 'down') {
             //@ts-ignore
-            return `<b> ${dateStr}  </b><br/>            ${that.language.Downstream}: ${Highcharts.numberFormat(Math.abs(this.point.y), 2)} ${that.yAxixTitle}`;
+            return `<b> ${dateStr}  </b><br/> Downstream: ${Highcharts.numberFormat(Math.abs(this.point.y), 2)} ${that.yAxixTitle}`;
 
           }
         }
@@ -597,7 +597,7 @@ export class StreamChartComponent implements OnInit {
 
       series: [
         {
-          name: that?.language?.upStream ? that.language.upStream : 'up',
+          name: 'up',
           data: (function () {
             var data = [],
               time = (new Date()).getTime() + timezoneDetected,
@@ -624,7 +624,7 @@ export class StreamChartComponent implements OnInit {
             return data;
           })()
         }, {
-          name: that?.language?.downStream ? that.language.downStream : 'down',
+          name: 'down',
           data: (function () {
             // generate an array of random data
             var data = [],

@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { DatePipe } from '@angular/common';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin } from 'rxjs';
 import { RealTimeTrafficService } from 'src/app/services/real-time/real-time-traffic.service';
 
@@ -8,6 +10,8 @@ import { RealTimeTrafficService } from 'src/app/services/real-time/real-time-tra
   styleUrls: ['./real-time.component.scss']
 })
 export class RealTimeComponent implements OnInit {
+
+  @ViewChild('recordingModal', { static: true }) private recordingModal: TemplateRef<any> = TemplateRef.prototype;
 
   updateFlag = true;
   isCcoTraffic = false;
@@ -64,20 +68,61 @@ export class RealTimeComponent implements OnInit {
   mappedCount = 0;
   mappedPercentage = 0;
 
-  constructor(private realTimeTrafficService: RealTimeTrafficService) { }
+  recordingStatus: boolean = false;
+  selectedDuration: any = "1";
+  isNow: boolean = true;
+  recordingName: any = "";
+  description: any = ""
+  isvalid: boolean = true;
+  showDate: boolean = true;
+  minDate = new Date();
+  date: any = new Date();
+  items: any = [
+    {
+      name: "0.5 Hour",
+      value: '1'
+    },
+    {
+      name: "1 Hour",
+      value: '2'
+    },
+    {
+      name: "1.5 Hour",
+      value: '3'
+    },
+    {
+      name: "2 Hour",
+      value: '4'
+    }
+  ]
+
+  constructor(private realTimeTrafficService: RealTimeTrafficService, private dialogService: NgbModal) { }
 
   ngOnInit(): void {
     this.realTimeTrafficService.getSocketUrl().subscribe(result => {
       this.socketUrl = result.signedurl;
       this.connectToSocket();
+
     });
-    this.getCount()
+    this.getCount();
+    setTimeout(() => {
+      this.getRecordingStatus();
+      const recordId = sessionStorage.getItem('recordId');
+      if (recordId) {
+        this.getgetrafficRecordDetails(recordId);
+      }
+    }, 1000);
   }
 
   connectToSocket(): void {
     this.realTimeTrafficService.getSocketConnection(this.socketUrl, 'NET',
       {
-        delay: 60, graphType: "TRF,TAPP,TLOC,TEP", monitorId: "12921722_0", monitorType: "NET", networkId: "12921722_0", orgId: "12921722", outputStartTimeDiffToCur: 135114, startTime: new Date().getTime(), windowLen: this.selectedWindow,
+        delay: 60, graphType: "TRF,TAPP,TLOC,TEP",
+        monitorId: "12921722_0", monitorType: "NET",
+        networkId: "12921722_0", orgId: "12921722",
+        outputStartTimeDiffToCur: 135114,
+        startTime: new Date().getTime(),
+        windowLen: this.selectedWindow,
       });
     this.realTimeTrafficService.netSocketStream$.subscribe(
       result => {
@@ -92,6 +137,35 @@ export class RealTimeComponent implements OnInit {
           this.makeTLOCEvents(result);
         }
       });
+  }
+
+  createRecording() {
+    let startTime = (new Date()).getTime();
+    let length = parseInt(this.selectedDuration) * 30 * 60 * 1000;
+    if (!this.isNow) {
+      startTime = (new Date(this.date)).getTime();
+    }
+    const request = {
+      "orgId": "12921722",
+      "monitorType": "NET",
+      "graphType": "TRF,TAPP,TLOC,TEP",
+      "startTime": startTime,
+      "name": this.recordingName,
+      "description": this.description,
+      "length": length,
+      "status": "New",
+      "userId": '2689898083412557049',
+      "recordingType": "traffic",
+      "trigger": "Manual",
+      "monitorId": '12921722_0'
+    };
+    this.realTimeTrafficService.recordStream$.subscribe(recordId => {
+      sessionStorage.setItem('recordId', recordId);
+      this.getRecordingStatus();
+      this.getgetrafficRecordDetails(recordId);
+    })
+    this.realTimeTrafficService.getSocketConnection(this.socketUrl, "RECORDING", request);
+    this.closeAllModal();
   }
 
   applyFilter() {
@@ -110,6 +184,32 @@ export class RealTimeComponent implements OnInit {
         this.discoveredCount = result[0] + result[1];
         this.mappedPercentage = (this.mappedCount / this.discoveredCount) * 100;
       });
+  }
+
+  getRecordingStatus() {
+    this.realTimeTrafficService.getTrafficRecording().subscribe((res: any) => {
+      if (res) {
+        res.forEach((element: { monitorType: string; status: string; id: any; }) => {
+          if (element.monitorType === "NET" && element.status === "Recording") {
+            this.recordingStatus = true;
+            this.isNow = false;
+            this.showDate = false;
+          } else {
+            this.recordingStatus = false;
+            this.isNow = true;
+            this.showDate = true;
+          }
+        });
+      }
+    })
+  }
+
+  getgetrafficRecordDetails(recordId: string) {
+    this.realTimeTrafficService.getrafficRecordDetails(recordId).subscribe(() => {
+      this.recordingStatus = true;
+      this.isNow = false;
+      this.showDate = false;
+    });
   }
 
   makeTEPEvents(data: any): any {
@@ -172,28 +272,7 @@ export class RealTimeComponent implements OnInit {
         // return `${this.value}`
       },
       events: {
-        click: function () {
-          //@ts-ignore
-          // window.sessionStorage.setItem('endpointName', this.axis.categories[this.pos]);
-          // that.navigationByUrl(this.category = '', that.tepUpDataObj[this.axis.categories[this.pos]], 'Endpoints');
-          // that.onclickCopy(this.value);
-        },
-        // dblclick: function (e) {
-        // that.websocketservice.isUnmapped = false;
-        // data.upData.forEach((element) => {
-        //   if (element.id == element.name && element.name == that.tepDownDataObj[this.value]) {
-        //     that.websocketservice.isUnmapped = true;
-        //   }
-        // });
-        //   that.navigationByUrl(this.category = '', that.tepUpDataObj[this.value], 'Endpoints');
-        // },
-        contextmenu: function (e: { preventDefault: () => void; }) {
-          e.preventDefault();
-          // that.navigationByUrl(this.category = '', that.tepUpDataObj[this.value], 'Endpoints');
-          // window.sessionStorage.removeItem('endpointName');
-          // let newTabUrl = window.location.origin + url + '?id=' + that.tepUpDataObj[this.axis.categories[this.pos]];
-          // window.open(newTabUrl, '_blank');
-        }
+
       }
 
     }
@@ -218,27 +297,7 @@ export class RealTimeComponent implements OnInit {
         // return `${this.value}`
       },
       events: {
-        click: function () {
-          // window.sessionStorage.setItem('endpointName', this.axis.categories[this.pos]);
-          // that.navigationByUrl(this.category = '', that.tepDownDataObj[this.axis.categories[this.pos]], 'Endpoints');
-          // that.onclickCopy(this.value);
-        },
-        // dblclick: function (e) {
-        // that.websocketservice.isUnmapped = false;
-        // data.downData.forEach((element) => {
-        //   if (element.id == element.name && element.name == that.tepDownDataObj[this.value]) {
-        //     that.websocketservice.isUnmapped = true;
-        //   }
-        // });
-        //   that.navigationByUrl(this.category = '', that.tepDownDataObj[this.value], 'Endpoints');
-        // },
-        contextmenu: function (e: any) {
-          e.preventDefault();
-          // that.navigationByUrl(this.category = '', that.tepDownDataObj[this.value], 'Endpoints');
-          window.sessionStorage.removeItem('endpointName');
-          // let newTabUrl = window.location.origin + url + '?id=' + that.tepDownDataObj[this.axis.categories[this.pos]];
-          // window.open(newTabUrl, '_blank');
-        }
+
       }
     }
     topEndPointDownChartoptions.plotOptions.series.point.events = {
@@ -446,28 +505,10 @@ export class RealTimeComponent implements OnInit {
         // return `${this.value}`
       },
       events: {
-        // click: function (event) {
-        //   if (that.hasLocationAccess) {
-        //     that.router.navigate([url], { queryParams: { id: that.tlocUpDataObj[this.axis.categories[this.pos]] } })
-        //   }
-        // },
-        // contextmenu: function (event) {
-        //   if (that.hasLocationAccess) {
-        //     event.preventDefault();
-        //     // that.router.navigate(['/cco/traffic/locations/realtime'], { queryParams: { id: that.tlocUpDataObj[this.value] } })
-        //     let newTabUrl = window.location.origin + url + '?id=' + that.tlocUpDataObj[this.axis.categories[this.pos]];
-        //     window.open(newTabUrl, '_blank');
-        //   }
-        // }
       }
 
     }
     topLocationsUpChartoptions.plotOptions.series.point.events = {
-      // click: function (event) {
-      //   if (that.hasLocationAccess) {
-      //     that.router.navigate([url], { queryParams: { id: that.tlocUpDataObj[event.point.category] } })
-      //   }
-      // }
 
     };
     topLocationsDownChartoptions.xAxis.labels = {
@@ -485,28 +526,10 @@ export class RealTimeComponent implements OnInit {
         // return `${this.value}`
       },
       events: {
-        // click: function (event) {
-        //   if (that.hasLocationAccess) {
-        //     that.router.navigate([url], { queryParams: { id: that.tlocDownDataObj[this.axis.categories[this.pos]] } })
-        //   }
-        // },
-        // contextmenu: function (event) {
-        //   if (that.hasLocationAccess) {
-        //     event.preventDefault();
-        //     // that.router.navigate(['/cco/traffic/locations/realtime'], { queryParams: { id: that.tlocDownDataObj[this.value] } })
-        //     let newTabUrl = window.location.origin + url + '?id=' + that.tlocDownDataObj[this.axis.categories[this.pos]];
-        //     window.open(newTabUrl, '_blank');
-        //   }
-        // }
       }
     }
 
     topLocationsDownChartoptions.plotOptions.series.point.events = {
-      // click: function (event) {
-      //   if (that.hasLocationAccess) {
-      //     that.router.navigate([url], { queryParams: { id: that.tlocDownDataObj[event.point.category] } })
-      //   }
-      // }
     };
 
     topLocationsDownChartoptions.plotOptions.series.color = '#5ACFEA';
@@ -536,4 +559,17 @@ export class RealTimeComponent implements OnInit {
     this.tepDownDataObj = obj;
   }
 
+  createRecordingModal() {
+    let pipe = new DatePipe('en-US');
+    this.recordingName = "Network_" + (pipe.transform(new Date(), "yyyy-MM-dd")) + "_" + new Date().toTimeString().substr(0, 8)
+    this.dialogService.open(this.recordingModal, { size: 'lg', centered: true, windowClass: 'custom-modal', backdrop: 'static', keyboard: false });
+  }
+
+  changeNowAndLater() {
+    this.showDate = !this.showDate
+  }
+
+  closeAllModal(): void {
+    this.dialogService.dismissAll();
+  }
 }
