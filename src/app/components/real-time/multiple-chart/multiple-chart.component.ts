@@ -100,6 +100,8 @@ export class MultipleChartComponent implements OnInit {
     this.applicationWSRequestObj.networkId = this.orgid_tenantid;
     this.applicationWSRequestObj.monitorId = this.monitorId;
     // @ts-ignore
+    this.applicationWSRequestObj['delay'] = 60;
+    // @ts-ignore
     this.applicationWSRequestObj['startTime'] = this.startTime;
     this.yATitle = this.Type === "Rate" ? "bps" : "pps";
     this.buildNewChart();
@@ -154,7 +156,7 @@ export class MultipleChartComponent implements OnInit {
 
 
   send(eventname: string, data: any) {
-    this.realTimeTrafficService.multipleEmit(eventname, data);
+    this.realTimeTrafficService.pushMessage(eventname, data);
   }
 
   lastSubscriptionTime: any;
@@ -166,7 +168,7 @@ export class MultipleChartComponent implements OnInit {
       this.multipleStreamSubscription.unsubscribe();
     }
 
-    this.multipleStreamSubscription = this.realTimeTrafficService.multiSocketStream$.subscribe((cdata: any) => {
+    this.multipleStreamSubscription = this.realTimeTrafficService.socketStream$.subscribe((cdata: any) => {
       this.cacheRateRTDataObj = {};
       this.cachePacketRTDataObj = {};
 
@@ -199,7 +201,7 @@ export class MultipleChartComponent implements OnInit {
       }
     })
 
-    this.streamSubscription = this.realTimeTrafficService.multiSocketStream$.subscribe((data: any) => {
+    this.streamSubscription = this.realTimeTrafficService.socketStream$.subscribe((data: any) => {
       this.showRealTime = true;
       if (data.monitorId === this.monitorId) {
         if (data.graphType === 'TRF') {

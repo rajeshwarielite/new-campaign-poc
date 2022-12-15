@@ -665,7 +665,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     } else {
       if (this.locationsSelected.length > 1 && this.locationsSelected.includes('All')) {
         if (this.locationsSelected[0] === 'All') {
-          this.locationsSelected = this.locationsSelected.filter((l:any) => l !== 'All');
+          this.locationsSelected = this.locationsSelected.filter((l: any) => l !== 'All');
         }
         else if (this.locationsSelected.pop() === 'All') {
           this.locationsSelected = ['All'];
@@ -773,7 +773,6 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
   }
 
   loadMultipleChart() {
-    debugger;
     let IsDuplicate = false;
     let doWSCall = true;
     let position = 0;
@@ -791,12 +790,12 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
         }
       });
     }
-    let multipleLocationName = this.locationsSelected ? this.locationsSelected + ' - ' : "";
+    let multipleLocationName = this.locationItems.find(l => l._id === this.locationsSelected)?.name + ' - ';
     if (!IsDuplicate) {
       this.loadedMultipleChart.push({
         monitorId: monitorId,
         Type: this.metricSelected,
-        Name: this.applicationsSelected + multipleLocationName,
+        Name: this.trafficType === 'Applications' ? this.applicationsSelected + multipleLocationName : multipleLocationName,
         windowLen: this.selectedWindow,
         IsDuplicate: IsDuplicate,
         Position: position,
@@ -811,15 +810,12 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
 
   constructMultipleMonitorId(applicationid: any, locationid: any) {
     let monitorId = "";
-    let locationIdString = locationid;
-    // if (locationid && locationid.length) {
-    //   locationIdString = locationid.join();
-    // }
 
-    if (applicationid && locationIdString) {
-      monitorId = applicationid + '@@' + locationIdString
-    } else {
-      monitorId = applicationid ? applicationid : locationid;
+    if (this.trafficType === 'Locations') {
+      monitorId = locationid;
+    }
+    else {
+      monitorId = applicationid + '@@' + locationid
     }
     return monitorId;
   }

@@ -11,15 +11,9 @@ import { TrafficApplication, TrafficLocation } from './real-time-traffix.model';
 export class RealTimeTrafficService {
 
   private socketSubject = new ReplaySubject<any>();
-
   public socketStream$ = this.socketSubject.asObservable();
 
-  private multiSocketSubject = new ReplaySubject<any>();
-
-  public multiSocketStream$ = this.socketSubject.asObservable();
-
   private recordSubject = new ReplaySubject<string>();
-
   public recordStream$ = this.recordSubject.asObservable();
 
 
@@ -65,9 +59,7 @@ export class RealTimeTrafficService {
 
   listenMultiple(eventname: string) { }
 
-  multipleEmit(eventname: string, data: any) { }
-
-  pushMessage(event: string, requestType: string) {
+  pushMessage(event: string, requestType: any) {
     if (this.socket && (this.socket.active || this.socket.connected)) {
       this.socket.emit(event, requestType);
     }
@@ -75,8 +67,8 @@ export class RealTimeTrafficService {
 
   closeSocketConnection() {
     if (this.socket && (this.socket.active || this.socket.connected)) {
-      this.socket.removeAllListeners();
-      this.socket.disconnect();
+      // this.socket.removeAllListeners();
+      // this.socket.disconnect();
     }
   }
 
