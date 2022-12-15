@@ -55,7 +55,6 @@ export class RealTimeTrafficService {
     this.socket.on(requestType, (data: string) => {
       if (['NET', 'LOC', 'APP'].includes(requestType)) {
         const result = JSON.parse(data);
-        console.log(requestType, result);
         this.socketSubject.next(result);
       } else {
         const recordId = data.split(' ').pop() ?? '';

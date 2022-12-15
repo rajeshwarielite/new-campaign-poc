@@ -102,7 +102,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
 
   // locations
   locationItems: TrafficLocation[] = [];
-  locationsSelected: string[] = ['All'];
+  locationsSelected: any = ['All'];
 
   // applications
   applicationItems: TrafficApplication[] = [];
@@ -163,6 +163,10 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
   }
 
   connectToSocket(): void {
+    if (this.isMultiple) {
+      this.loadMultipleChart();
+      return;
+    }
     switch (this.trafficType) {
       case 'Network':
         this.showRealTime = true;
@@ -656,12 +660,16 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
   // location
 
   changeLocation() {
-    if (this.locationsSelected.length > 1 && this.locationsSelected.includes('All')) {
-      if (this.locationsSelected[0] === 'All') {
-        this.locationsSelected = this.locationsSelected.filter(l => l !== 'All');
-      }
-      else if (this.locationsSelected.pop() === 'All') {
-        this.locationsSelected = ['All'];
+    if (this.isMultiple) {
+
+    } else {
+      if (this.locationsSelected.length > 1 && this.locationsSelected.includes('All')) {
+        if (this.locationsSelected[0] === 'All') {
+          this.locationsSelected = this.locationsSelected.filter((l:any) => l !== 'All');
+        }
+        else if (this.locationsSelected.pop() === 'All') {
+          this.locationsSelected = ['All'];
+        }
       }
     }
   }
@@ -670,16 +678,18 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     this.realTimeTrafficService.getLocations().subscribe(result => {
       result.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
       this.locationItems = result;
-      this.locationItems.unshift({
-        name: 'All', _id: 'All',
-        address: '',
-        geo: '',
-        orgId: '',
-        region: '',
-        subnetsV4: '',
-        subnetsV6: '',
-        tenantId: 0
-      })
+      if (!this.isMultiple) {
+        this.locationItems.unshift({
+          name: 'All', _id: 'All',
+          address: '',
+          geo: '',
+          orgId: '',
+          region: '',
+          subnetsV4: '',
+          subnetsV6: '',
+          tenantId: 0
+        });
+      }
     });
   }
 
@@ -704,29 +714,35 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     this.realTimeTrafficService.getApplications().subscribe(result => {
       result.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
       this.applicationItems = result;
-      this.applicationItems.unshift({
-        name: 'All', _id: 'All',
-        addressesV4: '',
-        addressesV6: '',
-        engineId: '',
-        extAppEnum: '',
-        extProtocolId: '',
-        orgId: '',
-        ports: '',
-        protocol: '',
-        rangePorts: '',
-        tenantId: 0
-      })
+      if (!this.isMultiple) {
+        this.applicationItems.unshift({
+          name: 'All', _id: 'All',
+          addressesV4: '',
+          addressesV6: '',
+          engineId: '',
+          extAppEnum: '',
+          extProtocolId: '',
+          orgId: '',
+          ports: '',
+          protocol: '',
+          rangePorts: '',
+          tenantId: 0
+        });
+      }
     });
   }
 
   changeApplication() {
-    if (this.applicationsSelected.length > 1 && this.applicationsSelected.includes('All')) {
-      if (this.applicationsSelected[0] === 'All') {
-        this.applicationsSelected = this.applicationsSelected.filter(l => l !== 'All');
-      }
-      else if (this.applicationsSelected.pop() === 'All') {
-        this.applicationsSelected = ['All'];
+    if (this.isMultiple) {
+
+    } else {
+      if (this.applicationsSelected.length > 1 && this.applicationsSelected.includes('All')) {
+        if (this.applicationsSelected[0] === 'All') {
+          this.applicationsSelected = this.applicationsSelected.filter(l => l !== 'All');
+        }
+        else if (this.applicationsSelected.pop() === 'All') {
+          this.applicationsSelected = ['All'];
+        }
       }
     }
   }
@@ -741,7 +757,9 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
 
   setMultiple(mutiple: boolean): void {
     this.isMultiple = mutiple;
-    this.clearFilter();
+    this.applicationItems = this.applicationItems.filter(a => a.name !== 'All');
+    this.locationItems = this.locationItems.filter(a => a.name !== 'All');
+    //this.clearFilter();
   }
 
   clearChartContainer(values: any) {
@@ -752,5 +770,57 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     if (this.loadedMultipleChart.length <= 9) {
       // this.btnDisable = false;
     }
+  }
+
+  loadMultipleChart() {
+    debugger;
+    let IsDuplicate = false;
+    let doWSCall = true;
+    let position = 0;
+    let monitorId = this.constructMultipleMonitorId(this.applicationsSelected, this.locationsSelected);
+    if (this.loadedMultipleChart.length > 0) {
+      this.loadedMultipleChart.forEach((element: any) => {
+        if (element.monitorId === monitorId) {
+          doWSCall = false;
+        }
+        if (element.monitorId === monitorId && element.selectedTime === this.selectedWindow && element.Type === this.metricSelected) {
+          IsDuplicate = true;
+        }
+        if (element.monitorId === monitorId && element.Type === this.metricSelected) {
+          position = position + 1;
+        }
+      });
+    }
+    let multipleLocationName = this.locationsSelected ? this.locationsSelected + ' - ' : "";
+    if (!IsDuplicate) {
+      this.loadedMultipleChart.push({
+        monitorId: monitorId,
+        Type: this.metricSelected,
+        Name: this.applicationsSelected + multipleLocationName,
+        windowLen: this.selectedWindow,
+        IsDuplicate: IsDuplicate,
+        Position: position,
+        doWSCall: doWSCall,
+        replay: false,
+        startTime: (new Date()).getTime(),
+        selectedTime: this.selectedWindow
+      });
+      this.loadedMultipleChart = [...this.loadedMultipleChart];
+    }
+  }
+
+  constructMultipleMonitorId(applicationid: any, locationid: any) {
+    let monitorId = "";
+    let locationIdString = locationid;
+    // if (locationid && locationid.length) {
+    //   locationIdString = locationid.join();
+    // }
+
+    if (applicationid && locationIdString) {
+      monitorId = applicationid + '@@' + locationIdString
+    } else {
+      monitorId = applicationid ? applicationid : locationid;
+    }
+    return monitorId;
   }
 }
