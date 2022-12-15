@@ -108,6 +108,22 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
   applicationItems: TrafficApplication[] = [];
   applicationsSelected: string[] = ['All'];
 
+  // comparitive
+  metricItems = [
+    {
+      name: 'Rate',
+      value: 'Rate'
+    },
+    {
+      name: 'Packet',
+      value: 'Packet'
+    }
+  ];
+
+  metricSelected = 'Rate';
+  isMultiple = false;
+  loadedMultipleChart: any = [];
+
   constructor(private realTimeTrafficService: RealTimeTrafficService, private dialogService: NgbModal) { }
   ngOnDestroy(): void {
     this.realTimeTrafficService.closeSocketConnection();
@@ -186,7 +202,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
         break;
     }
     this.clearCacheData();
-    this.realTimeTrafficService.netSocketStream$.subscribe(
+    this.realTimeTrafficService.socketStream$.subscribe(
       result => {
         this.data = result;
         if (result.confData.graphType === 'TEP') {
@@ -236,8 +252,8 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
 
   clearFilter() {
     this.selectedWindow = 1;
-    this.locationsSelected = [];
-    this.applicationsSelected = [];
+    this.locationsSelected = ['All'];
+    this.applicationsSelected = ['All'];
     this.connectToSocket();
   }
 
@@ -721,4 +737,20 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       : this.applicationsSelected.join(',');
   }
 
+  // comparitive
+
+  setMultiple(mutiple: boolean): void {
+    this.isMultiple = mutiple;
+    this.clearFilter();
+  }
+
+  clearChartContainer(values: any) {
+    var findindex = this.loadedMultipleChart.findIndex((x: { monitorId: any; Type: any; Position: any; }) => x.monitorId === values.monitorId && x.Type === values.Type && x.Position === values.Position);
+    if (findindex > -1) {
+      this.loadedMultipleChart.splice(findindex, 1);
+    }
+    if (this.loadedMultipleChart.length <= 9) {
+      // this.btnDisable = false;
+    }
+  }
 }

@@ -43,6 +43,7 @@ import { TrafficComponent } from './components/real-time/traffic/traffic.compone
 import { NetworkTrafficComponent } from './components/real-time/traffic/network-traffic/network-traffic.component';
 import { LocationTrafficComponent } from './components/real-time/traffic/location-traffic/location-traffic.component';
 import { ApplicationTrafficComponent } from './components/real-time/traffic/application-traffic/application-traffic.component';
+import { MultipleChartComponent } from './components/real-time/multiple-chart/multiple-chart.component';
 
 const routes: Route[] = [
   {
@@ -93,6 +94,7 @@ const routes: Route[] = [
     NetworkTrafficComponent,
     LocationTrafficComponent,
     ApplicationTrafficComponent,
+    MultipleChartComponent
   ],
   imports: [
     BrowserModule,

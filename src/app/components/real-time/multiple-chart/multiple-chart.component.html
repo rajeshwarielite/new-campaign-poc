@@ -1,0 +1,59 @@
+<div class="row" style="padding: 10px;">
+    <div class="col-md-12 px-0">
+        <div class="mwc-header flex w-100 border-bottom mb-2">
+            <div class="cco-secondary-title title-tooltip" data-toggle="tooltip" data-placement="top"
+                title="{{Name}} {{Type}} ({{windowType}})">
+                {{Name}} {{Type}} ({{windowType}})
+            </div>
+            <div class="mwc-btns flex align-items-center">
+                <button type="button" class="close m-2" aria-label="Close" (click)="closeChart()">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+        <div class="col-md-12 col-lg-12 col-xl-12 col-sm-12 px-0">
+            <div id="traffic-location-realtime-rate" class="card m-10" *ngIf="data.length || showRealTime">
+                <div class="" id="ngx-stream-path-chart-rate">
+                    <div class="analytic-widget" *ngIf="pageAvailable">
+                        <div class="analytic-widget-header">
+                            <div class="d-flex justify-content-between">
+                                <div class="ml-1">
+                                    <a class="legend-label toggle-up" (click)="toggleUpStream();">
+                                        <span class="legend-glyph"
+                                            [ngStyle]="{'background-color': isUpStreamVisible === true ? '#0027FF' : 'grey'}"></span>
+                                        Up
+                                    </a>
+                                    <a class="legend-label toggle-down" (click)="toggleDownStream();">
+                                        <span class="legend-glyph"
+                                            [ngStyle]="{'background-color': isDownStreamVisible === true ? '#00d0ff' : 'grey'}"></span>
+                                        Down
+                                    </a>
+
+                                    <span class="interval">Interval 1 sec</span>
+                                </div>
+
+                                <div class="mr-1" style="text-align: right;">
+                                    <span class="traffic-volume monitor-status-normal">
+                                        <span style="color: #0027FF;" *ngIf="isUpStreamVisible"><i
+                                                class="fa fa-arrow-up" aria-hidden="true"></i>
+                                            {{upRate}} </span>
+                                        <span style="color: #5ACFEA;" *ngIf="isDownStreamVisible"><i
+                                                class="fa fa-arrow-down" aria-hidden="true"></i>
+                                            {{downRate}}</span>
+                                    </span>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="analytic-widget-body">
+                            <highcharts-chart [Highcharts]="highcharts" [options]="streamOptions"
+                                [callbackFunction]="chartCallback" id="custom-mirrot-chart"
+                                style="width: 100%; display: block;">
+                            </highcharts-chart>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

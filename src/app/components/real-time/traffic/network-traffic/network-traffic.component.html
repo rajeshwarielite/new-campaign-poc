@@ -1,5 +1,11 @@
-<section class="m-4">
-    <div class="container">
+<div class="btn-action-view mt-4 m-2" *ngIf="trafficType !== 'Network'">
+    <button (click)="setMultiple(false)" class="btn-std" [ngClass]="!isMultiple ? 'btn-active' : ''">Standard
+        View</button>
+    <button (click)="setMultiple(true)" class="btn-comp" [ngClass]="isMultiple ? 'btn-active' : ''">Comparative
+        View</button>
+</div>
+<section class="m-4" [hidden]="isMultiple">
+    <div class="d-inline">
         <div class="filter-elemnts">
             <div class="row">
                 <div class="col-md-12 col-lg-8">
@@ -21,7 +27,7 @@
                                 <label class="col-form-label">Application <span class="error">*</span></label>
                                 <div class="col-sm-12 p-0">
                                     <ng-select id="application" [items]="applicationItems" bindLabel="name"
-                                        bindValue="_id" [multiple]="true" placeholder="None Selected"
+                                        bindValue="_id" [multiple]="!isMultiple" placeholder="None Selected"
                                         [(ngModel)]="applicationsSelected" [ngModelOptions]="{ standalone: true }"
                                         [clearable]="true" [searchable]="true" (change)="changeApplication()">
                                         <ng-template ng-optgroup-tmp let-item="item">
@@ -37,9 +43,9 @@
                                 <label class="col-form-label">Location <span class="error">*</span></label>
                                 <div class="col-sm-12 p-0">
                                     <ng-select id="location" [items]="locationItems" bindLabel="name" bindValue="_id"
-                                        [multiple]="true" placeholder="None Selected" [(ngModel)]="locationsSelected"
-                                        [ngModelOptions]="{ standalone: true }" [clearable]="true" [searchable]="true"
-                                        (change)="changeLocation()">
+                                        [multiple]="!isMultiple" placeholder="None Selected"
+                                        [(ngModel)]="locationsSelected" [ngModelOptions]="{ standalone: true }"
+                                        [clearable]="true" [searchable]="true" (change)="changeLocation()">
                                         <ng-template ng-optgroup-tmp let-item="item">
                                             {{item.region}}
                                         </ng-template>
@@ -47,24 +53,42 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="current-issue-menu-item col-md-12 col-lg-3 ">
+                            <div class="custom-selectbox">
+                                <label class="col-form-label">Metric</label>
+                                <div class="col-sm-12 p-0">
+                                    <ng-select id="metric" [items]="metricItems" bindLabel="name" bindValue="value"
+                                        [multiple]="false" placeholder="None Selected" [(ngModel)]="metricSelected"
+                                        [ngModelOptions]="{standalone: true}" [clearable]="false" [searchable]="false">
+                                        <ng-template ng-label-tmp let-item="item">
+                                            {{item.name }}
+                                        </ng-template>
+                                        <ng-template ng-option-tmp let-item="item" let-index="index">
+                                            {{item.name }}
+                                        </ng-template>
+                                    </ng-select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right btns-con justify-content-end">
+                    <div class="d-inline-flex mr-3">
+                        <button type="button" class="btn-default primary px-3" (click)="applyFilter()">
+                            Apply
+                        </button>
+                    </div>
+                    <div class="d-inline-flex">
+                        <button type="button" id="#" class="btn-default btn-dft" (click)="clearFilter()">
+                            Clear
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="text-right btns-con d-flex justify-content-end">
-                <div class="d-inline-flex mr-3">
-                    <button type="button" class="btn-default primary px-3" (click)="applyFilter()">
-                        Apply
-                    </button>
-                </div>
-                <div class="d-inline-flex">
-                    <button type="button" id="#" class="btn-default btn-dft" (click)="clearFilter()">
-                        Clear
-                    </button>
-                </div>
-            </div>
+
         </div>
     </div>
-    <div class="row">
+    <div class="row" *ngIf="showRealTime">
         <div class="col-md-9 text-left">
             <div class="pl-3">
                 <div class="d-inline-flex mx-2 primary pointer" data-toggle="modal" (click)="createRecordingModal()"
@@ -268,3 +292,15 @@
         </div>
     </div>
 </ng-template>
+
+<section class="m-4" [hidden]="!isMultiple">
+    <div class="row">
+        <div class="col-md-4" *ngFor="let item of loadedMultipleChart; let i=index">
+            <app-multiple-chart [Type]="item.Type" [Name]="item.Name" [windowLen]="item.windowLen"
+                [selectedTime]="item.selectedTime" [EventName]="'APP'" [monitorId]="item.monitorId"
+                [Position]="item.Position" [doWSCall]="item.doWSCall" [replay]="item.replay"
+                [startTime]="item.startTime" (valueChange)="clearChartContainer($event)">
+            </app-multiple-chart>
+        </div>
+    </div>
+</section>

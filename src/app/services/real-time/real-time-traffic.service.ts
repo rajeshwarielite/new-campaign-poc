@@ -12,7 +12,11 @@ export class RealTimeTrafficService {
 
   private socketSubject = new ReplaySubject<any>();
 
-  public netSocketStream$ = this.socketSubject.asObservable();
+  public socketStream$ = this.socketSubject.asObservable();
+
+  private multiSocketSubject = new ReplaySubject<any>();
+
+  public multiSocketStream$ = this.socketSubject.asObservable();
 
   private recordSubject = new ReplaySubject<string>();
 
@@ -59,6 +63,10 @@ export class RealTimeTrafficService {
       }
     });
   }
+
+  listenMultiple(eventname: string) { }
+
+  multipleEmit(eventname: string, data: any) { }
 
   pushMessage(event: string, requestType: string) {
     if (this.socket && (this.socket.active || this.socket.connected)) {
