@@ -16,7 +16,23 @@
                                 </div>
                             </div>
                         </div>
-                        <div *ngIf="trafficType === 'Locations'" class="current-issue-menu-item">
+                        <div *ngIf="trafficType === 'Applications'" class="current-issue-menu-item">
+                            <div class="custom-selectbox">
+                                <label class="col-form-label">Application <span class="error">*</span></label>
+                                <div class="col-sm-12 p-0">
+                                    <ng-select id="application" [items]="applicationItems" bindLabel="name"
+                                        bindValue="_id" [multiple]="true" placeholder="None Selected"
+                                        [(ngModel)]="applicationsSelected" [ngModelOptions]="{ standalone: true }"
+                                        [clearable]="true" [searchable]="true" (change)="changeApplication()">
+                                        <ng-template ng-optgroup-tmp let-item="item">
+                                            {{item.groupName}}
+                                        </ng-template>
+                                    </ng-select>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="['Locations', 'Applications'].includes(trafficType)"
+                            class="current-issue-menu-item">
                             <div class="custom-selectbox">
                                 <label class="col-form-label">Location <span class="error">*</span></label>
                                 <div class="col-sm-12 p-0">
@@ -132,7 +148,7 @@
                 </div>
             </div>
         </div>
-        <div id="traffic-network-realtime-tapp" class="card m-2 my-3 h-auto">
+        <div *ngIf="trafficType != 'Applications'" id="traffic-network-realtime-tapp" class="card m-2 my-3 h-auto">
             <div class="board_head">
                 <div class="orange-text-wrapper d-inline-block">
                     <p class="orange-text">Top 5 Applications </p>
@@ -161,7 +177,7 @@
                 </div>
             </div>
         </div>
-        <div id="traffic-network-realtime-location" class="card m-2 my-3 h-auto" *ngIf="trafficType != 'Locations'">
+        <div *ngIf="trafficType != 'Locations'" id="traffic-network-realtime-location" class="card m-2 my-3 h-auto">
             <div class="board_head">
                 <div class="orange-text-wrapper d-inline-block">
                     <p class="orange-text">Top 5 Locations </p>

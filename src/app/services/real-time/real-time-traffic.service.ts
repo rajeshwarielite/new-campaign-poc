@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import * as Highcharts from 'highcharts';
 import { Observable, ReplaySubject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
-import { TrafficLocation } from './real-time-traffix.model';
+import { TrafficApplication, TrafficLocation } from './real-time-traffix.model';
 
 @Injectable({
   providedIn: 'root'
@@ -49,9 +49,9 @@ export class RealTimeTrafficService {
     }
 
     this.socket.on(requestType, (data: string) => {
-      if (['NET', 'LOC'].includes(requestType)) {
+      if (['NET', 'LOC', 'APP'].includes(requestType)) {
         const result = JSON.parse(data);
-        // console.log(requestType, result);
+        console.log(requestType, result);
         this.socketSubject.next(result);
       } else {
         const recordId = data.split(' ').pop() ?? '';
@@ -91,6 +91,10 @@ export class RealTimeTrafficService {
 
   getLocations(): Observable<TrafficLocation[]> {
     return this.httpClient.get<TrafficLocation[]>(this.apiUrl + 'fa/config/location?org-id=12921722')
+  }
+
+  getApplications(): Observable<TrafficApplication[]> {
+    return this.httpClient.get<TrafficApplication[]>(this.apiUrl + 'fa/config/application?org-id=0')
   }
 
   makeOptionsForRTBC(data: any, type: any, dataType?: any, sliceNum?: any, fsView?: any): any {

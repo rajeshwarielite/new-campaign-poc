@@ -3,7 +3,7 @@ import { Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@an
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin } from 'rxjs';
 import { RealTimeTrafficService } from 'src/app/services/real-time/real-time-traffic.service';
-import { TrafficLocation } from 'src/app/services/real-time/real-time-traffix.model';
+import { TrafficApplication, TrafficLocation } from 'src/app/services/real-time/real-time-traffix.model';
 
 @Component({
   selector: 'app-network-traffic',
@@ -100,9 +100,13 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     }
   ];
 
-  //locations
+  // locations
   locationItems: TrafficLocation[] = [];
   locationsSelected: string[] = ['All'];
+
+  // applications
+  applicationItems: TrafficApplication[] = [];
+  applicationsSelected: string[] = ['All'];
 
   constructor(private realTimeTrafficService: RealTimeTrafficService, private dialogService: NgbModal) { }
   ngOnDestroy(): void {
@@ -110,34 +114,27 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    const socketUrl$ = this.realTimeTrafficService.getSocketUrl();
     switch (this.trafficType) {
       case 'Network':
-        this.realTimeTrafficService.getSocketUrl().subscribe(result => {
+        socketUrl$.subscribe(result => {
           this.socketUrl = result.signedurl;
           this.connectToSocket();
         });
         this.getCount();
         break;
       case 'Locations':
-        this.realTimeTrafficService.getSocketUrl().subscribe(result => {
+        socketUrl$.subscribe(result => {
           this.socketUrl = result.signedurl;
         });
-        this.realTimeTrafficService.getLocations().subscribe(result => {
-          result.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
-          this.locationItems = result;
-          this.locationItems.unshift({
-            name: 'All', _id: 'All',
-            address: '',
-            geo: '',
-            orgId: '',
-            region: '',
-            subnetsV4: '',
-            subnetsV6: '',
-            tenantId: 0
-          })
-        });
+        this.getLocations();
         break;
       case 'Applications':
+        socketUrl$.subscribe(result => {
+          this.socketUrl = result.signedurl;
+        });
+        this.getLocations();
+        this.getApplications();
         break;
     }
     setTimeout(() => {
@@ -176,6 +173,16 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
         setTimeout(() => this.showRealTime = true, 500);
         break;
       case 'Applications':
+        this.showRealTime = false;
+        this.realTimeTrafficService.pushMessage('remove', 'APP');
+        this.realTimeTrafficService.getSocketConnection(this.socketUrl, 'APP',
+          {
+            delay: 60, graphType: "TRF,TLOC,TEP",
+            monitorId: this.getApplicationMonitorIds() + '@@' + this.getLocationMonitorIds(),
+            monitorType: "APP", networkId: "12921722_0",
+            orgId: "12921722", startTime: new Date().getTime(),
+          });
+        setTimeout(() => this.showRealTime = true, 500);
         break;
     }
     this.clearCacheData();
@@ -230,6 +237,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
   clearFilter() {
     this.selectedWindow = 1;
     this.locationsSelected = [];
+    this.applicationsSelected = [];
     this.connectToSocket();
   }
 
@@ -642,6 +650,23 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     }
   }
 
+  getLocations() {
+    this.realTimeTrafficService.getLocations().subscribe(result => {
+      result.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
+      this.locationItems = result;
+      this.locationItems.unshift({
+        name: 'All', _id: 'All',
+        address: '',
+        geo: '',
+        orgId: '',
+        region: '',
+        subnetsV4: '',
+        subnetsV6: '',
+        tenantId: 0
+      })
+    });
+  }
+
   getLocationMonitorIds(): string {
     return (this.locationsSelected.length === 1 && this.locationsSelected[0] === 'All')
       ? this.locationItems.filter(l => l._id !== 'All').map(l => l._id).join(',')
@@ -655,6 +680,45 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     this.topAppsDownChartoptions = null;
     this.topLocationsUpChartoptions = null;
     this.topLocationsDownChartoptions = null;
+  }
+
+  // Applications
+
+  getApplications() {
+    this.realTimeTrafficService.getApplications().subscribe(result => {
+      result.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1);
+      this.applicationItems = result;
+      this.applicationItems.unshift({
+        name: 'All', _id: 'All',
+        addressesV4: '',
+        addressesV6: '',
+        engineId: '',
+        extAppEnum: '',
+        extProtocolId: '',
+        orgId: '',
+        ports: '',
+        protocol: '',
+        rangePorts: '',
+        tenantId: 0
+      })
+    });
+  }
+
+  changeApplication() {
+    if (this.applicationsSelected.length > 1 && this.applicationsSelected.includes('All')) {
+      if (this.applicationsSelected[0] === 'All') {
+        this.applicationsSelected = this.applicationsSelected.filter(l => l !== 'All');
+      }
+      else if (this.applicationsSelected.pop() === 'All') {
+        this.applicationsSelected = ['All'];
+      }
+    }
+  }
+
+  getApplicationMonitorIds(): string {
+    return (this.applicationsSelected.length === 1 && this.applicationsSelected[0] === 'All')
+      ? this.applicationItems.filter(l => l._id !== 'All').map(l => l._id).join(',')
+      : this.applicationsSelected.join(',');
   }
 
 }
