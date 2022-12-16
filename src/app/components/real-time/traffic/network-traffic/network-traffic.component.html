@@ -305,7 +305,8 @@
             <app-multiple-chart [Type]="item.Type" [Name]="item.Name" [windowLen]="item.windowLen"
                 [selectedTime]="item.selectedTime" [EventName]="trafficType === 'Applications' ? 'APP': 'LOC'"
                 [monitorId]="item.monitorId" [Position]="item.Position" [doWSCall]="item.doWSCall"
-                [replay]="item.replay" [startTime]="item.startTime" (valueChange)="clearChartContainer($event)">
+                [socketUrl]="socketUrl" [replay]="item.replay" [startTime]="item.startTime"
+                (valueChange)="clearChartContainer($event)">
             </app-multiple-chart>
         </div>
     </div>

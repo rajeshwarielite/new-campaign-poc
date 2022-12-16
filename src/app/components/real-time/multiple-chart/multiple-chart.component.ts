@@ -24,6 +24,7 @@ export class MultipleChartComponent implements OnInit {
   @Input() doWSCall: any;
   @Input() replay: any;
   @Input() startTime: any;
+  @Input() socketUrl: any;
   @Output() valueChange = new EventEmitter();
 
   highcharts = Highcharts;
@@ -110,7 +111,6 @@ export class MultipleChartComponent implements OnInit {
     document.addEventListener("visibilitychange", function () {
       that.rebuildData();
     });
-
     if (!this.replay) {
       if (!this.doWSCall) {
         this.getRtData();
@@ -156,7 +156,7 @@ export class MultipleChartComponent implements OnInit {
 
 
   send(eventname: string, data: any) {
-    this.realTimeTrafficService.pushMessage(eventname, data);
+    this.realTimeTrafficService.getSocketConnection(this.socketUrl, eventname, data);
   }
 
   lastSubscriptionTime: any;
@@ -168,7 +168,7 @@ export class MultipleChartComponent implements OnInit {
       this.multipleStreamSubscription.unsubscribe();
     }
 
-    this.multipleStreamSubscription = this.realTimeTrafficService.socketStream$.subscribe((cdata: any) => {
+    this.multipleStreamSubscription = this.realTimeTrafficService.multiSocketStream$.subscribe((cdata: any) => {
       this.cacheRateRTDataObj = {};
       this.cachePacketRTDataObj = {};
 
@@ -202,9 +202,11 @@ export class MultipleChartComponent implements OnInit {
     })
 
     this.streamSubscription = this.realTimeTrafficService.socketStream$.subscribe((data: any) => {
+      console.log('data', data)
+
       this.showRealTime = true;
-      if (data.monitorId === this.monitorId) {
-        if (data.graphType === 'TRF') {
+      if (data.confData.monitorId === this.monitorId) {
+        if (data.confData.graphType === 'TRF') {
           this.lastSubscriptionData = data
           this.lastSubscriptionTime = new Date().getTime();
           if (this.Type === "Rate") {
@@ -763,12 +765,12 @@ export class MultipleChartComponent implements OnInit {
           // @ts-ignore
           if (this.series.name == 'up') {
             // @ts-ignore
-            return `<b> ${dateStr}  </b><br/>            ${that.language.Upstream}: ${Highcharts.numberFormat(Math.abs(this.point.y), 2)} ${that.yAxixTitle}`;
+            return `<b> ${dateStr}  </b><br/>            Upstream: ${Highcharts.numberFormat(Math.abs(this.point.y), 2)} ${that.yAxixTitle}`;
           }
           // @ts-ignore
           if (this.series.name == 'down') {
             // @ts-ignore
-            return `<b> ${dateStr}  </b><br/>            ${that.language.Downstream}: ${Highcharts.numberFormat(Math.abs(this.point.y), 2)} ${that.yAxixTitle}`;
+            return `<b> ${dateStr}  </b><br/>           Downstream: ${Highcharts.numberFormat(Math.abs(this.point.y), 2)} ${that.yAxixTitle}`;
 
           }
         }
@@ -784,7 +786,7 @@ export class MultipleChartComponent implements OnInit {
 
       series: [
         {
-          name: that?.language?.upStream ? that.language.upStream : 'up',
+          name: 'up',
           data: (function () {
             var data = [],
               time = (new Date()).getTime() + timezoneDetected,
@@ -811,7 +813,7 @@ export class MultipleChartComponent implements OnInit {
             return data;
           })()
         }, {
-          name: that?.language?.downStream ? that.language.downStream : 'down',
+          name: 'down',
           data: (function () {
             var data = [],
               time = (new Date()).getTime() + timezoneDetected,

@@ -13,6 +13,9 @@ export class RealTimeTrafficService {
   private socketSubject = new ReplaySubject<any>();
   public socketStream$ = this.socketSubject.asObservable();
 
+  private multiSocketSubject = new ReplaySubject<any>();
+  public multiSocketStream$ = this.socketSubject.asObservable();
+
   private recordSubject = new ReplaySubject<string>();
   public recordStream$ = this.recordSubject.asObservable();
 
@@ -67,8 +70,8 @@ export class RealTimeTrafficService {
 
   closeSocketConnection() {
     if (this.socket && (this.socket.active || this.socket.connected)) {
-      // this.socket.removeAllListeners();
-      // this.socket.disconnect();
+      this.socket.removeAllListeners();
+      this.socket.disconnect();
     }
   }
 
