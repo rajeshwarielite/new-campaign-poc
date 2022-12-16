@@ -3,9 +3,9 @@ import * as Highcharts from 'highcharts/highstock';
 import { Subscription } from 'rxjs';
 import more from 'highcharts/highcharts-more';
 import StreamgraphModule from 'highcharts/modules/streamgraph';
+import { RealTimeTrafficService } from '../traffic/real-time-service/real-time-traffic.service';
 more(Highcharts);
 StreamgraphModule(Highcharts);
-import { RealTimeTrafficService } from 'src/app/services/real-time/real-time-traffic.service';
 
 @Component({
   selector: 'app-multiple-chart',

@@ -2,8 +2,8 @@ import { DatePipe } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { forkJoin } from 'rxjs';
-import { RealTimeTrafficService } from 'src/app/services/real-time/real-time-traffic.service';
-import { TrafficApplication, TrafficLocation } from 'src/app/services/real-time/real-time-traffix.model';
+import { RealTimeTrafficService } from '../real-time-service/real-time-traffic.service';
+import { TrafficApplication, TrafficLocation } from '../real-time-service/real-time-traffix.model';
 
 @Component({
   selector: 'app-network-traffic',
