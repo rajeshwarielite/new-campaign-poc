@@ -41,8 +41,6 @@ import { HighchartsChartModule } from 'highcharts-angular';
 import { BarChartComponent } from './components/real-time/bar-chart/bar-chart.component';
 import { TrafficComponent } from './components/real-time/traffic/traffic.component';
 import { NetworkTrafficComponent } from './components/real-time/traffic/network-traffic/network-traffic.component';
-import { LocationTrafficComponent } from './components/real-time/traffic/location-traffic/location-traffic.component';
-import { ApplicationTrafficComponent } from './components/real-time/traffic/application-traffic/application-traffic.component';
 import { MultipleChartComponent } from './components/real-time/multiple-chart/multiple-chart.component';
 
 const routes: Route[] = [
@@ -92,8 +90,6 @@ const routes: Route[] = [
     BarChartComponent,
     TrafficComponent,
     NetworkTrafficComponent,
-    LocationTrafficComponent,
-    ApplicationTrafficComponent,
     MultipleChartComponent
   ],
   imports: [
