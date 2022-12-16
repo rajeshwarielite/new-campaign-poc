@@ -74,7 +74,8 @@
                 </div>
                 <div class="text-right btns-con justify-content-end">
                     <div class="d-inline-flex mr-3">
-                        <button type="button" class="btn-default primary px-3" (click)="applyFilter()">
+                        <button [disabled]="disableApply" type="button" class="btn-default primary px-3"
+                            (click)="applyFilter()">
                             Apply
                         </button>
                     </div>
@@ -85,7 +86,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
     <div class="row" *ngIf="showRealTime">
@@ -299,7 +299,7 @@
         </ng-template>
     </section>
 </section>
-<section class="m-4" [hidden]="!isMultiple">
+<section class="container" [hidden]="!isMultiple">
     <div class="row">
         <div class="col-md-4" *ngFor="let item of loadedMultipleChart; let i=index">
             <app-multiple-chart [Type]="item.Type" [Name]="item.Name" [windowLen]="item.windowLen"

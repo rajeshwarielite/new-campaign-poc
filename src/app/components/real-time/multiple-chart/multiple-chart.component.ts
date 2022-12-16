@@ -202,8 +202,6 @@ export class MultipleChartComponent implements OnInit {
     })
 
     this.streamSubscription = this.realTimeTrafficService.socketStream$.subscribe((data: any) => {
-      console.log('data', data)
-
       this.showRealTime = true;
       if (data.confData.monitorId === this.monitorId) {
         if (data.confData.graphType === 'TRF') {

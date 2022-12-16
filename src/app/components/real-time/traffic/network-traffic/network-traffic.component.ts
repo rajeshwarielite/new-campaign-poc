@@ -19,6 +19,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
   updateFlag = true;
   isCcoTraffic = false;
   showRealTime = false;
+  disableApply = false;
 
   data: any;
   topEndPointUpChartoptions: any;
@@ -106,7 +107,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
 
   // applications
   applicationItems: TrafficApplication[] = [];
-  applicationsSelected: string[] = ['All'];
+  applicationsSelected: any = ['All'];
 
   // comparitive
   metricItems = [
@@ -258,6 +259,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     this.selectedWindow = 1;
     this.locationsSelected = ['All'];
     this.applicationsSelected = ['All'];
+    this.loadedMultipleChart = [];
     this.connectToSocket();
   }
 
@@ -738,7 +740,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     } else {
       if (this.applicationsSelected.length > 1 && this.applicationsSelected.includes('All')) {
         if (this.applicationsSelected[0] === 'All') {
-          this.applicationsSelected = this.applicationsSelected.filter(l => l !== 'All');
+          this.applicationsSelected = this.applicationsSelected.filter((l: any) => l !== 'All');
         }
         else if (this.applicationsSelected.pop() === 'All') {
           this.applicationsSelected = ['All'];
@@ -763,12 +765,12 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
   }
 
   clearChartContainer(values: any) {
-    var findindex = this.loadedMultipleChart.findIndex((x: { monitorId: any; Type: any; Position: any; }) => x.monitorId === values.monitorId && x.Type === values.Type && x.Position === values.Position);
+    var findindex = this.loadedMultipleChart.findIndex((x: any) => x.monitorId === values.monitorId && x.Type === values.Type && x.Position === values.Position);
     if (findindex > -1) {
       this.loadedMultipleChart.splice(findindex, 1);
     }
     if (this.loadedMultipleChart.length <= 9) {
-      // this.btnDisable = false;
+      this.disableApply = false;
     }
   }
 
@@ -791,11 +793,13 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       });
     }
     let multipleLocationName = this.locationItems.find(l => l._id === this.locationsSelected)?.name + ' - ';
+    let multipleApplicationName = this.applicationItems.find(l => l._id === this.applicationsSelected)?.name + ' - ';
+
     if (!IsDuplicate) {
       this.loadedMultipleChart.push({
         monitorId: monitorId,
         Type: this.metricSelected,
-        Name: this.trafficType === 'Applications' ? this.applicationsSelected + multipleLocationName : multipleLocationName,
+        Name: this.trafficType === 'Applications' ? multipleApplicationName + multipleLocationName : multipleLocationName,
         windowLen: this.selectedWindow,
         IsDuplicate: IsDuplicate,
         Position: position,
@@ -805,6 +809,12 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
         selectedTime: this.selectedWindow
       });
       this.loadedMultipleChart = [...this.loadedMultipleChart];
+    }
+
+    if (this.loadedMultipleChart.length > 8) {
+      this.disableApply = true;
+    } else {
+      this.disableApply = false;
     }
   }
 
