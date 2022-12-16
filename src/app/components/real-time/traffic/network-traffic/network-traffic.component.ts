@@ -24,12 +24,12 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
   data: any;
   topEndPointUpChartoptions: any;
   topEndPointDownChartoptions: any;
-  topAppsUpChartoptions: any;
-  topAppsDownChartoptions: any;
+  topApplicationsUpChartoptions: any;
+  topApplicationsDownChartoptions: any;
   topLocationsUpChartoptions: any;
   topLocationsDownChartoptions: any;
 
-  windowOptions = [
+  timeFrameOptions = [
     { id: 1, name: '5 Minutes window' },
     { id: 2, name: '10 Minutes window' },
     { id: 3, name: '15 Minutes window' },
@@ -37,29 +37,30 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     { id: 5, name: '25 Minutes window' },
     { id: 6, name: '30 Minutes window' }
   ];
-  selectedWindow: number = 1;
-  tAPrcntData = {
+  selectedTimeFrame: number = 1;
+
+  percentTAPP = {
     downPercentage: '0',
     upPercentage: '0'
   };
-  tLPrcntData = {
+  percentTLOC = {
     downPercentage: '0',
     upPercentage: '0'
   };
-  tEPrcntData = {
+  percentTEP = {
     downPercentage: '0',
     upPercentage: '0'
   };
 
-  tAData = {
+  streamTAPP = {
     upData: [],
     downData: []
   };
-  tLData = {
+  streamTLOC = {
     upData: [],
     downData: []
   };
-  tEPData = {
+  streamTEP = {
     upData: [],
     downData: []
   };
@@ -171,20 +172,20 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     switch (this.trafficType) {
       case 'Network':
         this.showRealTime = true;
-        this.realTimeTrafficService.getSocketConnection(this.socketUrl, 'NET',
+        this.realTimeTrafficService.openSocketConnection(this.socketUrl, 'NET',
           {
             delay: 60, graphType: "TRF,TAPP,TLOC,TEP",
             monitorId: "12921722_0", monitorType: "NET",
             networkId: "12921722_0", orgId: "12921722",
             outputStartTimeDiffToCur: 135114,
             startTime: new Date().getTime(),
-            windowLen: this.selectedWindow,
+            windowLen: this.selectedTimeFrame,
           });
         break;
       case 'Locations':
         this.showRealTime = false;
         this.realTimeTrafficService.pushMessage('remove', 'LOC');
-        this.realTimeTrafficService.getSocketConnection(this.socketUrl, 'LOC',
+        this.realTimeTrafficService.openSocketConnection(this.socketUrl, 'LOC',
           {
             delay: 60, graphType: "TRF,TAPP,TEP",
             monitorId: this.getLocationMonitorIds(),
@@ -196,7 +197,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       case 'Applications':
         this.showRealTime = false;
         this.realTimeTrafficService.pushMessage('remove', 'APP');
-        this.realTimeTrafficService.getSocketConnection(this.socketUrl, 'APP',
+        this.realTimeTrafficService.openSocketConnection(this.socketUrl, 'APP',
           {
             delay: 60, graphType: "TRF,TLOC,TEP",
             monitorId: this.getApplicationMonitorIds() + '@@' + this.getLocationMonitorIds(),
@@ -211,13 +212,13 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       result => {
         this.data = result;
         if (result.confData.graphType === 'TEP') {
-          this.makeTEPEvents(result);
+          this.listenMessageTEP(result);
         }
         if (result.confData.graphType === 'TAPP') {
-          this.makeTAPPEvents(result);
+          this.listenMessageTAPP(result);
         }
         if (result.confData.graphType === 'TLOC') {
-          this.makeTLOCEvents(result);
+          this.listenMessageTLOC(result);
         }
       });
   }
@@ -247,7 +248,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       this.getRecordingStatus();
       this.getgetrafficRecordDetails(recordId);
     })
-    this.realTimeTrafficService.getSocketConnection(this.socketUrl, "RECORDING", request);
+    this.realTimeTrafficService.openSocketConnection(this.socketUrl, "RECORDING", request);
     this.closeAllModal();
   }
 
@@ -256,7 +257,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
   }
 
   clearFilter() {
-    this.selectedWindow = 1;
+    this.selectedTimeFrame = 1;
     this.locationsSelected = ['All'];
     this.applicationsSelected = ['All'];
     this.loadedMultipleChart = [];
@@ -298,15 +299,13 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     });
   }
 
-  makeTEPEvents(data: any): any {
-    //let data: any = this.tEPData;
+  listenMessageTEP(data: any): any {
 
-    this.tEPrcntData = {
+    this.percentTEP = {
       downPercentage: data.downPercentage ? data.downPercentage : 0,
       upPercentage: data.upPercentage ? data.upPercentage : 0
     };
 
-    // let len = (this.fsView && this.fsName === 'TEP') ? this.selectedTopLength : 5;
     let len = 5;
     let upLen = data['upData']?.length;
     let downLen = data['downData']?.length;
@@ -318,14 +317,14 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       downLen = len;
     }
 
-    this.tEPrcntData.upPercentage = this.realTimeTrafficService.calculatePercentage(data.upTotal, data.upData, len);
-    this.tEPrcntData.downPercentage = this.realTimeTrafficService.calculatePercentage(data.downTotal, data.downData, len);
+    this.percentTEP.upPercentage = this.realTimeTrafficService.calculatePercentage(data.upTotal, data.upData, len);
+    this.percentTEP.downPercentage = this.realTimeTrafficService.calculatePercentage(data.downTotal, data.downData, len);
 
-    this.settepUpDataObj(data.upData);
-    this.settepDownDataObj(data.downData)
+    this.settUpData(data.upData);
+    this.setDownData(data.downData)
 
-    this.tEPData["upData"] = data.upData;
-    this.tEPData["downData"] = data.downData;
+    this.streamTEP["upData"] = data.upData;
+    this.streamTEP["downData"] = data.downData;
 
     let topEndPointUpChartoptions = this.realTimeTrafficService.makeOptionsForRTBC(data, 'bar', 'upData', len, '');
     let topEndPointDownChartoptions = this.realTimeTrafficService.makeOptionsForRTBC(data, 'bar', 'downData', len, '');
@@ -338,11 +337,6 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     topEndPointDownChartoptions.chart.height = 160;
     topEndPointDownChartoptions.plotOptions.series.pointWidth = 14;
 
-    let that = this;
-    let url = '/cco/traffic/endpoints/realtime';
-    if (!this.isCcoTraffic) {
-      url = '/organization-admin/flowAnalyze/traffic/endpoint/realtime';
-    }
     topEndPointUpChartoptions.xAxis.labels = {
       useHTML: true,
       style: {
@@ -355,18 +349,12 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       },
       formatter: function () {
         return `<span  class="text-primary axis_label" title="${this.value}" style="cursor:pointer">${this.value}</span>`;
-        // return `${this.value}`
       },
       events: {
-
       }
-
     }
     topEndPointUpChartoptions['plotOptions'].series.point.events = {
-      click: function () {
-        window.sessionStorage.setItem('endpointName', this.category);
-        // that.navigationByUrl(this.category, that.tepUpDataObj[this.category], 'Endpoints');
-      }
+
     };
     topEndPointDownChartoptions.xAxis.labels = {
       useHTML: true,
@@ -380,18 +368,13 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       },
       formatter: function () {
         return `<span  class="text-primary axis_label" title="${this.value}" style="cursor:pointer">${this.value}</span>`;
-        // return `${this.value}`
       },
       events: {
 
       }
     }
     topEndPointDownChartoptions.plotOptions.series.point.events = {
-      click: function () {
-        window.sessionStorage.setItem('endpointName', this.category);
-        // that.navigationByUrl(this.category, that.tepDownDataObj[this.category], 'Endpoints');
-        //that.realTimeCommonFunctionService.nagigationByUrl(this.category, that.tepDownDataObj[this.value], 'Endpoints');
-      }
+
     };
 
     topEndPointDownChartoptions.plotOptions.series.color = '#5ACFEA';
@@ -403,10 +386,8 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     this.topEndPointDownChartoptions = topEndPointDownChartoptions;
   }
 
-  makeTAPPEvents(data?: any): any {
-
-    //let data: any = this.tAData;
-    this.tAPrcntData = {
+  listenMessageTAPP(data?: any): any {
+    this.percentTAPP = {
       downPercentage: data.downPercentage ? data.downPercentage : 0,
       upPercentage: data.upPercentage ? data.upPercentage : 0
     };
@@ -422,14 +403,14 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       downLen = len;
     }
 
-    this.tAPrcntData.upPercentage = this.realTimeTrafficService.calculatePercentage(data.upTotal, data.upData, len);
-    this.tAPrcntData.downPercentage = this.realTimeTrafficService.calculatePercentage(data.downTotal, data.downData, len);
+    this.percentTAPP.upPercentage = this.realTimeTrafficService.calculatePercentage(data.upTotal, data.upData, len);
+    this.percentTAPP.downPercentage = this.realTimeTrafficService.calculatePercentage(data.downTotal, data.downData, len);
 
-    this.settepUpDataObj(data.upData);
-    this.settepDownDataObj(data.downData);
+    this.settUpData(data.upData);
+    this.setDownData(data.downData);
 
-    this.tAData["upData"] = data.upData;
-    this.tAData["downData"] = data.downData;
+    this.streamTAPP["upData"] = data.upData;
+    this.streamTAPP["downData"] = data.downData;
 
     let topAppsUpChartoptions = this.realTimeTrafficService.makeOptionsForRTBC(data, 'bar', 'upData', len, false);
     let topAppsDownChartoptions = this.realTimeTrafficService.makeOptionsForRTBC(data, 'bar', 'downData', len, false);
@@ -442,12 +423,6 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     delete topAppsDownChartoptions.chart.width;
     topAppsDownChartoptions.plotOptions.series.pointWidth = 14;
 
-
-    let that = this;
-    let url = '/cco/traffic/applications/realtime';
-    if (!this.isCcoTraffic) {
-      url = '/organization-admin/flowAnalyze/traffic/application/realtime';
-    }
     topAppsUpChartoptions.xAxis.labels = {
       useHTML: true,
       style: {
@@ -460,30 +435,11 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       },
       formatter: function () {
         return `<span  class="text-primary axis_label" title="${this.value}" style="cursor:pointer">${this.value}</span>`;
-        // return `${this.value}`
       },
       events: {
-        click: function () {
-          // if (that.hasApplicationAccess) {
-          //   that.router.navigate([url], { queryParams: { id: that.tapUpDataObj[this.axis.categories[this.pos]] } });
-          // }
-        },
-        contextmenu: function () {
-          // if (that.hasApplicationAccess) {
-          //   event.preventDefault();
-          //   // that.router.navigate(['/cco/traffic/applications/realtime'], { queryParams: { id: that.tapUpDataObj[this.value] } });
-          //   let newTabUrl = window.location.origin + url + '?id=' + that.tapUpDataObj[this.axis.categories[this.pos]];
-          //   window.open(newTabUrl, '_blank');
-          // }
-        }
       }
     }
     topAppsUpChartoptions.plotOptions.series.point.events = {
-      click: function () {
-        // if (that.hasApplicationAccess) {
-        //   that.router.navigate([url], { queryParams: { id: that.tapUpDataObj[event.point.category] } })
-        // }
-      }
     }
     topAppsDownChartoptions.xAxis.labels = {
       useHTML: true,
@@ -497,43 +453,22 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       },
       formatter: function () {
         return `<span  class="text-primary axis_label" title="${this.value}" style="cursor:pointer">${this.value}</span>`;
-        // return `${this.value}`
       },
       events: {
-        click: function () {
-          // if (that.hasApplicationAccess) {
-          //   that.router.navigate([url], { queryParams: { id: that.tapDownDataObj[this.axis.categories[this.pos]] } });
-          // }
-        },
-        contextmenu: function () {
-          // if (that.hasApplicationAccess) {
-          //   event.preventDefault();
-          //   // that.router.navigate(['/cco/traffic/applications/realtime'], { queryParams: { id: that.tapDownDataObj[this.value] } });
-          //   let newTabUrl = window.location.origin + url + '?id=' + that.tapDownDataObj[this.axis.categories[this.pos]];
-          //   window.open(newTabUrl, '_blank');
-          // }
-        }
       }
     }
     topAppsDownChartoptions.plotOptions.series.point.events = {
-      click: function () {
-        // if (that.hasApplicationAccess) {
-        //   that.router.navigate([url], { queryParams: { id: that.tapDownDataObj[event.point.category] } })
-        // }
-      }
-
     }
 
     topAppsDownChartoptions.plotOptions.series.color = '#5ACFEA';
 
-    this.topAppsUpChartoptions = { ...topAppsUpChartoptions };
-    this.topAppsDownChartoptions = { ...topAppsDownChartoptions };
+    this.topApplicationsUpChartoptions = { ...topAppsUpChartoptions };
+    this.topApplicationsDownChartoptions = { ...topAppsDownChartoptions };
 
   }
 
-  makeTLOCEvents(data: any): any {
-    //let data: any = this.tAData;
-    this.tLPrcntData = {
+  listenMessageTLOC(data: any): any {
+    this.percentTLOC = {
       downPercentage: data.downPercentage ? data.downPercentage : 0,
       upPercentage: data.upPercentage ? data.upPercentage : 0
     };
@@ -549,14 +484,14 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       downLen = len;
     }
 
-    this.tLPrcntData.upPercentage = this.realTimeTrafficService.calculatePercentage(data.upTotal, data.upData, len);
-    this.tLPrcntData.downPercentage = this.realTimeTrafficService.calculatePercentage(data.downTotal, data.downData, len);
+    this.percentTLOC.upPercentage = this.realTimeTrafficService.calculatePercentage(data.upTotal, data.upData, len);
+    this.percentTLOC.downPercentage = this.realTimeTrafficService.calculatePercentage(data.downTotal, data.downData, len);
 
-    this.settepUpDataObj(data.upData);
-    this.settepDownDataObj(data.downData);
+    this.settUpData(data.upData);
+    this.setDownData(data.downData);
 
-    this.tLData["upData"] = data.upData;
-    this.tLData["downData"] = data.downData;
+    this.streamTLOC["upData"] = data.upData;
+    this.streamTLOC["downData"] = data.downData;
 
     let topLocationsUpChartoptions = this.realTimeTrafficService.makeOptionsForRTBC(data, 'bar', 'upData', len, false);
     let topLocationsDownChartoptions = this.realTimeTrafficService.makeOptionsForRTBC(data, 'bar', 'downData', len, false);
@@ -569,13 +504,6 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     delete topLocationsDownChartoptions.chart.width;
     topLocationsDownChartoptions.plotOptions.series.pointWidth = 14;
 
-
-
-    let that = this;
-    let url = '/cco/traffic/locations/realtime';
-    if (!this.isCcoTraffic) {
-      url = '/organization-admin/flowAnalyze/traffic/location/realtime';
-    }
     topLocationsUpChartoptions.xAxis.labels = {
       useHTML: true,
       style: {
@@ -588,11 +516,9 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       },
       formatter: function () {
         return `<span  class="text-primary axis_label" title="${this.value}" style="cursor:pointer">${this.value}</span>`;
-        // return `${this.value}`
       },
       events: {
       }
-
     }
     topLocationsUpChartoptions.plotOptions.series.point.events = {
 
@@ -609,7 +535,6 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
       },
       formatter: function () {
         return `<span  class="text-primary axis_label" title="${this.value}" style="cursor:pointer">${this.value}</span>`;
-        // return `${this.value}`
       },
       events: {
       }
@@ -625,7 +550,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     this.topLocationsDownChartoptions = { ...topLocationsDownChartoptions };
   }
 
-  public settepUpDataObj(data: any): any {
+  public settUpData(data: any): any {
     let obj = {};
     data?.forEach((element: any) => {
       //@ts-ignore
@@ -635,7 +560,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
     this.tepUpDataObj = obj;
   }
 
-  public settepDownDataObj(data: any): any {
+  public setDownData(data: any): any {
     let obj = {};
     data?.forEach((element: any) => {
       //@ts-ignore
@@ -704,8 +629,8 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
   clearCacheData() {
     this.topEndPointUpChartoptions = null;
     this.topEndPointDownChartoptions = null;
-    this.topAppsUpChartoptions = null;
-    this.topAppsDownChartoptions = null;
+    this.topApplicationsUpChartoptions = null;
+    this.topApplicationsDownChartoptions = null;
     this.topLocationsUpChartoptions = null;
     this.topLocationsDownChartoptions = null;
   }
@@ -784,7 +709,7 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
         if (element.monitorId === monitorId) {
           doWSCall = false;
         }
-        if (element.monitorId === monitorId && element.selectedTime === this.selectedWindow && element.Type === this.metricSelected) {
+        if (element.monitorId === monitorId && element.selectedTime === this.selectedTimeFrame && element.Type === this.metricSelected) {
           IsDuplicate = true;
         }
         if (element.monitorId === monitorId && element.Type === this.metricSelected) {
@@ -800,13 +725,13 @@ export class NetworkTrafficComponent implements OnInit, OnDestroy {
         monitorId: monitorId,
         Type: this.metricSelected,
         Name: this.trafficType === 'Applications' ? multipleApplicationName + multipleLocationName : multipleLocationName,
-        windowLen: this.selectedWindow,
+        windowLen: this.selectedTimeFrame,
         IsDuplicate: IsDuplicate,
         Position: position,
         doWSCall: doWSCall,
         replay: false,
         startTime: (new Date()).getTime(),
-        selectedTime: this.selectedWindow
+        selectedTime: this.selectedTimeFrame
       });
       this.loadedMultipleChart = [...this.loadedMultipleChart];
     }

@@ -30,7 +30,7 @@ export class RealTimeTrafficService {
     return this.httpClient.get<{ signedurl: string }>(this.apiUrl + 'realtime/signed-url');
   }
 
-  getSocketConnection(socketUrl: string, requestType: string, request: any) {
+  openSocketConnection(socketUrl: string, requestType: string, request: any) {
 
     if (this.socket && this.socket.active) {
       this.socket.emit(requestType, request);

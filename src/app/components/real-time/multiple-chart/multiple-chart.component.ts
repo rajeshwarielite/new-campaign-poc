@@ -156,7 +156,7 @@ export class MultipleChartComponent implements OnInit {
 
 
   send(eventname: string, data: any) {
-    this.realTimeTrafficService.getSocketConnection(this.socketUrl, eventname, data);
+    this.realTimeTrafficService.openSocketConnection(this.socketUrl, eventname, data);
   }
 
   lastSubscriptionTime: any;

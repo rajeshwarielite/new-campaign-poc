@@ -12,12 +12,12 @@
                     <div class="current-issue-menu-container">
                         <div class="current-issue-menu-item">
                             <div class="form-group ccl-form required">
-                                <label class="col-form-label">TimeFrame </label>
+                                <label class="col-form-label">Time Frame </label>
                                 <div class="col-sm-12 p-0">
                                     <ng-select [searchable]="false" placeholder='5 Minutes window'
-                                        [(ngModel)]="selectedWindow">
-                                        <ng-option *ngFor="let winoption of windowOptions"
-                                            [value]="winoption.id">{{winoption.name}}</ng-option>
+                                        [(ngModel)]="selectedTimeFrame">
+                                        <ng-option *ngFor="let timeFrame of timeFrameOptions"
+                                            [value]="timeFrame.id">{{timeFrame.name}}</ng-option>
                                     </ng-select>
                                 </div>
                             </div>
@@ -128,7 +128,7 @@
                 <div id="traffic-network-realtime-rate" class="card m-2">
                     <div id="ngx-stream-path-chart-rate">
                         <app-stream-chart [chartName]="'Rate'" [yAxixTitle]="'Gbps'" [data]="data?.maxRate"
-                            [time]="data?.sendTime" [windowLen]="5" [history]="[]" [selectedFilter]="selectedWindow"
+                            [time]="data?.sendTime" [windowLen]="5" [history]="[]" [selectedFilter]="selectedTimeFrame"
                             [selectedLocation]="locationsSelected">
                         </app-stream-chart>
                     </div>
@@ -137,7 +137,7 @@
                 <div id="traffic-network-realtime-packet" class="card m-2">
                     <div id="ngx-stream-path-chart-packet">
                         <app-stream-chart [chartName]="'packet'" [yAxixTitle]="'Kbps'" [data]="data?.packet"
-                            [time]="data?.sendTime" [windowLen]="5" [history]="[]" [selectedFilter]="selectedWindow"
+                            [time]="data?.sendTime" [windowLen]="5" [history]="[]" [selectedFilter]="selectedTimeFrame"
                             [selectedLocation]="locationsSelected">
                         </app-stream-chart>
                     </div>
@@ -154,7 +154,7 @@
                     <div class="card-body row board_body no-gutters h-210">
                         <div class="col-md-6 col-12" id="top-endpoints-up-chart-div">
                             <div class="chart-info">
-                                <span class="">Up Rate (<b>{{tEPrcntData.upPercentage}}% </b> of Total
+                                <span class="">Up Rate (<b>{{percentTEP.upPercentage}}% </b> of Total
                                     )</span>
                             </div>
                             <app-bar-chart id="top-endpoints-up-chart" *ngIf="topEndPointUpChartoptions"
@@ -163,7 +163,7 @@
                         </div>
                         <div class="col-md-6 col-12">
                             <div class="chart-info">
-                                <span class="">Down Rate(<b>{{tEPrcntData.downPercentage}}%</b>
+                                <span class="">Down Rate(<b>{{percentTEP.downPercentage}}%</b>
                                     of Total)</span>
                             </div>
                             <app-bar-chart id="top-endpoints-down-chart" *ngIf="topEndPointDownChartoptions"
@@ -185,19 +185,20 @@
                         <div class="col-md-6 col-12" id="top-apps-up-chart-div">
                             <div class="chart-info">
                                 <span class="">Up Rate
-                                    (<b>{{tAPrcntData.upPercentage}}% </b>of Total)</span>
+                                    (<b>{{percentTAPP.upPercentage}}% </b>of Total)</span>
                             </div>
-                            <app-bar-chart id="top-apps-up-chart" *ngIf="topAppsUpChartoptions"
-                                [chartOptions]="topAppsUpChartoptions" [type]="'up'" [updateFlag]="updateFlag">
+                            <app-bar-chart id="top-apps-up-chart" *ngIf="topApplicationsUpChartoptions"
+                                [chartOptions]="topApplicationsUpChartoptions" [type]="'up'" [updateFlag]="updateFlag">
                             </app-bar-chart>
                         </div>
                         <div class="col-md-6 col-12" id="top-apps-down-chart-div">
                             <div class="chart-info">
-                                <span class="">Down Rate (<b>{{tAPrcntData.downPercentage}}%</b>
+                                <span class="">Down Rate (<b>{{percentTAPP.downPercentage}}%</b>
                                     of Total)</span>
                             </div>
-                            <app-bar-chart id="top-apps-down-chart" *ngIf="topAppsDownChartoptions"
-                                [chartOptions]="topAppsDownChartoptions" [type]="'down'" [updateFlag]="updateFlag">
+                            <app-bar-chart id="top-apps-down-chart" *ngIf="topApplicationsDownChartoptions"
+                                [chartOptions]="topApplicationsDownChartoptions" [type]="'down'"
+                                [updateFlag]="updateFlag">
                             </app-bar-chart>
                         </div>
                     </div>
@@ -214,7 +215,7 @@
                         <div class="col-md-6 col-12" id="top-apps-up-chart-div">
                             <div class="chart-info">
                                 <span class="">Up Rate
-                                    (<b>{{tLPrcntData.upPercentage}}% </b>of Total)</span>
+                                    (<b>{{percentTLOC.upPercentage}}% </b>of Total)</span>
                             </div>
                             <app-bar-chart id="top-apps-up-chart" *ngIf="topLocationsUpChartoptions && true"
                                 [chartOptions]="topLocationsUpChartoptions" [type]="'up'" [updateFlag]="updateFlag">
@@ -222,7 +223,7 @@
                         </div>
                         <div class="col-md-6 col-12" id="top-apps-down-chart-div">
                             <div class="chart-info">
-                                <span class="">Down Rate (<b>{{tLPrcntData.downPercentage}}%</b>
+                                <span class="">Down Rate (<b>{{percentTLOC.downPercentage}}%</b>
                                     of Total)</span>
                             </div>
                             <app-bar-chart id="top-apps-down-chart" *ngIf="topLocationsDownChartoptions"
